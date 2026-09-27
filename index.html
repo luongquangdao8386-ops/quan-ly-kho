@@ -175,6 +175,7 @@ h2.sec{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--
 .row{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;padding:12px 14px;border:0;border-bottom:1px solid var(--line);background:transparent}
 .row:last-child{border-bottom:0}
 button.row:active{background:var(--sunk)}
+button.row:disabled{opacity:.55}
 .row-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
 .nm{font-weight:600;line-height:1.3}
 .nm2{color:var(--muted);font-size:13.5px;line-height:1.3}
@@ -270,6 +271,41 @@ textarea.inp{height:auto;min-height:70px;padding:10px 12px;resize:vertical}
 .facts.loan{grid-template-columns:minmax(92px,36%) 1fr}
 .facts.loan dt .zi{display:block;margin-left:0;font-size:12.5px}
 
+/* Phiếu đề xuất */
+.tile.t-req .ic{color:var(--warn)}
+.tile-badge.mine{background:var(--signal);color:var(--signal-ink);box-shadow:0 0 0 1.5px var(--signal-ink)}
+.rq-line{display:flex;gap:10px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line)}
+.rq-line:last-child{border-bottom:0}
+.rq-q{width:96px;flex:none;display:flex;flex-direction:column;align-items:stretch;gap:2px;text-align:center}
+.rq-q .inp{height:44px;text-align:center;padding:0 6px}
+.rq-q small{font-size:11.5px;color:var(--muted);line-height:1.2}
+.rq-q small .zi{display:block;margin-left:0}
+.rq-line .icon-btn{flex:none;color:var(--muted)}
+.trio{display:flex;flex-wrap:wrap;gap:2px 10px;font-size:12.5px;color:var(--muted)}
+.trio b{font-family:var(--mono);color:var(--ink);font-variant-numeric:tabular-nums}
+.iss{display:flex;flex-direction:column;gap:8px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+.iss .two{grid-template-columns:1fr 104px}
+.iss .inp.mono{text-align:center}
+.iss.done{opacity:.7}
+.btn-row{display:flex;gap:8px}
+.btn-row .btn{flex:1;height:52px;white-space:nowrap;padding:0 12px}
+.btn-row .btn.primary{flex:1.6;width:auto}
+.btn.danger{color:var(--bad);border-color:var(--bad)}
+.lich{display:flex;flex-direction:column;gap:6px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--card);font-size:13px}
+.sheet .inp{margin:0}
+.toast .tq{display:block;margin-top:6px;font-size:13px;opacity:.9}
+
+/* Mạng yếu: thanh trạng thái, hàng chờ gửi */
+.netbar{max-width:620px;margin:10px auto 0;padding-inline:16px}
+.netbar button{width:100%;display:flex;align-items:center;gap:10px;text-align:left;padding:9px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);font-size:13px;line-height:1.3}
+.netbar button.off{background:var(--warnbg);border-color:var(--warn);color:var(--warn)}
+.netbar button.bad{background:var(--badbg);border-color:var(--bad);color:var(--bad)}
+.netbar .ic{width:22px;height:22px}
+.nb-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.nb-main small{font-size:12px;opacity:.9}
+.nb-go{flex:none;font-weight:700;font-size:12.5px;text-decoration:underline}
+.pill.pend{background:var(--sunk);color:var(--muted);border:1px dashed var(--muted)}
+
 /* Tem */
 .seg{display:grid;grid-template-columns:1fr 1fr;border:1.5px solid var(--ink);border-radius:10px;overflow:hidden}
 .seg button{border:0;background:var(--card);min-height:48px;padding:4px 6px;font-weight:600;line-height:1.2}
@@ -343,6 +379,7 @@ textarea.inp{height:auto;min-height:70px;padding:10px 12px;resize:vertical}
     <div class="stripe"></div>
     <div class="busy" id="busy" hidden></div>
   </header>
+  <div class="netbar" id="netbar" hidden></div>
   <div class="demo" id="demo" hidden><p id="demoText"></p></div>
   <main class="wrap" id="main"></main>
 </div>
@@ -503,13 +540,13 @@ __ss.insertSheet('Trang tính1');
 
 /**
  * ==================================================================
- *  KHO CƠ ĐIỆN · 机电仓库  —  Máy chủ (Google Apps Script)   v1.1
+ *  KHO CƠ ĐIỆN · 机电仓库  —  Máy chủ (Google Apps Script)   v1.2.1
  * ==================================================================
  *  CÁCH CÀI (tóm tắt, xem hướng dẫn đầy đủ trong tin nhắn):
  *   1. Tạo Google Sheet mới → Tiện ích mở rộng → Apps Script.
  *   2. Xoá hết code có sẵn, dán TOÀN BỘ file này vào, bấm Lưu.
  *   3. Chọn hàm "caiDat" ở thanh trên → bấm Chạy → cấp quyền.
- *      Sheet sẽ tự tạo 7 trang và dữ liệu mẫu.
+ *      Sheet sẽ tự tạo 9 trang và dữ liệu mẫu.
  *   4. Triển khai → Tuỳ chọn triển khai mới → loại "Ứng dụng web".
  *      Thực thi với: Tôi · Người có quyền truy cập: Bất kỳ ai → Triển khai.
  *   5. Sao chép URL (kết thúc bằng /exec) dán vào API_URL trong index.html.
@@ -523,13 +560,16 @@ __ss.insertSheet('Trang tính1');
  *  Sửa code xong muốn giữ nguyên đường link: Triển khai → Quản lý triển khai
  *  → biểu tượng bút chì → Phiên bản: "Phiên bản mới" → Triển khai.
  *
- *  NÂNG CẤP TỪ BẢN 1.0: chỉ cần dán code mới và triển khai phiên bản mới.
- *  KHÔNG cần chạy lại caiDat — trang "MuonTra" (mượn – trả dụng cụ) tự tạo
- *  khi cho mượn lần đầu.
+ *  NÂNG CẤP TỪ BẢN 1.0 / 1.1 / 1.2: chỉ cần dán code mới và triển khai phiên bản
+ *  mới. KHÔNG cần chạy lại caiDat — các trang mới tự tạo khi dùng lần đầu:
+ *    MuonTra  (mượn – trả dụng cụ)
+ *    DeXuat   (phiếu đề xuất vật tư: công nhân đề xuất → kỹ sư duyệt → thủ kho xuất)
+ *    DongBo   (mã các thao tác đã nhận, để thao tác làm lúc mất mạng gửi lại
+ *              nhiều lần cũng chỉ ghi một lần; không cần xem trang này)
  * ==================================================================
  */
 
-const PHIEN_BAN = '1.1';
+const PHIEN_BAN = '1.2.1';
 
 // Các trang (sheet) và cột. Không đổi tên cột.
 const BANG = {
@@ -541,11 +581,16 @@ const BANG = {
   NhatKy:    ['ThoiGian', 'NguoiDung', 'HanhDong', 'ChiTiet'],
   // Phiếu mượn dụng cụ. DaTra = số đã trả về kho (gồm cả hỏng), Hong ⊂ DaTra, Mat = số báo mất.
   MuonTra:   ['ID', 'ThoiGian', 'MaVT', 'TuViTri', 'SoLuong', 'NguoiMuon', 'CongTrinh', 'HanTra', 'GhiChu',
-              'NguoiChoMuon', 'DaTra', 'Hong', 'Mat', 'TrangThai', 'CapNhat', 'LichSuTra']
+              'NguoiChoMuon', 'DaTra', 'Hong', 'Mat', 'TrangThai', 'CapNhat', 'LichSuTra'],
+  // Phiếu đề xuất vật tư. ChiTiet: danh sách dòng dạng JSON [{maVT, sl (đề xuất), duyet, daXuat}].
+  DeXuat:    ['ID', 'ThoiGian', 'NguoiTao', 'NguoiTaoID', 'CongTrinh', 'CanNgay', 'GhiChu', 'ChiTiet', 'TrangThai',
+              'NguoiDuyet', 'ThoiGianDuyet', 'YKien', 'CapNhat', 'LichSu'],
+  // Mã thao tác đã nhận từ điện thoại (chống ghi trùng khi gửi lại lúc sóng yếu).
+  DongBo:    ['MaThaoTac', 'ThoiGian', 'NguoiDung', 'HanhDong', 'KetQua']
 };
 
 // Trang thêm sau bản 1.0: tự tạo khi cần, người dùng không phải chạy lại caiDat.
-const BANG_MOI = ['MuonTra'];
+const BANG_MOI = ['MuonTra', 'DeXuat', 'DongBo'];
 
 // Cột luôn lưu dạng chữ (giữ số 0 ở đầu mã vạch, không tự đổi thành ngày tháng).
 const COT_CHU = {
@@ -555,19 +600,26 @@ const COT_CHU = {
   GiaoDich:  ['ID', 'Loai', 'MaVT', 'TuViTri', 'DenViTri', 'CongTrinh', 'GhiChu', 'NguoiDung'],
   NguoiDung: ['ID', 'Ten', 'PinHash', 'VaiTro'],
   NhatKy:    ['NguoiDung', 'HanhDong', 'ChiTiet'],
-  MuonTra:   ['ID', 'MaVT', 'TuViTri', 'NguoiMuon', 'CongTrinh', 'HanTra', 'GhiChu', 'NguoiChoMuon', 'TrangThai', 'LichSuTra']
+  MuonTra:   ['ID', 'MaVT', 'TuViTri', 'NguoiMuon', 'CongTrinh', 'HanTra', 'GhiChu', 'NguoiChoMuon', 'TrangThai', 'LichSuTra'],
+  DeXuat:    ['ID', 'NguoiTao', 'NguoiTaoID', 'CongTrinh', 'CanNgay', 'GhiChu', 'ChiTiet', 'TrangThai', 'NguoiDuyet', 'YKien', 'LichSu'],
+  DongBo:    ['MaThaoTac', 'NguoiDung', 'HanhDong', 'KetQua']
 };
 
 const VAI_TRO = ['admin', 'kysu', 'thukho', 'congnhan'];
 
 // Ai được làm gì. Muốn cho Kỹ sư nhập/xuất thì thêm 'kysu' vào dòng nhapxuat.
 // Xem danh sách dụng cụ đang cho mượn: mọi người đã đăng nhập.
+// Phiếu đề xuất: ai cũng tạo được (dexuat), Kỹ sư duyệt (duyet), Thủ kho xuất (nhapxuat).
+// Công nhân chỉ xem phiếu của mình; người trong xemdexuat xem được mọi phiếu.
 const QUYEN = {
   nhapxuat:  ['admin', 'thukho'],
   danhmuc:   ['admin', 'thukho'],
   muontra:   ['admin', 'thukho'],
   nhatky:    ['admin', 'kysu', 'thukho'],
-  nguoidung: ['admin']
+  nguoidung: ['admin'],
+  dexuat:    ['admin', 'kysu', 'thukho', 'congnhan'],
+  duyet:     ['admin', 'kysu'],
+  xemdexuat: ['admin', 'kysu', 'thukho']
 };
 
 // Tiền tố mã tự tạo theo nhóm vật tư.
@@ -576,7 +628,12 @@ const TIEN_TO = { dien: 'DI', nuoc: 'NU', pccc: 'PC', hvac: 'HV', phukien: 'PK',
 const LOAI_GD = ['NHAP', 'XUAT', 'CHUYEN', 'KIEMKE'];   // loại gửi được qua action 'txn'
 // MUON (cho mượn: trừ tồn), TRA (trả: cộng tồn), MAT (báo mất: không đổi tồn) chỉ tạo qua lend / takeBack.
 const TINH_TRANG = ['TOT', 'HONG', 'MAT'];
-const HANH_DONG_GHI = ['login', 'txn', 'saveItem', 'saveLocation', 'saveUser', 'changePin', 'lend', 'takeBack'];
+const HANH_DONG_GHI = ['login', 'txn', 'saveItem', 'saveLocation', 'saveUser', 'changePin', 'lend', 'takeBack',
+  'request', 'editRequest', 'approve', 'issue', 'closeRequest'];
+// Thao tác điện thoại được làm lúc mất mạng rồi gửi sau: kèm mã thao tác (opId), gửi lại bao nhiêu lần cũng chỉ ghi một lần.
+const THAO_TAC_GUI_LAI = ['txn', 'lend', 'takeBack', 'request', 'editRequest', 'approve', 'issue', 'closeRequest'];
+const DX_MO = ['CHO_DUYET', 'DA_DUYET'];   // phiếu đề xuất còn đang xử lý
+const DX_TOI_DA = 80;                      // số vật tư tối đa mỗi phiếu
 const PHIEN_GIAY = 21600;      // phiên đăng nhập tối đa 6 giờ
 const SAI_TOI_DA = 5;          // sai PIN 5 lần trên 1 máy → khoá 5 phút
 const SAI_TOAN_HE_THONG = 30;  // tổng 30 lần sai trong 10 phút → khoá đăng nhập 10 phút
@@ -621,8 +678,20 @@ function dieuHuong(req) {
   const a = req.action, p = req.payload || {};
   if (a === 'login') return dangNhap(p.pin, req.device);
   const u = xacThuc(req.token);
+  if (a === 'logout') { CacheService.getScriptCache().remove('tk_' + req.token); return true; }
+  // Thao tác có mã (opId): nếu đã nhận rồi (điện thoại gửi lại vì sóng yếu) thì không làm lại.
+  const opId = THAO_TAC_GUI_LAI.indexOf(a) >= 0 ? sach(req.opId, 64) : '';
+  if (opId) {
+    const daCo = timThaoTac(opId);
+    if (daCo) return { dup: true, id: daCo === 'OK' ? '' : daCo };
+  }
+  const kq = thucHien(a, u, p);
+  if (opId) ghiThaoTac(opId, u, a, kq);
+  return kq;
+}
+
+function thucHien(a, u, p) {
   switch (a) {
-    case 'logout':       CacheService.getScriptCache().remove('tk_' + req.token); return true;
     case 'data':         return taiDuLieu(u);
     case 'txn':          canQuyen(u, 'nhapxuat'); return giaoDich(u, p);
     case 'saveItem':     canQuyen(u, 'danhmuc'); return luuVatTu(u, p);
@@ -634,8 +703,33 @@ function dieuHuong(req) {
     case 'lend':         canQuyen(u, 'muontra'); return choMuon(u, p);
     case 'takeBack':     canQuyen(u, 'muontra'); return nhanTra(u, p);
     case 'loans':        return dsPhieuMuon(p);
+    case 'requests':     return dsDeXuat(u, p);
+    case 'request':      canQuyen(u, 'dexuat'); return taoDeXuat(u, p);
+    case 'editRequest':  canQuyen(u, 'dexuat'); return suaDeXuat(u, p);
+    case 'approve':      canQuyen(u, 'duyet'); return duyetDeXuat(u, p);
+    case 'issue':        canQuyen(u, 'nhapxuat'); return xuatDeXuat(u, p);
+    case 'closeRequest': return dongDeXuat(u, p);
   }
   throw loi('KHONG_HIEU', a);
+}
+
+// Tìm mã thao tác trong 5000 dòng cuối của trang DongBo. Trả về KetQua ('OK' hoặc mã phiếu vừa tạo), '' nếu chưa có.
+function timThaoTac(opId) {
+  const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('DongBo');
+  if (!sh) return '';
+  const n = sh.getLastRow();
+  if (n < 2) return '';
+  const bat = Math.max(2, n - 4999);
+  const vals = sh.getRange(bat, 1, n - bat + 1, BANG.DongBo.length).getValues();
+  const cKq = BANG.DongBo.indexOf('KetQua');
+  for (let i = vals.length - 1; i >= 0; i--) {
+    if (str(vals[i][0]) === opId) return str(vals[i][cKq]) || 'OK';
+  }
+  return '';
+}
+function ghiThaoTac(opId, u, a, kq) {
+  const id = (kq && kq.loan && kq.loan.id) || (kq && kq.request && kq.request.id) || 'OK';
+  themDong('DongBo', { MaThaoTac: opId, ThoiGian: new Date(), NguoiDung: str(u.Ten), HanhDong: a, KetQua: id });
 }
 
 /* ------------------------------------------------------------------ */
@@ -809,7 +903,10 @@ function viTriRa(r) {
 
 function taiDuLieu(u) {
   const muon = taiPhieuMuon();
+  const dx = taiDeXuat(u);
   return {
+    requests: dx,
+    projects: duAnGanDay(dx),
     me: congKhai(u),
     items: docBang('VatTu').map(vatTuRa),
     locations: docBang('ViTri').map(viTriRa),
@@ -820,6 +917,20 @@ function taiDuLieu(u) {
     borrowers: muon.borrowers,
     time: new Date().toISOString()
   };
+}
+
+// Tên công trình dùng gần đây (gợi ý khi gõ, giúp viết thống nhất để sau này báo cáo theo công trình).
+function duAnGanDay(dx) {
+  const out = [];
+  function them(x) { x = str(x); if (x && out.indexOf(x) < 0 && out.length < 40) out.push(x); }
+  dx.slice().sort(function (a, b) { return a.time < b.time ? 1 : -1; }).forEach(function (r) { them(r.congTrinh); });
+  const sh = sheet('GiaoDich'), n = sh.getLastRow();
+  if (n >= 2) {
+    const bat = Math.max(2, n - 499);
+    const vals = sh.getRange(bat, BANG.GiaoDich.indexOf('CongTrinh') + 1, n - bat + 1, 1).getValues();
+    for (let i = vals.length - 1; i >= 0; i--) them(vals[i][0]);
+  }
+  return out;
 }
 
 function lichSu(p) {
@@ -858,13 +969,24 @@ function giaoDich(u, p) {
   return { stock: thucHienGD(u, p).stock };
 }
 
+// Đọc sẵn danh mục và tồn để ghi nhiều giao dịch liền nhau (xuất theo phiếu) mà không đọc lại trang mỗi dòng.
+function nguCanh() {
+  return {
+    vatTu: docBang('VatTu').map(function (v) { return hoa(v.MaVT); }),
+    viTri: docBang('ViTri').map(function (v) { return hoa(v.MaViTri); }),
+    ton: docBang('TonKho')
+  };
+}
+
 // Ghi một giao dịch và cập nhật tồn. Dùng chung cho nhập/xuất/chuyển/kiểm kê và mượn/trả/mất.
-function thucHienGD(u, p) {
+// ctx (tuỳ chọn): kết quả nguCanh(), dùng chung giữa nhiều lần gọi.
+function thucHienGD(u, p, ctx) {
   const loai = str(p.loai);
   const maVT = hoa(p.maVT);
-  if (!docBang('VatTu').some(function (v) { return hoa(v.MaVT) === maVT; })) throw loi('KHONG_CO_VT', maVT);
+  const dsVT = ctx ? ctx.vatTu : docBang('VatTu').map(function (v) { return hoa(v.MaVT); });
+  if (dsVT.indexOf(maVT) < 0) throw loi('KHONG_CO_VT', maVT);
 
-  const dsViTri = docBang('ViTri').map(function (v) { return hoa(v.MaViTri); });
+  const dsViTri = ctx ? ctx.viTri : docBang('ViTri').map(function (v) { return hoa(v.MaViTri); });
   function kiemViTri(m) {
     m = hoa(m);
     if (!m || dsViTri.indexOf(m) < 0) throw loi('KHONG_CO_VITRI', m);
@@ -875,7 +997,7 @@ function thucHienGD(u, p) {
 
   const sh = sheet('TonKho');
   const cSL = BANG.TonKho.indexOf('SoLuong') + 1;
-  const ton = docBang('TonKho');
+  const ton = ctx ? ctx.ton : docBang('TonKho');
   function dong(m) {
     return ton.filter(function (r) { return hoa(r.MaVT) === maVT && hoa(r.MaViTri) === m; })[0];
   }
@@ -1036,6 +1158,266 @@ function nhanTra(u, p) {
 }
 
 /* ------------------------------------------------------------------ */
+/*  Phiếu đề xuất vật tư                                              */
+/*  CHO_DUYET → (kỹ sư) DA_DUYET / TU_CHOI → (thủ kho) HOAN_TAT        */
+/*  Người tạo sửa được khi chưa xuất (sửa phiếu đã duyệt / bị từ chối  */
+/*  thì quay về CHO_DUYET), huỷ được khi chưa xuất: DA_HUY            */
+/* ------------------------------------------------------------------ */
+
+function dongDX(r) {
+  let ds = [];
+  try { ds = JSON.parse(str(r.ChiTiet) || '[]'); } catch (e) { ds = []; }
+  if (!Array.isArray(ds)) ds = [];
+  return ds.filter(function (x) { return x && str(x.maVT); }).map(function (x) {
+    return { maVT: hoa(x.maVT), sl: so(x.sl), duyet: so(x.duyet), daXuat: so(x.daXuat) };
+  });
+}
+function deXuatRa(r) {
+  return {
+    id: str(r.ID), time: iso(r.ThoiGian), nguoiTao: str(r.NguoiTao), nguoiTaoId: str(r.NguoiTaoID),
+    congTrinh: str(r.CongTrinh), canNgay: ngayChu(r.CanNgay), ghiChu: str(r.GhiChu), lines: dongDX(r),
+    trangThai: str(r.TrangThai), nguoiDuyet: str(r.NguoiDuyet), tgDuyet: iso(r.ThoiGianDuyet), yKien: str(r.YKien),
+    capNhat: iso(r.CapNhat), lichSu: str(r.LichSu)
+  };
+}
+function dxMo(r) { return DX_MO.indexOf(str(r.TrangThai)) >= 0; }
+function xemDX(u, r) { return QUYEN.xemdexuat.indexOf(str(u.VaiTro)) >= 0 || str(r.NguoiTaoID) === str(u.ID); }
+function ghiLichSuDX(r, noiDung, u) {
+  const dong = gioChu(new Date()) + ' · ' + noiDung + ' (' + str(u.Ten) + ')';
+  r.LichSu = ((str(r.LichSu) ? str(r.LichSu) + ' | ' : '') + dong).slice(-4000);
+}
+
+// Phiếu đang xử lý + phiếu của chính mình vừa xong trong 7 ngày (để người đề xuất thấy kết quả).
+function taiDeXuat(u) {
+  const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('DeXuat');
+  if (!sh) return [];
+  const n = sh.getLastRow();
+  if (n < 2) return [];
+  const tt = sh.getRange(2, BANG.DeXuat.indexOf('TrangThai') + 1, n - 1, 1).getValues();
+  let dau = Math.max(0, tt.length - 300);
+  for (let i = 0; i < dau; i++) { if (DX_MO.indexOf(str(tt[i][0])) >= 0) { dau = i; break; } }
+  const moc = Date.now() - 7 * 864e5;
+  return docBang('DeXuat', dau + 2).filter(function (r) {
+    if (!str(r.ID) || !xemDX(u, r)) return false;
+    if (dxMo(r)) return true;
+    return str(r.NguoiTaoID) === str(u.ID) && r.CapNhat instanceof Date && r.CapNhat.getTime() > moc;
+  }).map(deXuatRa);
+}
+
+// Danh sách phiếu đã xong (hoàn tất / từ chối / huỷ), mới nhất trước.
+function dsDeXuat(u, p) {
+  const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('DeXuat');
+  if (!sh) return [];
+  const rows = docBang('DeXuat', Math.max(2, sh.getLastRow() - 1499));
+  const gioiHan = Math.min(Math.max(so(p.limit) || 100, 1), 300);
+  const xong = p.done !== false;
+  return rows
+    .filter(function (r) { return str(r.ID) && xemDX(u, r) && dxMo(r) !== xong; })
+    .map(deXuatRa)
+    .sort(function (a, b) { return a.capNhat < b.capNhat ? 1 : a.capNhat > b.capNhat ? -1 : 0; })
+    .slice(0, gioiHan);
+}
+
+function maDeXuat() {
+  const sh = sheet('DeXuat'), n = sh.getLastRow();
+  let lon = 0;
+  if (n >= 2) sh.getRange(2, 1, n - 1, 1).getValues().forEach(function (r) {
+    const m = /^DX-(\d+)$/.exec(hoa(r[0]));
+    if (m) lon = Math.max(lon, Number(m[1]));
+  });
+  return 'DX-' + String(lon + 1).padStart(4, '0');
+}
+
+function timDX(id) {
+  id = hoa(id);
+  const r = id ? docBang('DeXuat').filter(function (x) { return hoa(x.ID) === id; })[0] : null;
+  if (!r) throw loi('KHONG_CO_DX', id);
+  return r;
+}
+
+// Kiểm tra nội dung phiếu (dùng chung cho tạo mới và sửa). Dòng trùng vật tư thì cộng dồn.
+function docNoiDungDX(p) {
+  const ct = sach(p.congTrinh, 120);
+  if (!ct) throw loi('THIEU_CONG_TRINH');
+  const can = str(p.canNgay);
+  if (can && !laNgay(can)) throw loi('CAN_NGAY');
+  const dsVT = docBang('VatTu').map(function (v) { return hoa(v.MaVT); });
+  const gop = {}, thuTu = [];
+  (Array.isArray(p.lines) ? p.lines : []).forEach(function (x) {
+    const m = hoa(x && x.maVT);
+    if (dsVT.indexOf(m) < 0) throw loi('KHONG_CO_VT', m);
+    const sl = lamTron(Number(x.soLuong));
+    if (!isFinite(sl) || sl <= 0) throw loi('SO_LUONG');
+    if (!(m in gop)) { gop[m] = 0; thuTu.push(m); }
+    gop[m] = lamTron(gop[m] + sl);
+  });
+  if (!thuTu.length) throw loi('DX_TRONG');
+  if (thuTu.length > DX_TOI_DA) throw loi('DX_NHIEU');
+  return {
+    ct: ct, can: can, ghiChu: sach(p.ghiChu, 300),
+    lines: thuTu.map(function (m) { return { maVT: m, sl: gop[m], duyet: 0, daXuat: 0 }; })
+  };
+}
+
+function taoDeXuat(u, p) {
+  const nd = docNoiDungDX(p);
+  const now = new Date();
+  const r = {
+    ID: maDeXuat(), ThoiGian: now, NguoiTao: str(u.Ten), NguoiTaoID: str(u.ID), CongTrinh: nd.ct, CanNgay: nd.can,
+    GhiChu: nd.ghiChu, TrangThai: 'CHO_DUYET', NguoiDuyet: '', ThoiGianDuyet: '', YKien: '', CapNhat: now, LichSu: '',
+    ChiTiet: JSON.stringify(nd.lines)
+  };
+  ghiLichSuDX(r, 'Tạo 创建 · ' + nd.lines.length + ' mục 项', u);
+  themDong('DeXuat', r);
+  return { request: deXuatRa(r) };
+}
+
+// Người tạo (hoặc Quản trị) sửa phiếu đã gửi, khi chưa xuất gì:
+//  Chờ duyệt: sửa xong vẫn chờ duyệt.
+//  Đã duyệt (chưa xuất) hoặc Bị từ chối: sửa xong quay về Chờ duyệt, kỹ sư duyệt lại.
+// p.trangThai: trạng thái điện thoại đang thấy; khác trên máy chủ (ví dụ kỹ sư vừa duyệt) thì báo để tải lại.
+function suaDeXuat(u, p) {
+  const r = timDX(p.id);
+  const tt = str(r.TrangThai), cu = dongDX(r);
+  if (str(r.NguoiTaoID) !== str(u.ID) && str(u.VaiTro) !== 'admin') throw loi('KHONG_QUYEN', 'dexuat');
+  if (['CHO_DUYET', 'DA_DUYET', 'TU_CHOI'].indexOf(tt) < 0) throw loi('DX_TRANG_THAI', tt);
+  if (str(p.trangThai) && str(p.trangThai) !== tt) throw loi('DX_TRANG_THAI', tt);
+  if (cu.some(function (z) { return z.daXuat > 0; })) throw loi('DX_DA_XUAT');
+  const nd = docNoiDungDX(p);
+
+  // Ghi lại những gì đã đổi để kỹ sư nhìn là biết
+  const doi = [];
+  if (nd.ct !== str(r.CongTrinh)) doi.push('→ ' + nd.ct);
+  if (nd.can !== ngayChu(r.CanNgay)) doi.push('Cần 需用 ' + (nd.can || '—'));
+  nd.lines.forEach(function (l) {
+    const c = cu.filter(function (z) { return z.maVT === l.maVT; })[0];
+    if (!c) doi.push('+' + l.maVT + ' ' + l.sl);
+    else if (c.sl !== l.sl) doi.push(l.maVT + ' ' + c.sl + '→' + l.sl);
+  });
+  cu.forEach(function (c) {
+    if (!nd.lines.some(function (l) { return l.maVT === c.maVT; })) doi.push('−' + c.maVT);
+  });
+  if (nd.ghiChu !== str(r.GhiChu)) doi.push('Ghi chú 备注');
+
+  const guiLai = tt !== 'CHO_DUYET';
+  r.CongTrinh = nd.ct; r.CanNgay = nd.can; r.GhiChu = nd.ghiChu; r.ChiTiet = JSON.stringify(nd.lines);
+  r.TrangThai = 'CHO_DUYET';
+  if (guiLai) { r.NguoiDuyet = ''; r.ThoiGianDuyet = ''; r.YKien = ''; }
+  ghiLichSuDX(r, (guiLai ? 'Sửa, gửi duyệt lại 修改并重新提交' : 'Sửa 修改') + (doi.length ? ' · ' + doi.join(', ').slice(0, 300) : ''), u);
+  r.CapNhat = new Date();
+  suaDong('DeXuat', r._row, r);
+  return { request: deXuatRa(r) };
+}
+
+// Kỹ sư duyệt (có thể sửa số lượng từng dòng, 0 = bỏ dòng) hoặc từ chối (bắt buộc ghi lý do).
+function duyetDeXuat(u, p) {
+  const r = timDX(p.id);
+  if (str(r.TrangThai) !== 'CHO_DUYET') throw loi('DX_TRANG_THAI', str(r.TrangThai));
+  const yKien = sach(p.yKien, 300);
+  const lines = dongDX(r);
+  if (p.dongY === false) {
+    if (!yKien) throw loi('THIEU_LY_DO');
+    lines.forEach(function (l) { l.duyet = 0; });
+    r.TrangThai = 'TU_CHOI';
+    ghiLichSuDX(r, 'Từ chối 驳回: ' + yKien, u);
+  } else {
+    const moi = {};
+    (Array.isArray(p.lines) ? p.lines : []).forEach(function (x) {
+      const d = lamTron(Number(x && x.duyet));
+      if (!isFinite(d) || d < 0) throw loi('SO_LUONG');
+      moi[hoa(x.maVT)] = d;
+    });
+    lines.forEach(function (l) { l.duyet = l.maVT in moi ? moi[l.maVT] : l.sl; });
+    if (!lines.some(function (l) { return l.duyet > 0; })) throw loi('DX_TRONG');
+    r.TrangThai = 'DA_DUYET';
+    const sua = lines.filter(function (l) { return l.duyet !== l.sl; })
+      .map(function (l) { return l.maVT + ' ' + l.sl + '→' + l.duyet; }).join(', ');
+    ghiLichSuDX(r, 'Duyệt 批准' + (sua ? ' · ' + sua : '') + (yKien ? ': ' + yKien : ''), u);
+  }
+  r.ChiTiet = JSON.stringify(lines);
+  r.NguoiDuyet = str(u.Ten); r.ThoiGianDuyet = new Date(); r.YKien = yKien; r.CapNhat = new Date();
+  suaDong('DeXuat', r._row, r);
+  return { request: deXuatRa(r) };
+}
+
+// Thủ kho xuất theo phiếu đã duyệt. Có thể xuất nhiều lần (từng phần, từ nhiều vị trí).
+// Kiểm tra hết các dòng trước rồi mới ghi, để không bao giờ ghi dở dang.
+function xuatDeXuat(u, p) {
+  const r = timDX(p.id);
+  if (str(r.TrangThai) !== 'DA_DUYET') throw loi('DX_TRANG_THAI', str(r.TrangThai));
+  const lines = dongDX(r);
+  const ds = Array.isArray(p.lines) ? p.lines : [];
+  if (!ds.length) throw loi('DX_TRONG');
+  const ctx = nguCanh();
+  const them = {}, tonTam = {};
+  function tonCo(m, l) {
+    const k = m + '|' + l;
+    if (!(k in tonTam)) {
+      const x = ctx.ton.filter(function (t) { return hoa(t.MaVT) === m && hoa(t.MaViTri) === l; })[0];
+      tonTam[k] = x ? so(x.SoLuong) : 0;
+    }
+    return tonTam[k];
+  }
+  const viec = ds.map(function (x) {
+    const m = hoa(x && x.maVT), l = hoa(x && x.tuViTri), sl = lamTron(Number(x && x.soLuong));
+    const d = lines.filter(function (z) { return z.maVT === m; })[0];
+    if (!d) throw loi('KHONG_CO_VT', m);
+    if (!isFinite(sl) || sl <= 0) throw loi('SO_LUONG');
+    if (ctx.viTri.indexOf(l) < 0) throw loi('KHONG_CO_VITRI', l);
+    const con = lamTron(d.duyet - d.daXuat - (them[m] || 0));
+    if (sl > con) throw loi('XUAT_QUA_SO', con + '|' + m);
+    const co = tonCo(m, l);
+    if (co < sl) throw loi('KHONG_DU_TON', co + '|' + m);
+    tonTam[m + '|' + l] = lamTron(co - sl);
+    them[m] = lamTron((them[m] || 0) + sl);
+    return { d: d, m: m, l: l, sl: sl };
+  });
+  const ghi = sach(p.ghiChu, 200);
+  viec.forEach(function (v) {
+    thucHienGD(u, {
+      loai: 'XUAT', maVT: v.m, tuViTri: v.l, soLuong: v.sl, congTrinh: str(r.CongTrinh),
+      ghiChu: [str(r.ID), str(r.NguoiTao), ghi].filter(function (x) { return x; }).join(' · ')
+    }, ctx);
+    v.d.daXuat = lamTron(v.d.daXuat + v.sl);
+  });
+  const du = lines.every(function (z) { return z.daXuat >= z.duyet; });
+  r.ChiTiet = JSON.stringify(lines);
+  ghiLichSuDX(r, 'Xuất 出库 ' + viec.map(function (v) { return v.m + ' × ' + v.sl + ' ← ' + v.l; }).join('; ') + (ghi ? ' · ' + ghi : ''), u);
+  if (du) r.TrangThai = 'HOAN_TAT';
+  else if (p.dong === true) { r.TrangThai = 'HOAN_TAT'; ghiLichSuDX(r, 'Đóng phiếu 关闭 · không xuất phần còn lại 余量不出库', u); }
+  r.CapNhat = new Date();
+  suaDong('DeXuat', r._row, r);
+  const cacMa = Object.keys(them);
+  return {
+    request: deXuatRa(r),
+    stock: ctx.ton
+      .filter(function (t) { return cacMa.indexOf(hoa(t.MaVT)) >= 0 && so(t.SoLuong) !== 0; })
+      .map(function (t) { return { maVT: hoa(t.MaVT), maViTri: hoa(t.MaViTri), soLuong: so(t.SoLuong) }; })
+  };
+}
+
+// Huỷ (chưa xuất gì) hoặc đóng phiếu (đã xuất một phần, không xuất phần còn lại).
+//  Chờ duyệt: người tạo hoặc Quản trị huỷ được.
+//  Đã duyệt: Thủ kho / Quản trị đóng được; người tạo huỷ được nếu chưa xuất gì.
+function dongDeXuat(u, p) {
+  const r = timDX(p.id);
+  const tt = str(r.TrangThai), vt = str(u.VaiTro);
+  const laNguoiTao = str(r.NguoiTaoID) === str(u.ID);
+  const daXuat = dongDX(r).some(function (z) { return z.daXuat > 0; });
+  let duoc;
+  if (tt === 'CHO_DUYET') duoc = laNguoiTao || vt === 'admin';
+  else if (tt === 'DA_DUYET') duoc = QUYEN.nhapxuat.indexOf(vt) >= 0 || (laNguoiTao && !daXuat);
+  else throw loi('DX_TRANG_THAI', tt);
+  if (!duoc) throw loi('KHONG_QUYEN', 'dexuat');
+  const lyDo = sach(p.lyDo, 200);
+  r.TrangThai = daXuat ? 'HOAN_TAT' : 'DA_HUY';
+  ghiLichSuDX(r, (daXuat ? 'Đóng phiếu 关闭' : 'Huỷ 撤销') + (lyDo ? ': ' + lyDo : ''), u);
+  r.CapNhat = new Date();
+  suaDong('DeXuat', r._row, r);
+  return { request: deXuatRa(r) };
+}
+
+/* ------------------------------------------------------------------ */
 /*  Danh mục: vật tư, vị trí                                          */
 /* ------------------------------------------------------------------ */
 
@@ -1193,6 +1575,7 @@ function caiDat() {
 
   const trong = function (ten) { return sheet(ten).getLastRow() < 2; };
   const now = Date.now(), gio = 3600 * 1000;
+  const vatTuMau = trong('VatTu');   // chỉ thêm phiếu đề xuất mẫu khi vật tư cũng là mẫu
 
   if (trong('ViTri')) {
     themNhieu('ViTri', MAU.viTri.map(function (r) {
@@ -1248,6 +1631,24 @@ function caiDat() {
       return { ID: r[0], Ten: r[1], PinHash: bamPin(r[2]), VaiTro: r[3], HoatDong: true, NgayTao: new Date() };
     }));
   }
+  if (vatTuMau && trong('DeXuat')) {
+    const ten = function (id) { const x = MAU.nguoiDung.filter(function (n) { return n[0] === id; })[0]; return x ? x[1] : id; };
+    const ghiMau = function (t, noiDung, nguoi) { return gioChu(new Date(t)) + ' · ' + noiDung + ' (' + nguoi + ')'; };
+    themNhieu('DeXuat', MAU.deXuat.map(function (r, i) {
+      const t = now - r[2] * gio, tDuyet = t + r[8] * gio, tt = r[3];
+      const lines = r[4].map(function (x) { return { maVT: x[0], sl: x[1], duyet: x.length > 2 ? x[2] : 0, daXuat: 0 }; });
+      const lich = [ghiMau(t, 'Tạo 创建 · ' + lines.length + ' mục 项', ten(r[1]))];
+      if (tt === 'DA_DUYET') lich.push(ghiMau(tDuyet, 'Duyệt 批准' + (r[7] ? ': ' + r[7] : ''), 'Kỹ sư Minh'));
+      if (tt === 'TU_CHOI') lich.push(ghiMau(tDuyet, 'Từ chối 驳回: ' + r[7], 'Kỹ sư Minh'));
+      const daXuLy = tt !== 'CHO_DUYET';
+      return {
+        ID: 'DX-' + String(i + 1).padStart(4, '0'), ThoiGian: new Date(t), NguoiTao: ten(r[1]), NguoiTaoID: r[1], CongTrinh: r[0],
+        CanNgay: r[5] === null ? '' : ngayChu(new Date(now + r[5] * 24 * gio)), GhiChu: r[6], ChiTiet: JSON.stringify(lines),
+        TrangThai: tt, NguoiDuyet: daXuLy ? 'Kỹ sư Minh' : '', ThoiGianDuyet: daXuLy ? new Date(tDuyet) : '', YKien: r[7],
+        CapNhat: new Date(daXuLy ? tDuyet : t), LichSu: lich.join(' | ')
+      };
+    }));
+  }
 
   // Xoá trang trống mặc định (Trang tính1 / Sheet1)
   ss.getSheets().forEach(function (sh) {
@@ -1256,9 +1657,9 @@ function caiDat() {
   return 'Đã cài đặt xong. Tiếp theo: Triển khai → Ứng dụng web.';
 }
 
-/** Xoá toàn bộ vật tư, vị trí, tồn kho, giao dịch, phiếu mượn (giữ người dùng và nhật ký). */
+/** Xoá toàn bộ vật tư, vị trí, tồn kho, giao dịch, phiếu mượn, phiếu đề xuất (giữ người dùng và nhật ký). */
 function xoaDuLieuMau() {
-  ['VatTu', 'ViTri', 'TonKho', 'GiaoDich', 'MuonTra'].forEach(function (ten) {
+  ['VatTu', 'ViTri', 'TonKho', 'GiaoDich', 'MuonTra', 'DeXuat'].forEach(function (ten) {
     const sh = sheet(ten), n = sh.getLastRow();
     if (n >= 2) sh.deleteRows(2, n - 1);
   });
@@ -1340,6 +1741,16 @@ const MAU = {
     ['DC-0001', 'K1-D-01-1', 1, 'Tuấn – tổ điện', 'Toà nhà B – khoan treo ống tầng 3', 24, 0, 'Thủ kho Lan'],
     ['DC-0003', 'K1-D-01-1', 1, '王师傅 – 空调组', 'Xưởng A – lắp điều hoà', 3, 2, 'Thủ kho Lan']
   ],
+  // Phiếu đề xuất mẫu (cũ → mới): Công trình, Người tạo, Số giờ trước, Trạng thái, Dòng [MaVT, SL đề xuất, SL duyệt],
+  // Cần sau (ngày kể từ hôm nay, null = không ghi), Ghi chú, Ý kiến duyệt, Duyệt sau (giờ)
+  deXuat: [
+    ['Toà nhà B – điều hoà tầng 2', 'U004', 50, 'TU_CHOI', [['HV-0002', 10]], null, '',
+      'Công trình B còn 4 cuộn, dùng hết rồi đề xuất lại', 3],
+    ['Xưởng A – chiếu sáng nhà xưởng', 'U004', 26, 'DA_DUYET', [['DI-0007', 12, 10], ['DI-0001', 200, 200], ['DI-0005', 30, 30]], 0, '',
+      'Đèn lấy 10 bộ trước, tuần sau đề xuất tiếp', 2],
+    ['Toà nhà B – PCCC tầng 4', 'U004', 3, 'CHO_DUYET', [['PC-0001', 80], ['PC-0003', 6], ['PK-0001', 40], ['PK-0002', 80]], 1,
+      'Lắp sprinkler hành lang trục 3–5', '', 0]
+  ],
   // ID, Tên, PIN, Vai trò
   nguoiDung: [
     ['U001', 'Quản trị', '111111', 'admin'],
@@ -1363,9 +1774,14 @@ const DEMO = !API_URL;
 const LIB_SCAN = 'https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js';
 const LIB_QR = 'https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js';
 const IDLE_MIN = 15;
+const APP_VER = '1.2.1';   // tăng số này mỗi lần giao index.html mới, để kiểm tra điện thoại đã tải bản mới chưa
 const LOGO = '<svg viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="112" fill="#16211F"/><path d="M104 184V124Q104 104 124 104H184M328 104H388Q408 104 408 124V184M408 328V388Q408 408 388 408H328M184 408H124Q104 408 104 388V328" stroke="#F5C400" stroke-width="30" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M256 164L348 210L256 256L164 210Z" fill="#F5C400"/><path d="M256 164L348 210V306L256 352L164 306V210ZM164 210L256 256L348 210M256 256V352" stroke="#F5C400" stroke-width="24" stroke-linejoin="round" fill="none"/><path d="M312 244L284 294H304L292 334L324 280H304L318 244Z" fill="#F5C400"/></svg>';
 // Giống QUYEN trong Code.gs (máy chủ vẫn kiểm tra lại mọi thao tác)
-const QUYEN = { nhapxuat: ['admin', 'thukho'], danhmuc: ['admin', 'thukho'], muontra: ['admin', 'thukho'], nhatky: ['admin', 'kysu', 'thukho'], nguoidung: ['admin'] };
+const QUYEN = { nhapxuat: ['admin', 'thukho'], danhmuc: ['admin', 'thukho'], muontra: ['admin', 'thukho'], nhatky: ['admin', 'kysu', 'thukho'], nguoidung: ['admin'],
+  dexuat: ['admin', 'kysu', 'thukho', 'congnhan'], duyet: ['admin', 'kysu'], xemdexuat: ['admin', 'kysu', 'thukho'] };
+// Thao tác làm được lúc mất mạng (lưu trên máy, có mạng tự gửi). Các việc khác cần có mạng.
+const QUEUE_OK = ['txn', 'lend', 'takeBack', 'request', 'editRequest', 'approve', 'issue', 'closeRequest'];
+const SYNC_SEC = 30;
 const TIEN_TO = { dien: 'DI', nuoc: 'NU', pccc: 'PC', hvac: 'HV', phukien: 'PK', dungcu: 'DC' };
 
 /* ---------------- Song ngữ ---------------- */
@@ -1421,6 +1837,7 @@ const TX = {
   errNotEnough: ['Không đủ tồn. Vị trí này chỉ còn {n}.', '库存不足，该库位仅剩{n}。'],
   errQty: ['Nhập số lượng lớn hơn 0.', '请输入大于0的数量。'],
   errQtyKK: ['Nhập số lượng thực tế (từ 0 trở lên).', '请输入实际数量（≥0）。'],
+  errQty0: ['Nhập số lượng từ 0 trở lên (0 = không duyệt dòng này).', '请输入≥0的数量（0＝不批准此行）。'],
   errSameLoc: ['Vị trí đi và đến phải khác nhau.', '起止库位不能相同。'],
   errDupCode: ['Mã {x} đã có. Chọn mã khác hoặc để trống để tự tạo.', '编码{x}已存在，请更换或留空自动生成。'],
   errDupBarcode: ['Mã vạch này đã gắn cho vật tư hoặc vị trí khác.', '该条码已被其他物料或库位使用。'],
@@ -1472,11 +1889,12 @@ const TX = {
   pinTip: ['Không dùng PIN dễ đoán như 123456 hay ngày sinh.', '请勿使用123456或生日等易猜的PIN。'],
   role_admin: ['Quản trị', '管理员'], role_kysu: ['Kỹ sư', '工程师'], role_thukho: ['Thủ kho', '仓管员'], role_congnhan: ['Công nhân', '工人'],
   rd_admin: ['Toàn quyền, quản lý người dùng và PIN', '全部权限，管理用户和PIN'],
-  rd_kysu: ['Xem tồn kho, vị trí và nhật ký', '查看库存、库位和记录'],
-  rd_thukho: ['Nhập, xuất, chuyển, kiểm kê, cho mượn – nhận trả dụng cụ, thêm vật tư, in tem', '出入库、移库、盘点、工具借还、新增物料、打印标签'],
-  rd_congnhan: ['Tìm vật tư, xem vị trí và dụng cụ đang cho mượn', '查询物料、库位和借出的工具'],
+  rd_kysu: ['Xem tồn kho, vị trí, nhật ký; duyệt đề xuất vật tư', '查看库存、库位和记录；审批物料申请'],
+  rd_thukho: ['Nhập, xuất, chuyển, kiểm kê, xuất theo đề xuất, cho mượn – nhận trả dụng cụ, thêm vật tư, in tem', '出入库、移库、盘点、按申请出库、工具借还、新增物料、打印标签'],
+  rd_congnhan: ['Tìm vật tư, xem vị trí, gửi đề xuất vật tư', '查询物料和库位，提交物料申请'],
   by: ['bởi', '操作人'],
   optional: ['tuỳ chọn', '可选'],
+  version: ['Phiên bản', '版本'],
   // Mượn – trả dụng cụ
   loans: ['Mượn – trả dụng cụ', '工具借还'],
   lend: ['Cho mượn', '借出'], lendTitle: ['Cho mượn dụng cụ', '借出工具'],
@@ -1520,7 +1938,104 @@ const TX = {
   errDue: ['Chọn hạn trả từ hôm nay trở đi.', '请选择今天或以后的归还日期。'],
   errNoLoan: ['Không tìm thấy phiếu mượn này.', '找不到该借用单。'],
   errLoanClosed: ['Phiếu này đã trả xong.', '该借用单已全部归还。'],
-  errReturnTooMany: ['Chỉ còn {n} chưa trả.', '仅剩{n}未还。']
+  errReturnTooMany: ['Chỉ còn {n} chưa trả.', '仅剩{n}未还。'],
+  // Đề xuất vật tư
+  reqs: ['Đề xuất vật tư', '物料申请'],
+  reqNew: ['Tạo đề xuất', '新建申请'],
+  reqDetail: ['Phiếu đề xuất', '申请单'],
+  reqSubmit: ['Gửi đề xuất', '提交申请'],
+  reqAddThis: ['Đề xuất vật tư này', '申请此物料'],
+  reqLines: ['Vật tư cần', '所需物料'],
+  reqNoLines: ['Chưa có vật tư nào. Gõ tên hoặc quét mã để thêm.', '尚未添加物料，请输入名称或扫码添加。'],
+  reqAddMore: ['Thêm vật tư', '添加物料'],
+  reqNeedBy: ['Cần ngày', '需用日期'],
+  needBy_none: ['Không gấp', '不急'],
+  needToday: ['Cần hôm nay', '今天需用'], needOn: ['Cần {x}', '需用 {x}'], needLate: ['Trễ {n} ngày', '已过{n}天'],
+  requester: ['Người đề xuất', '申请人'],
+  approver: ['Người duyệt', '审批人'],
+  approveNote: ['Ý kiến duyệt', '审批意见'],
+  approveNotePh: ['Ý kiến (bắt buộc khi từ chối)', '意见（驳回时必填）'],
+  qtyReq: ['Đề xuất', '申请'], qtyOk: ['Duyệt', '批准'], qtyOut: ['Đã xuất', '已出'], qtyLeft: ['Còn phải xuất', '待出'],
+  qtyApprove: ['SL duyệt', '批准数量'],
+  inStock: ['Tồn kho', '库存'],
+  st_CHO_DUYET: ['Chờ duyệt', '待审批'], st_DA_DUYET: ['Chờ xuất', '待出库'], st_HOAN_TAT: ['Hoàn tất', '已完成'],
+  st_TU_CHOI: ['Từ chối', '已驳回'], st_DA_HUY: ['Đã huỷ', '已撤销'],
+  tabClosed: ['Đã xong', '已结束'],
+  nLinesShort: ['mục', '项'],
+  outProgress: ['Đã xuất {a}/{b} mục', '已出{a}/{b}项'],
+  todo: ['Việc cần làm', '待办事项'], myReqs: ['Đề xuất của tôi', '我的申请'], seeAll: ['Xem tất cả', '查看全部'],
+  noReqs: ['Không có phiếu nào.', '暂无申请单。'],
+  reqFilterPh: ['Lọc theo số phiếu, công trình, người, vật tư', '按单号、工程、人员、物料筛选'],
+  approve: ['Duyệt', '批准'], reject: ['Từ chối', '驳回'],
+  issueTitle: ['Xuất theo phiếu', '按申请出库'],
+  issueConfirm: ['Xác nhận xuất', '确认出库'],
+  issueHelp: ['Để trống hoặc 0 ở dòng nào thì dòng đó chưa xuất lần này.', '某行留空或填0，则本次不出库。'],
+  issuedAll: ['Đã xuất đủ', '已出齐'],
+  closeReq: ['Đóng phiếu', '关闭申请单'], cancelReq: ['Huỷ đề xuất', '撤销申请'],
+  closeReqQ: ['Đóng phiếu, không xuất phần còn lại?', '关闭申请单，余量不再出库？'],
+  cancelReqQ: ['Huỷ phiếu đề xuất này?', '撤销此申请单？'],
+  reasonPh: ['Lý do (tuỳ chọn)', '原因（可选）'],
+  noStockAny: ['Trong kho đang hết vật tư này.', '该物料目前无库存。'],
+  history2: ['Diễn biến', '处理记录'],
+  reqPendingSync: ['Phiếu chưa gửi lên máy chủ. Có mạng sẽ tự gửi, sau đó mới duyệt được.', '申请单尚未上传，联网后自动发送，之后才能审批。'],
+  d_REQ: ['Đã gửi đề xuất {x}', '已提交申请 {x}'],
+  d_APPROVE: ['Đã duyệt {x}', '已批准 {x}'], d_REJECT: ['Đã từ chối {x}', '已驳回 {x}'],
+  d_ISSUE: ['Đã xuất theo phiếu {x}', '已按申请单 {x} 出库'],
+  d_CLOSE: ['Đã đóng phiếu {x}', '已关闭 {x}'], d_CANCEL: ['Đã huỷ phiếu {x}', '已撤销 {x}'],
+  // Sửa phiếu đã gửi
+  reqEdit: ['Sửa phiếu đề xuất', '修改申请单'],
+  editReq: ['Sửa phiếu', '修改'], editResubmit: ['Sửa và gửi lại', '修改后重新提交'],
+  editNoteApproved: ['Phiếu này đã được duyệt. Sửa xong sẽ phải chờ kỹ sư duyệt lại.', '该申请单已批准，修改后需工程师重新审批。'],
+  editNoteRejected: ['Sửa theo ý kiến của kỹ sư rồi gửi lại để duyệt.', '请按工程师意见修改后重新提交审批。'],
+  saveEdit: ['Lưu thay đổi', '保存修改'], saveResubmit: ['Lưu và gửi duyệt lại', '保存并重新提交'],
+  d_EDIT: ['Đã sửa phiếu {x}', '已修改 {x}'], d_RESUBMIT: ['Đã sửa và gửi lại phiếu {x}', '已修改并重新提交 {x}'],
+  copyReq: ['Tạo phiếu mới giống phiếu này', '复制为新申请'],
+  copyQ: ['Bạn đang soạn dở một phiếu. Thay bằng nội dung phiếu này?', '您有未提交的申请草稿，要用此单内容替换吗？'],
+  copyGo: ['Thay phiếu đang soạn', '替换草稿'],
+  d_COPY: ['Đã chép sang phiếu mới. Xem lại rồi bấm Gửi đề xuất.', '已复制到新申请，请核对后点“提交申请”。'],
+  errReqIssued: ['Phiếu đã xuất một phần nên không sửa được nữa. Nhờ thủ kho đóng phiếu rồi tạo phiếu mới.', '该申请单已部分出库，无法修改。请仓管员关闭后新建申请。'],
+  errProject: ['Nhập công trình / hạng mục.', '请填写工程/项目。'],
+  errReqEmpty: ['Thêm ít nhất một vật tư với số lượng lớn hơn 0.', '请至少添加一种数量大于0的物料。'],
+  errReqQty: ['Nhập số lượng cho {x}.', '请填写{x}的数量。'],
+  errReason: ['Nhập lý do từ chối.', '请填写驳回原因。'],
+  errReqState: ['Phiếu này đã được người khác xử lý. Tải lại dữ liệu để xem.', '该申请单已被他人处理，请刷新数据查看。'],
+  errNoReq: ['Không tìm thấy phiếu đề xuất này.', '找不到该申请单。'],
+  errIssueTooMany: ['{x}: chỉ còn phải xuất {n}.', '{x}：待出库仅剩{n}。'],
+  errNotEnoughItem: ['{x}: vị trí này chỉ còn {n}.', '{x}：该库位仅剩{n}。'],
+  errNeedBy: ['Ngày cần không hợp lệ.', '需用日期无效。'],
+  errTooManyLines: ['Tối đa 80 vật tư mỗi phiếu.', '每张申请单最多80种物料。'],
+  // Mạng yếu
+  offline: ['Mất mạng', '网络已断开'],
+  offlineData: ['Đang dùng dữ liệu lưu trên máy lúc {x}', '正在使用本机数据（{x}）'],
+  pendingN: ['{n} thao tác chờ gửi', '{n}项待发送'],
+  failedN: ['{n} thao tác gửi lỗi', '{n}项发送失败'],
+  sendingN: ['Đang gửi {n} thao tác…', '正在发送{n}项…'],
+  view2: ['Xem', '查看'],
+  outbox: ['Hàng chờ gửi', '待发送'],
+  sendNow: ['Gửi ngay', '立即发送'], resend: ['Gửi lại', '重新发送'],
+  discard: ['Bỏ thao tác này', '放弃此操作'],
+  discardQ: ['Bỏ thao tác này? Nó sẽ không được gửi lên máy chủ.', '放弃此操作？它将不会发送到服务器。'],
+  queued: ['Đã lưu trên máy, có mạng sẽ tự gửi.', '已保存在本机，联网后自动发送。'],
+  synced: ['Đã gửi {n} thao tác lên máy chủ.', '已向服务器发送{n}项操作。'],
+  syncFailed: ['{n} thao tác không gửi được. Xem Hàng chờ gửi.', '{n}项操作发送失败，请查看待发送。'],
+  backOnline: ['Đã có mạng lại.', '网络已恢复。'],
+  st_cho: ['Chờ gửi', '待发送'], st_loi: ['Lỗi', '失败'], st_ok: ['Đã gửi', '已发送'],
+  outboxEmpty: ['Không còn thao tác nào chờ gửi.', '没有待发送的操作。'],
+  outboxHelp: ['Việc làm lúc mất mạng được lưu trên máy này và tự gửi lần lượt khi có mạng. Nếu một việc gửi lỗi (ví dụ không đủ tồn vì người khác đã xuất trước), hãy xem lại rồi bỏ đi hoặc làm lại.', '断网时的操作保存在本机，联网后依次自动发送。如某项发送失败（例如他人已先出库导致库存不足），请核对后放弃或重新操作。'],
+  needOnline: ['Việc này cần có mạng. Thử lại khi có sóng.', '此操作需要联网，请在有信号时重试。'],
+  offlineLogin: ['Không có mạng: đang dùng dữ liệu lưu trên máy.', '无网络：正在使用本机数据。'],
+  offlineNoPin: ['Không có mạng: PIN sai, hoặc PIN này chưa từng đăng nhập trên máy này.', '无网络：PIN错误，或此PIN从未在本机登录过。'],
+  offlineNoData: ['Không có mạng và máy này chưa có dữ liệu lưu sẵn.', '无网络，且本机没有已保存的数据。'],
+  logoutPending: ['Còn {n} thao tác chưa gửi. Chúng vẫn được giữ trên máy này và sẽ gửi khi bạn đăng nhập lại.', '还有{n}项操作未发送，将保留在本机，您重新登录后自动发送。'],
+  logoutAnyway: ['Vẫn đăng xuất', '仍然退出'],
+  simOff: ['Giả lập mất mạng', '模拟断网'], simOn: ['Bật lại mạng', '恢复网络'],
+  simNote: ['Đang giả lập mất mạng', '正在模拟断网'],
+  offReady: ['Mở app khi mất mạng: đã sẵn sàng', '断网打开应用：已就绪'],
+  offNotReady: ['Mở app khi mất mạng: chưa sẵn sàng (cần file sw.js)', '断网打开应用：未就绪（需要sw.js文件）'],
+  dataAt: ['Dữ liệu cập nhật lúc {x}', '数据更新于{x}'],
+  pendingPill: ['Chờ gửi', '待发送'],
+  loanPendingSync: ['Phiếu mượn chưa gửi lên máy chủ. Có mạng sẽ tự gửi, sau đó mới nhận trả được.', '借用单尚未上传，联网后自动发送，之后才能归还。'],
+  delete: ['Xoá', '删除']
 };
 const UNITS = {
   cai: ['cái', '个'], chiec: ['chiếc', '台'], bo: ['bộ', '套'], met: ['m', '米'], cuon: ['cuộn', '卷'], cay: ['cây', '根'],
@@ -1535,7 +2050,11 @@ const ROLES = ['admin', 'kysu', 'thukho', 'congnhan'];
 /* ---------------- Trạng thái ---------------- */
 const S = {
   token: null, me: null, items: [], locs: [], stock: [], loans: [], borrowers: [], closedLoans: null,
-  itemMap: new Map(), locMap: new Map(), byItem: new Map(), byLoc: new Map(), q: '', grp: ''
+  itemMap: new Map(), locMap: new Map(), byItem: new Map(), byLoc: new Map(), q: '', grp: '',
+  // Đề xuất vật tư
+  requests: [], closedReqs: null, projects: [], draft: null,
+  // Mạng yếu: base = dữ liệu máy chủ gửi về (cũng lưu trên máy); Q = hàng chờ gửi; phần hiển thị = base + các việc trong Q
+  base: null, Q: [], offline: false, simDown: false, sessionMe: null, dataAt: '', idMap: {}, _pin: null
 };
 const NAV = [];
 const $ = s => document.querySelector(s);
@@ -1562,6 +2081,11 @@ function stor(kind, k, v) {
   return null;
 }
 function rid() { return Math.random().toString(36).slice(2) + Date.now().toString(36); }
+// Lưu lâu dài trên máy (bản xem thử chỉ giữ trong bộ nhớ, tải lại trang là mất như dữ liệu mẫu)
+const MEM = new Map();
+function pget(k) { if (DEMO) return MEM.has(k) ? MEM.get(k) : null; return stor('l', k); }
+function pset(k, v) { if (DEMO) { if (v === null) MEM.delete(k); else MEM.set(k, v); return; } stor('l', k, v); }
+function pjson(k) { try { return JSON.parse(pget(k) || 'null'); } catch (e) { return null; } }
 function deviceId() {
   let d = stor('l', 'kho_dev');
   if (!d) { d = S._dev || rid(); S._dev = d; stor('l', 'kho_dev', d); }
@@ -1607,11 +2131,36 @@ function daysLate(han) { const a = dayOf(han); if (!a) return 0; return Math.rou
 function fmtDay(s) { const d = dayOf(s); if (!d) return s || ''; const p = n => String(n).padStart(2, '0'); return p(d.getDate()) + '/' + p(d.getMonth() + 1) + (d.getFullYear() !== new Date().getFullYear() ? '/' + d.getFullYear() : ''); }
 
 /* ---------------- Dữ liệu ---------------- */
-function setData(d) {
-  S.me = d.me; S.items = d.items; S.locs = d.locations; S.stock = d.stock;
-  S.loans = d.loans || []; S.borrowers = d.borrowers || []; S.closedLoans = null;
+// d: dữ liệu máy chủ. t0: lúc bắt đầu tải (bỏ các việc đã gửi xong trước lúc đó). fromSnap: lấy từ bản lưu trên máy.
+function setData(d, t0, fromSnap) {
+  d.requests = d.requests || []; d.projects = d.projects || []; d.loans = d.loans || []; d.borrowers = d.borrowers || [];
+  S.base = d; S.dataAt = d.time || '';
+  if (!fromSnap) { S.sessionMe = d.me; saveSnap(); }
+  if (t0) {
+    const n = S.Q.length;
+    S.Q = S.Q.filter(o => !(o.st === 'ok' && o.okAt <= t0));   // đã gửi xong trước lúc tải: dữ liệu mới đã có
+    if (S.Q.length !== n) saveQ();
+  }
+  S.closedLoans = null; S.closedReqs = null;
+  loadDraft();
+  rebuild();
+}
+function cloneReq(R) { return Object.assign({}, R, { lines: R.lines.map(l => Object.assign({}, l)) }); }
+function seeReq(R) { return can('xemdexuat') || (S.me && R.nguoiTaoId === S.me.id); }
+// Phần hiển thị = dữ liệu máy chủ + các việc đang chờ gửi (hoặc vừa gửi, chưa tải lại)
+function rebuild() {
+  const B = S.base || { items: [], locations: [], stock: [], loans: [], borrowers: [], requests: [], projects: [] };
+  S.me = S.sessionMe || B.me || null;
+  S.items = B.items; S.locs = B.locations;
+  S.stock = B.stock.map(s => Object.assign({}, s));
+  S.loans = B.loans.map(L => Object.assign({}, L));
+  S.borrowers = B.borrowers.slice();
+  S.requests = B.requests.filter(seeReq).map(cloneReq);
+  S.projects = B.projects.slice();
+  for (const op of myOps()) if (op.st === 'cho' || op.st === 'ok') { try { applyLocal(op); } catch (e) { /* bỏ qua */ } }
   reindex();
 }
+function commit() { saveSnapSoon(); rebuild(); }
 function reindex() {
   S.items.sort((a, b) => a.maVT.localeCompare(b.maVT));
   S.locs.sort((a, b) => a.maViTri.localeCompare(b.maViTri));
@@ -1642,26 +2191,59 @@ function reindex() {
   const lent = new Map();
   for (const L of S.loans) lent.set(L.maVT, (lent.get(L.maVT) || 0) + L.conLai);
   for (const it of S.items) it._lent = lent.get(it.maVT.toUpperCase()) || 0;
+  // Phiếu đề xuất: cần ngày sớm trước, rồi phiếu cũ trước
+  S.requests.sort((a, b) => (a.canNgay || '9').localeCompare(b.canNgay || '9') || a.time.localeCompare(b.time));
 }
+// Các hàm dưới sửa dữ liệu máy chủ (base) theo kết quả trả về, rồi dựng lại phần hiển thị
 function upsertLoan(L) {
-  S.loans = S.loans.filter(x => x.id !== L.id);
-  if (L.trangThai === 'DANG_MUON') S.loans.push(L);
+  const B = S.base;
+  B.loans = B.loans.filter(x => x.id !== L.id);
+  if (L.trangThai === 'DANG_MUON') B.loans.push(L);
   if (S.closedLoans) S.closedLoans = S.closedLoans.filter(x => x.id !== L.id);
   if (S.closedLoans && L.trangThai !== 'DANG_MUON') S.closedLoans.unshift(L);
-  S.borrowers = [L.nguoiMuon].concat(S.borrowers.filter(x => x !== L.nguoiMuon));
-  reindex();
+  B.borrowers = [L.nguoiMuon].concat(B.borrowers.filter(x => x !== L.nguoiMuon));
+  commit();
 }
-function findLoan(id) { return S.loans.find(x => x.id === id) || (S.closedLoans || []).find(x => x.id === id) || null; }
+function realId(id) { return S.idMap[id] || id; }
+function findLoan(id) { id = realId(id); return S.loans.find(x => x.id === id) || (S.closedLoans || []).find(x => x.id === id) || null; }
 function lateLoans() { return S.loans.filter(L => daysLate(L.hanTra) > 0); }
-function updateStock(maVT, rows) {
-  const k = maVT.toUpperCase();
-  S.stock = S.stock.filter(s => s.maVT !== k).concat(rows || []);
-  reindex();
+function updateStock(maVT, rows) { updateStockMany([maVT], rows); }
+function updateStockMany(codes, rows) {
+  const ks = codes.map(c => String(c).toUpperCase());
+  S.base.stock = S.base.stock.filter(s => !ks.includes(s.maVT)).concat(rows || []);
+  commit();
 }
 function upsert(list, key, obj) {
   const i = list.findIndex(x => x[key].toUpperCase() === obj[key].toUpperCase());
   if (i >= 0) list[i] = obj; else list.push(obj);
-  reindex();
+  commit();
+}
+function upsertReq(R) {
+  const B = S.base;
+  B.requests = B.requests.filter(x => x.id !== R.id).concat([R]);
+  if (S.closedReqs) { S.closedReqs = S.closedReqs.filter(x => x.id !== R.id); if (!reqOpen(R)) S.closedReqs.unshift(R); }
+  if (R.congTrinh) B.projects = [R.congTrinh].concat(B.projects.filter(x => x !== R.congTrinh));
+  commit();
+}
+function findReq(id) {
+  id = realId(id);
+  return S.requests.find(x => x.id === id) || (S.closedReqs || []).find(x => x.id === id) || null;
+}
+function reqOpen(R) { return R.trangThai === 'CHO_DUYET' || R.trangThai === 'DA_DUYET'; }
+// Sửa được khi: chờ duyệt, bị từ chối, hoặc đã duyệt mà chưa xuất gì
+function reqEditable(R) {
+  return ['CHO_DUYET', 'DA_DUYET', 'TU_CHOI'].includes(R.trangThai) && !R.lines.some(l => l.daXuat > 0);
+}
+function isTmp(id) { return String(id || '').startsWith('tmp-'); }
+// Phiếu cần mình xử lý: kỹ sư duyệt, thủ kho xuất
+function needsMe(R) {
+  if (isTmp(R.id)) return false;
+  return (R.trangThai === 'CHO_DUYET' && can('duyet')) || (R.trangThai === 'DA_DUYET' && can('nhapxuat'));
+}
+function addProject(ct) {
+  ct = String(ct || '').trim(); if (!ct) return;
+  S.projects = [ct].concat(S.projects.filter(x => x !== ct));
+  if (S.base) S.base.projects = [ct].concat(S.base.projects.filter(x => x !== ct));
 }
 function findItemByCode(code) {
   const u = String(code || '').trim().toUpperCase();
@@ -1701,31 +2283,326 @@ function nextCode(nhom) {
 /* ---------------- Gọi máy chủ ---------------- */
 let pending = 0;
 function busy(d) { pending = Math.max(0, pending + d); $('#busy').hidden = pending === 0; }
-async function api(action, payload) {
+// opts.opId: mã thao tác (máy chủ chỉ ghi một lần dù nhận nhiều lần)
+async function api(action, payload, opts) {
+  opts = opts || {};
+  // Đăng nhập lúc mất mạng thì chưa có phiên: có mạng lại thì tự đăng nhập bằng PIN đang giữ trong bộ nhớ
+  if (action !== 'login' && !S.token && S._pin) {
+    if (!await ensureToken()) throw { ok: false, code: 'MANG', message: 'offline' };
+  }
   const req = { action, payload: payload || {}, token: S.token, device: deviceId() };
+  if (opts.opId) req.opId = opts.opId;
   let res;
   busy(1);
   try {
-    if (DEMO) res = await DemoBackend.call(req);
-    else {
-      const r = await fetch(API_URL, { method: 'POST', body: JSON.stringify(req) });
-      res = await r.json();
+    if (DEMO) {
+      if (S.simDown) { await new Promise(r => setTimeout(r, 200)); throw new Error('offline (demo)'); }
+      res = await DemoBackend.call(req);
+    } else {
+      // Sóng yếu: không chờ quá lâu. Việc ghi có mã thao tác nên gửi lại sau cũng không bị trùng.
+      const ctl = typeof AbortController === 'function' ? new AbortController() : null;
+      const tm = setTimeout(() => { if (ctl) ctl.abort(); }, (action === 'data' ? 45 : 30) * 1000);
+      try {
+        const r = await fetch(API_URL, { method: 'POST', body: JSON.stringify(req), signal: ctl ? ctl.signal : undefined });
+        res = await r.json();
+      } finally { clearTimeout(tm); }
     }
   } catch (e) {
     res = { ok: false, code: 'MANG', message: String(e && e.message || e) };
   } finally { busy(-1); }
+  setOffline(res.code === 'MANG');
   if (!res.ok) {
     if (res.code === 'HET_PHIEN' && action !== 'login' && S.token) { endSession(); toast(t('sessionExpired'), 'bad'); }
     throw res;
   }
   return res.data;
 }
+
+/* ---------------- Mạng yếu: hàng chờ gửi ---------------- */
+function myOps() { return S.me ? S.Q.filter(o => o.uid === S.me.id) : []; }
+function waitingOps() { return myOps().filter(o => o.st === 'cho'); }
+function saveQ() { pset('kho_q', JSON.stringify(S.Q)); }
+let snapT;
+function saveSnap() {
+  clearTimeout(snapT);
+  if (!S.base || !S.sessionMe) return;
+  pset('kho_snap', JSON.stringify({ uid: S.sessionMe.id, data: S.base }, (k, v) => (k[0] === '_' ? undefined : v)));
+}
+function saveSnapSoon() { clearTimeout(snapT); snapT = setTimeout(saveSnap, 400); }
+function draftKey() { return 'kho_draft_' + (S.sessionMe ? S.sessionMe.id : ''); }
+function loadDraft() { if (!S.draft) S.draft = pjson(draftKey()); }
+function saveDraft() { pset(draftKey(), S.draft && (S.draft.lines.length || S.draft.ct || S.draft.note) ? JSON.stringify(S.draft) : null); }
+
+// Ghi dữ liệu. Có mạng: gửi ngay như cũ (lỗi nghiệp vụ báo ngay). Mất mạng: lưu vào hàng chờ, hiện luôn trên máy.
+// Trả về { data } (máy chủ đã làm, có kết quả), { queued, tmpId } (đang chờ gửi) hoặc { dup, id } (máy chủ đã làm từ trước).
+async function send(action, payload, info) {
+  const op = { id: rid(), uid: S.me.id, a: action, p: payload, t: Date.now(), st: 'cho' };
+  if (info) op.i = info;   // thông tin để hiện trong Hàng chờ gửi
+  if (!S.offline && !waitingOps().length) {
+    try {
+      const data = await api(action, payload, { opId: op.id });
+      // Sóng yếu: mất gói trả lời, trình duyệt tự gửi lại lần 2 → máy chủ báo "đã làm rồi". Tải lại để có số liệu đúng.
+      if (data && data.dup) {
+        try { await loadData(); } catch (e) { /* bỏ qua */ }
+        return { dup: true, id: data.id || '' };
+      }
+      return { data };
+    } catch (e) { if (e.code !== 'MANG' || !QUEUE_OK.includes(action)) throw e; }
+  } else if (!QUEUE_OK.includes(action)) throw { code: 'MANG' };
+  S.Q.push(op); saveQ(); rebuild(); updateNet();
+  if (!S.offline) { lastFlushTry = 0; setTimeout(() => flush(), 0); }
+  return { queued: true, tmpId: 'tmp-' + op.id };
+}
+function qn(r) { return r && r.queued ? '<span class="tq">' + t('queued') + '</span>' : ''; }
+
+// Áp một việc đang chờ gửi lên phần hiển thị (giống cách máy chủ sẽ làm)
+function applyLocal(op) {
+  const p = op.p, U = x => String(x || '').toUpperCase(), r3 = n => Math.round(n * 1000) / 1000;
+  const cell = (m, l) => {
+    m = U(m); l = U(l);
+    let s = S.stock.find(x => x.maVT === m && x.maViTri === l);
+    if (!s) { s = { maVT: m, maViTri: l, soLuong: 0 }; S.stock.push(s); }
+    return s;
+  };
+  const add = (m, l, q) => { const s = cell(m, l); s.soLuong = r3(s.soLuong + q); };
+  const now = new Date(op.t).toISOString();
+  const q = Number(p.soLuong);
+  if (op.a === 'txn') {
+    if (p.loai === 'NHAP') add(p.maVT, p.denViTri, q);
+    else if (p.loai === 'XUAT') add(p.maVT, p.tuViTri, -q);
+    else if (p.loai === 'CHUYEN') { add(p.maVT, p.tuViTri, -q); add(p.maVT, p.denViTri, q); }
+    else if (p.loai === 'KIEMKE') cell(p.maVT, p.denViTri).soLuong = r3(q);
+  } else if (op.a === 'lend') {
+    add(p.maVT, p.tuViTri, -q);
+    const who = String(p.nguoiMuon || '').replace(/[[\]]/g, '').trim();
+    S.loans.push({ id: 'tmp-' + op.id, pending: true, time: now, maVT: U(p.maVT), tu: U(p.tuViTri), soLuong: q, nguoiMuon: who,
+      congTrinh: p.congTrinh || '', hanTra: p.hanTra, ghiChu: p.ghiChu || '', nguoiChoMuon: S.me.ten, daTra: 0, hong: 0, mat: 0,
+      conLai: q, trangThai: 'DANG_MUON', capNhat: now, lichSuTra: '' });
+    S.borrowers = [who].concat(S.borrowers.filter(x => x !== who));
+  } else if (op.a === 'takeBack') {
+    const L = S.loans.find(x => x.id === realId(p.id)); if (!L) return;
+    if (p.tinhTrang === 'MAT') L.mat = r3(L.mat + q);
+    else { add(L.maVT, p.denViTri || L.tu, q); L.daTra = r3(L.daTra + q); if (p.tinhTrang === 'HONG') L.hong = r3(L.hong + q); }
+    L.conLai = r3(L.soLuong - L.daTra - L.mat); L.pending = true; L.capNhat = now;
+    if (L.conLai <= 0) S.loans = S.loans.filter(x => x !== L);
+  } else if (op.a === 'request') {
+    S.requests.push({ id: 'tmp-' + op.id, pending: true, time: now, nguoiTao: S.me.ten, nguoiTaoId: S.me.id, congTrinh: p.congTrinh,
+      canNgay: p.canNgay || '', ghiChu: p.ghiChu || '', lines: mergeLines(p.lines),
+      trangThai: 'CHO_DUYET', nguoiDuyet: '', tgDuyet: '', yKien: '', capNhat: now, lichSu: '' });
+    addProject(p.congTrinh);
+  } else {
+    const R = S.requests.find(x => x.id === realId(p.id)); if (!R) return;
+    if (op.a === 'approve') {
+      if (R.trangThai !== 'CHO_DUYET') return;
+      if (p.dongY === false) { R.trangThai = 'TU_CHOI'; R.lines.forEach(l => { l.duyet = 0; }); }
+      else {
+        const m = new Map((p.lines || []).map(x => [U(x.maVT), Number(x.duyet)]));
+        R.lines.forEach(l => { l.duyet = m.has(l.maVT) ? m.get(l.maVT) : l.sl; });
+        R.trangThai = 'DA_DUYET';
+      }
+      R.nguoiDuyet = S.me.ten; R.tgDuyet = now; R.yKien = p.yKien || '';
+    } else if (op.a === 'issue') {
+      if (R.trangThai !== 'DA_DUYET') return;
+      (p.lines || []).forEach(x => {
+        const l = R.lines.find(z => z.maVT === U(x.maVT)); if (!l) return;
+        add(x.maVT, x.tuViTri, -Number(x.soLuong)); l.daXuat = r3(l.daXuat + Number(x.soLuong));
+      });
+      if (p.dong || R.lines.every(l => l.daXuat >= l.duyet)) R.trangThai = 'HOAN_TAT';
+    } else if (op.a === 'closeRequest') {
+      if (!reqOpen(R)) return;
+      R.trangThai = R.lines.some(l => l.daXuat > 0) ? 'HOAN_TAT' : 'DA_HUY';
+    } else if (op.a === 'editRequest') {
+      if (!reqEditable(R)) return;
+      if (R.trangThai !== 'CHO_DUYET') { R.nguoiDuyet = ''; R.tgDuyet = ''; R.yKien = ''; }
+      Object.assign(R, { congTrinh: p.congTrinh, canNgay: p.canNgay || '', ghiChu: p.ghiChu || '', lines: mergeLines(p.lines), trangThai: 'CHO_DUYET' });
+      addProject(p.congTrinh);
+    }
+    R.pending = true; R.capNhat = now;
+  }
+}
+
+// Dòng vật tư của phiếu: gộp dòng trùng mã (giống máy chủ)
+function mergeLines(lines) {
+  const gop = new Map();
+  (lines || []).forEach(x => {
+    const m = String(x.maVT || '').toUpperCase();
+    gop.set(m, Math.round(((gop.get(m) || 0) + Number(x.soLuong)) * 1000) / 1000);
+  });
+  return [...gop].map(([m, sl]) => ({ maVT: m, sl, duyet: 0, daXuat: 0 }));
+}
+
+// Gửi lần lượt các việc đang chờ. Việc bị máy chủ từ chối thì đánh dấu lỗi, việc sau vẫn gửi tiếp.
+// Tự gửi lại cách nhau ít nhất 10 giây (tránh gửi dồn dập khi sóng chập chờn); bấm "Gửi ngay" thì gửi luôn.
+let flushP = null, lastFlushTry = 0;
+function flush(manual) {
+  if (flushP) return flushP;
+  if (!S.me || !waitingOps().length) return Promise.resolve();
+  if (!manual && Date.now() - lastFlushTry < 10000) return Promise.resolve();
+  lastFlushTry = Date.now();
+  flushP = (async () => {
+    let sent = 0, bad = 0;
+    updateNet();
+    try {
+      for (const op of waitingOps()) {
+        try {
+          const r = await api(op.a, op.p, { opId: op.id });
+          const newId = r && (r.dup ? r.id : (r.request && r.request.id) || (r.loan && r.loan.id));
+          if (newId) S.idMap['tmp-' + op.id] = newId;
+          op.st = 'ok'; op.okAt = Date.now(); sent++;
+        } catch (e) {
+          if (e.code === 'MANG' || e.code === 'HET_PHIEN' || !S.me) break;
+          op.st = 'loi'; op.err = { code: e.code || 'LOI', message: String(e.message || '') }; bad++;
+        }
+        saveQ();
+      }
+      if (sent || bad) { try { await loadData(); } catch (e) { rebuild(); } }
+      if (bad) toast(t('syncFailed', { n: bad }), 'bad');
+      else if (sent) toast(t('synced', { n: sent }));
+      else if (manual && S.offline) toast(t('network'), 'bad');
+    } finally {
+      flushP = null;
+      if (sent || bad) refreshView(); else updateNet();
+      // Có việc mới được thêm trong lúc đang gửi: gửi tiếp
+      if (sent && !S.offline && waitingOps().length) { lastFlushTry = 0; setTimeout(() => flush(), 0); }
+    }
+  })();
+  return flushP;
+}
+
+// Có mạng lại (hoặc thử lại định kỳ): gửi hàng chờ, tải dữ liệu mới
+// fresh: có dấu hiệu mạng vừa trở lại (điện thoại báo có mạng, mở lại app, bấm nút) → gửi luôn, không chờ
+let reconP = null;
+function reconnect(reload, fresh) {
+  if (fresh) lastFlushTry = 0;
+  if (reconP || !S.me) return reconP || Promise.resolve();
+  reconP = (async () => {
+    try {
+      if (waitingOps().length) await flush();
+      else if (S.offline || reload) { await loadData(); refreshView(); }
+    } catch (e) { /* vẫn mất mạng */ }
+  })().finally(() => { reconP = null; updateNet(); });
+  return reconP;
+}
+function setOffline(v) {
+  if (S.offline === v) return;
+  S.offline = v;
+  updateNet();
+  if (!v && S.me) {
+    if (!waitingOps().length) toast(t('backOnline'));
+    setTimeout(() => reconnect(true), 0);
+  }
+}
+// Phiên đăng nhập lúc mất mạng: có mạng thì đổi PIN trong bộ nhớ lấy phiên thật
+let tokenP = null;
+function ensureToken() {
+  if (S.token) return Promise.resolve(true);
+  if (!S._pin) return Promise.resolve(false);
+  if (tokenP) return tokenP;
+  tokenP = (async () => {
+    try {
+      const r = await api('login', { pin: S._pin });
+      startSession(r.token, r.user);
+      S._pin = null;
+      return true;
+    } catch (e) {
+      if (e.code === 'MANG') return false;
+      // PIN đã bị đổi hoặc tài khoản bị khoá: phải đăng nhập lại (hàng chờ vẫn giữ trên máy)
+      forgetPin(S.me && S.me.id);
+      endSession(); toast(t('sessionExpired'), 'bad');
+      return false;
+    } finally { tokenP = null; }
+  })();
+  return tokenP;
+}
+function startSession(token, user) {
+  S.token = token; S.sessionMe = user; S.me = user;
+  stor('s', 'kho_tk', token); stor('s', 'kho_me', JSON.stringify(user));
+}
+// Vẽ lại màn hình sau khi dữ liệu đổi — trừ khi người dùng đang gõ dở
+function refreshView() {
+  updateNet();
+  const c = cur();
+  if (!S.me || c.v === 'login') return;
+  const a = document.activeElement;
+  if (a && main.contains(a) && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)) return;
+  if ($('#sheetRoot').firstChild || !$('#scanner').hidden) return;
+  const p = c.p || {};
+  try { if (p._sync) p._sync(); if (p.F && p.F._sync) p.F._sync(); } catch (e) { /* bỏ qua */ }
+  const y = window.scrollY; render(); window.scrollTo(0, y);
+}
+function updateNet() {
+  const el = $('#netbar'); if (!el) return;
+  const ops = myOps();
+  const cho = ops.filter(o => o.st === 'cho').length, loi = ops.filter(o => o.st === 'loi').length;
+  if (!S.me || cur().v === 'login' || (!S.offline && !cho && !loi)) { el.hidden = true; el.innerHTML = ''; return; }
+  let cls = '', icn = 'send', l1, l2 = '';
+  if (S.offline) {
+    cls = 'off'; icn = 'cloudOff'; l1 = t('offline');
+    l2 = [S.dataAt ? t('offlineData', { x: fmtTime(S.dataAt) }) : '', cho ? t('pendingN', { n: cho }) : '', loi ? t('failedN', { n: loi }) : ''].filter(Boolean).join('<br>');
+  } else if (loi && !flushP) { cls = 'bad'; l1 = t('failedN', { n: loi }); l2 = cho ? t('pendingN', { n: cho }) : ''; }
+  else l1 = t(flushP ? 'sendingN' : 'pendingN', { n: cho });
+  el.hidden = false;
+  el.innerHTML = `<button type="button" class="${cls}" data-act="view" data-v="outbox">${ic(icn)}<span class="nb-main"><b>${l1}</b>${l2 ? `<small>${l2}</small>` : ''}</span><span class="nb-go">${t('view2')}</span></button>`;
+}
+
+/* ---------------- Mạng yếu: đăng nhập bằng PIN khi mất mạng ---------------- */
+// Lúc đăng nhập có mạng, lưu trên máy một mã băm chậm (PBKDF2) của PIN, không lưu PIN.
+async function pinHash(pin, salt) {
+  const enc = new TextEncoder();
+  const key = await crypto.subtle.importKey('raw', enc.encode(pin), 'PBKDF2', false, ['deriveBits']);
+  const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: enc.encode(salt), iterations: 100000 }, key, 256);
+  return [...new Uint8Array(bits)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+function canHash() { return !!(window.crypto && crypto.subtle && window.TextEncoder); }
+async function rememberPin(pin, user) {
+  if (!canHash()) return;
+  try {
+    const salt = rid() + rid();
+    const h = await pinHash(pin, salt);
+    const list = (pjson('kho_ol') || []).filter(x => x.me && x.me.id !== user.id);
+    list.unshift({ me: user, salt, h, at: Date.now() });
+    pset('kho_ol', JSON.stringify(list.slice(0, 8)));
+  } catch (e) { /* bỏ qua */ }
+}
+function forgetPin(uid) {
+  if (!uid) return;
+  const list = (pjson('kho_ol') || []).filter(x => x.me && x.me.id !== uid);
+  pset('kho_ol', list.length ? JSON.stringify(list) : null);
+}
+// Trả về người dùng khớp PIN, null nếu không khớp. Sai 5 lần liền: khoá 5 phút (throw KHOA).
+async function offlineCheck(pin) {
+  const lk = pjson('kho_olf') || { n: 0, until: 0 };
+  if (lk.until > Date.now()) throw { code: 'KHOA' };
+  const list = pjson('kho_ol') || [];
+  if (!list.length || !canHash()) return null;
+  for (const x of list) {
+    if (await pinHash(pin, x.salt) === x.h) { pset('kho_olf', null); return x.me; }
+  }
+  lk.n = (lk.n || 0) + 1;
+  if (lk.n >= 5) { lk.n = 0; lk.until = Date.now() + 5 * 60000; }
+  pset('kho_olf', JSON.stringify(lk));
+  return null;
+}
+// Dùng dữ liệu lưu trên máy (khi mất mạng)
+function useSnap() {
+  const s = pjson('kho_snap');
+  if (!s || !s.data) return false;
+  S.offline = true;
+  setData(s.data, 0, true);
+  return true;
+}
 function errMsg(e) {
   const m = { KHONG_QUYEN: 'noPerm', SO_LUONG: 'errQty', TRUNG_VITRI: 'errSameLoc', TRUNG_BARCODE: 'errDupBarcode', THIEU_TEN: 'errNeedName',
     THIEU_DU_LIEU: 'errMissing', KHONG_CO_VT: 'errNoItem', KHONG_CO_VITRI: 'errNoLoc', PIN_DINH_DANG: 'errPinFormat', PIN_TRUNG: 'errPinUsed',
     PIN_CU_SAI: 'errPinOld', ADMIN_CUOI: 'errLastAdmin', CHUA_CAI_DAT: 'errSetup', MANG: 'network', HET_PHIEN: 'sessionExpired', KHOA: 'pinLocked',
-    THIEU_NGUOI_MUON: 'errBorrower', HAN_TRA: 'errDue', KHONG_CO_PHIEU: 'errNoLoan', DA_TRA_XONG: 'errLoanClosed' };
+    THIEU_NGUOI_MUON: 'errBorrower', HAN_TRA: 'errDue', KHONG_CO_PHIEU: 'errNoLoan', DA_TRA_XONG: 'errLoanClosed',
+    THIEU_CONG_TRINH: 'errProject', CAN_NGAY: 'errNeedBy', DX_TRONG: 'errReqEmpty', DX_NHIEU: 'errTooManyLines', THIEU_LY_DO: 'errReason',
+    DX_TRANG_THAI: 'errReqState', KHONG_CO_DX: 'errNoReq', DX_DA_XUAT: 'errReqIssued' };
   if (!e || !e.code) return t('errGeneric', { x: String(e && e.message || e) });
+  // Lỗi của một dòng trong phiếu: message dạng "số|mã vật tư"
+  const per = /^([\d.]+)\|(.+)$/.exec(String(e.message || ''));
+  if (per && e.code === 'KHONG_DU_TON') return t('errNotEnoughItem', { n: fmt(per[1]), x: per[2] });
+  if (per && e.code === 'XUAT_QUA_SO') return t('errIssueTooMany', { n: fmt(per[1]), x: per[2] });
   if (e.code === 'KHONG_DU_TON') return t('errNotEnough', { n: fmt(e.message) });
   if (e.code === 'TRA_QUA_SO') return t('errReturnTooMany', { n: fmt(e.message) });
   if (e.code === 'TRUNG_MA') return t('errDupCode', { x: e.message });
@@ -1758,7 +2635,12 @@ const IC = {
   print: '<path d="M7 9V4h10v5M7 17H5a1 1 0 0 1-1-1v-6a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1h-2"/><rect x="7" y="14" width="10" height="6"/>',
   tool: '<path d="M14.7 3.6a4.6 4.6 0 0 0-4.9 6.1L3.9 15.6a1.9 1.9 0 0 0 2.7 2.7l5.9-5.9a4.6 4.6 0 0 0 6.1-4.9l-2.6 2.6-2.6-.6-.6-2.6z"/><path d="M15 17.5h6m0 0-2.2-2.2M21 17.5l-2.2 2.2"/>',
   lend: '<path d="M4 12h12m0 0-4.5-4.5M16 12l-4.5 4.5M20 5v14"/>',
-  ret: '<path d="M20 12H8m0 0 4.5-4.5M8 12l4.5 4.5M4 5v14"/>'
+  ret: '<path d="M20 12H8m0 0 4.5-4.5M8 12l4.5 4.5M4 5v14"/>',
+  req: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M8.5 10h7M8.5 13.5h7M8.5 17h4"/>',
+  cloudOff: '<path d="M7.5 18h9.8a3.7 3.7 0 0 0 1-7.3 5.6 5.6 0 0 0-10.4-1.9A4.6 4.6 0 0 0 7.5 18z"/><path d="M4 4l16 16"/>',
+  send: '<path d="M12 16V5m0 0-4 4m4-4 4 4"/><path d="M5 19.5h14"/>',
+  trash: '<path d="M5 7h14M10 7V5h4v2M7 7l1 13h8l1-13"/>',
+  check: '<path d="m5 12.5 4.5 4.5L19 7.5"/>'
 };
 function ic(n) {
   return '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + (IC[n] || '') + '</svg>';
@@ -1797,8 +2679,11 @@ const TITLES = {
   txn: p => K('a_' + p.loai), itemForm: p => K(p.id ? 'editItem' : 'addItem'), locForm: p => K(p.id ? 'editLoc' : 'addLoc'),
   labels: () => K('labels'), log: () => K('log'), users: () => K('users'), userForm: p => K(p.id ? 'editUser' : 'addUser'), pin: () => K('changePin'),
   loans: () => K('loans'), lend: () => K('lendTitle'),
-  giveBack: p => { const L = findLoan(p.id); return K(L && L.trangThai === 'DANG_MUON' && can('muontra') ? 'returnTitle' : 'loanDetail'); }
+  giveBack: p => { const L = findLoan(p.id); return K(L && L.trangThai === 'DANG_MUON' && can('muontra') ? 'returnTitle' : 'loanDetail'); },
+  reqs: () => K('reqs'), reqNew: p => K(p.edit ? 'reqEdit' : 'reqNew'), outbox: () => K('outbox'),
+  req: p => { const R = findReq(p.id); return R && !isTmp(R.id) ? [R.id, tp('reqDetail')] : K('reqDetail'); }
 };
+const MONO_TITLE = ['item', 'loc', 'req'];
 const VIEWS = {};
 function render() {
   const c = cur();
@@ -1806,18 +2691,20 @@ function render() {
   const tt = !home && TITLES[c.v] ? TITLES[c.v](c.p) : K('appName');
   $('#barTitle').textContent = tt[0];
   $('#barSub').textContent = tt[1];
-  $('#barSub').lang = c.v === 'item' || c.v === 'loc' ? '' : 'zh-CN';
-  $('#barTitle').className = c.v === 'item' || c.v === 'loc' ? 'mono' : '';
+  const mono = MONO_TITLE.includes(c.v) && !K('reqDetail').includes(tt[0]);
+  $('#barSub').lang = mono ? '' : 'zh-CN';
+  $('#barTitle').className = mono ? 'mono' : '';
   $('#btnBack').hidden = NAV.length <= 1 || c.v === 'login';
   $('#barLogo').hidden = c.v !== 'home';
   if (!$('#barLogo').firstChild) $('#barLogo').innerHTML = LOGO;
   $('#btnBack').innerHTML = ic('back');
   $('#btnBack').setAttribute('aria-label', tp('back'));
-  $('#btnUser').hidden = !S.token;
+  $('#btnUser').hidden = !S.me || c.v === 'login';
   $('#btnUser').innerHTML = ic('user');
   $('#btnUser').setAttribute('aria-label', S.me ? S.me.ten : '');
   $('#demo').hidden = !DEMO;
   $('#demoText').innerHTML = '<b>' + esc(tp('demoTitle')) + '</b> · ' + t('demoBanner') + (IS_PREVIEW ? '' : ' ' + t('demoLocal'));
+  updateNet();
   (VIEWS[c.v] || VIEWS.home)(c.p);
 }
 
@@ -1828,7 +2715,8 @@ VIEWS.login = function () {
   const keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', 'del'];
   const hints = DEMO ? '<div class="hints"><span class="muted">' + t('demoPins') + '</span>' +
     [['111111', 'admin'], ['222222', 'kysu'], ['333333', 'thukho'], ['444444', 'congnhan']]
-      .map(([p, r]) => '<button type="button" class="hint" data-act="demoPin" data-pin="' + p + '"><b>' + p + '</b> ' + roleName(r) + '</button>').join('') + '</div>' : '';
+      .map(([p, r]) => '<button type="button" class="hint" data-act="demoPin" data-pin="' + p + '"><b>' + p + '</b> ' + roleName(r) + '</button>').join('') +
+    (S.simDown ? '<button type="button" class="hint" data-act="simNet" style="border-color:var(--warn);color:var(--warn)">' + t('simNote') + ' · ' + t('simOn') + '</button>' : '') + '</div>' : '';
   main.innerHTML = `
   <section class="login">
     <div class="brand">
@@ -1842,6 +2730,7 @@ VIEWS.login = function () {
       k === 'del' ? `<button type="button" class="key ghost" data-act="pinKey" data-k="del" aria-label="Xoá">⌫</button>` :
       `<button type="button" class="key" data-act="pinKey" data-k="${k}">${k}</button>`).join('')}</div>
     ${hints}
+    <p class="muted" style="margin:4px 0 0;font-size:12px">${esc(tp('version'))} ${esc(APP_VER)}</p>
   </section>`;
 };
 function pinDots() { document.querySelectorAll('#dots i').forEach((d, i) => d.classList.toggle('on', i < pinBuf.length)); }
@@ -1856,19 +2745,36 @@ async function doLogin(pin) {
   const dots = $('#dots'); dots.dataset.wait = '1';
   $('#pinMsg').innerHTML = t('loading');
   try {
-    const r = await api('login', { pin });
-    S.token = r.token; S.me = r.user; stor('s', 'kho_tk', r.token);
-    await loadData();
+    let r = null;
+    try { r = await api('login', { pin }); }
+    catch (e) {
+      if (e.code === 'PIN_SAI' || e.code === 'KHOA') offlineCheck(pin).then(me => { if (me) forgetPin(me.id); }).catch(() => {});
+      if (e.code !== 'MANG') throw e;
+    }
+    if (r) { startSession(r.token, r.user); rememberPin(pin, r.user); }
+    else {
+      // Mất mạng: vào bằng PIN đã từng đăng nhập trên máy này + dữ liệu lưu trên máy
+      const me = await offlineCheck(pin);
+      if (!me) throw { code: 'X', html: t('offlineNoPin') };
+      S.sessionMe = me; S.me = me; S._pin = pin;
+    }
+    try { await loadData(); }
+    catch (e) { if (e.code !== 'MANG' || !useSnap()) throw (e.code === 'MANG' ? { code: 'X', html: t('offlineNoData') } : e); }
     NAV.length = 0; go('home'); poke();
+    if (!r) toast(t('offlineLogin'));
+    else if (waitingOps().length) flush();
   } catch (e) {
+    S.token = null; S.me = null; S.sessionMe = null; S._pin = null; stor('s', 'kho_tk', null);
     pinBuf = ''; delete dots.dataset.wait; pinDots();
-    $('#pinMsg').innerHTML = errMsg(e);
+    $('#pinMsg').innerHTML = e.html || errMsg(e);
     dots.classList.remove('shake'); void dots.offsetWidth; dots.classList.add('shake');
   }
 }
-async function loadData() { setData(await api('data')); }
+async function loadData() { const t0 = Date.now(); setData(await api('data'), t0); }
 function endSession() {
-  S.token = null; S.me = null; stor('s', 'kho_tk', null);
+  saveSnap();
+  S.token = null; S.me = null; S.sessionMe = null; S._pin = null; S.base = null; S.draft = null; S.idMap = {};
+  stor('s', 'kho_tk', null); stor('s', 'kho_me', null);
   clearTimeout(idleT); closeSheet(); closeScanner();
   NAV.length = 0; NAV.push({ v: 'login', p: {} }); render();
 }
@@ -1879,7 +2785,7 @@ function logout() {
 let idleT;
 function poke() {
   clearTimeout(idleT);
-  if (S.token) idleT = setTimeout(() => { logout(); toast(t('idleOut')); }, IDLE_MIN * 60000);
+  if (S.me) idleT = setTimeout(() => { logout(); toast(t('idleOut')); }, IDLE_MIN * 60000);
 }
 ['pointerdown', 'keydown'].forEach(ev => window.addEventListener(ev, poke, { passive: true }));
 document.addEventListener('keydown', e => {
@@ -1946,7 +2852,16 @@ function homeBody() {
   const low = S.items.filter(i => i._low);
   const late = lateLoans();
   const tiles = [];
+  // Đề xuất: người duyệt / thủ kho thấy số phiếu cần mình xử lý; công nhân thấy số phiếu của mình đang mở
+  const handler = can('duyet') || can('nhapxuat');
+  const todo = S.requests.filter(needsMe);
+  const mine = S.requests.filter(R => R.nguoiTaoId === S.me.id)
+    .sort((a, b) => (reqOpen(b) - reqOpen(a)) || b.capNhat.localeCompare(a.capNhat));
+  const reqN = handler ? todo.length : mine.filter(reqOpen).length;
+  const reqTile = `<button type="button" class="tile t-req" data-act="view" data-v="reqs">${ic('req')}${t('reqs')}${reqN ? `<span class="tile-badge ${handler ? 'mine' : ''}">${reqN}</span>` : ''}</button>`;
+  if (!can('nhapxuat')) tiles.push(reqTile);
   if (can('nhapxuat')) ['NHAP', 'XUAT', 'CHUYEN', 'KIEMKE'].forEach(l => tiles.push(`<button type="button" class="tile t-${l.toLowerCase()}" data-act="txn" data-loai="${l}">${ic(l)}${t('a_' + l)}</button>`));
+  if (can('nhapxuat')) tiles.push(reqTile);
   tiles.push(`<button type="button" class="tile t-muon" data-act="view" data-v="loans">${ic('tool')}${t('loans')}${S.loans.length ? `<span class="tile-badge ${late.length ? 'late' : ''}">${S.loans.length}</span>` : ''}</button>`);
   if (can('danhmuc')) tiles.push(`<button type="button" class="tile" data-act="itemForm">${ic('add')}${t('addItem')}</button>`);
   tiles.push(`<button type="button" class="tile" data-act="view" data-v="items">${ic('items')}${t('itemsAll')}</button>`);
@@ -1959,6 +2874,11 @@ function homeBody() {
       <span class="${low.length ? 'w' : ''}"><b>${low.length}</b> ${t('statLow')}</span>
       ${S.loans.length ? `<span class="${late.length ? 'w' : ''}"><b>${S.loans.length}</b> ${t('statLent')}</span>` : ''}</div>
     <nav class="tiles">${tiles.join('')}</nav>
+    ${handler && todo.length ? `<h2 class="sec">${t('todo')} <span class="count">${todo.length}</span></h2>
+      <div class="list" id="todoList">${todo.slice(0, 5).map(reqRow).join('')}</div>
+      ${todo.length > 5 ? `<div class="links"><button type="button" class="btn small" data-act="view" data-v="reqs">${t('seeAll')}</button></div>` : ''}` : ''}
+    ${!handler && mine.length ? `<h2 class="sec">${t('myReqs')} <span class="count">${mine.length}</span></h2>
+      <div class="list" id="myReqList">${mine.slice(0, 5).map(reqRow).join('')}</div>` : ''}
     ${late.length ? `<h2 class="sec">${t('overdueHome')} <span class="count">${late.length}</span></h2>
       <div class="list" id="lateList">${late.map(L => loanRow(L)).join('')}</div>` : ''}
     <h2 class="sec">${t('lowStock')} <span class="count">${low.length}</span></h2>
@@ -2004,6 +2924,7 @@ VIEWS.item = function (p) {
     ${it._lent ? `<span class="pill move">${t('lentOut')}: ${fmt(it._lent)}</span>` : ''}
   </div>
   ${acts}
+  ${!can('nhapxuat') && can('dexuat') ? `<div class="links"><button type="button" class="btn signal" data-act="reqAdd" data-id="${esc(it.maVT)}">${ic('req')}${t('reqAddThis')}</button></div>` : ''}
   <h2 class="sec">${t('whereStored')}</h2>
   ${it._locs.length ? `<div class="list">${it._locs.map(s => {
     const l = S.locMap.get(s.maViTri) || { maViTri: s.maViTri };
@@ -2133,7 +3054,8 @@ VIEWS.txn = function (F) {
     <div class="field"><label for="fQty">${loai === 'KIEMKE' ? t('actualQty') : t('quantity')} (${esc(unitName(u))}) <span class="req">*</span></label>
       <input class="inp mono" id="fQty" inputmode="decimal" autocomplete="off" value="${esc(F.qty || '')}" placeholder="0">
       <div class="hintline" id="qtyHint"></div></div>
-    ${loai === 'XUAT' ? `<div class="field"><label for="fCt">${t('project')}</label><input class="inp" id="fCt" value="${esc(F.ct || '')}" placeholder="${esc(tp('projectPh'))}"></div>` : ''}
+    ${loai === 'XUAT' ? `<div class="field"><label for="fCt">${t('project')}</label><input class="inp" id="fCt" autocomplete="off" value="${esc(F.ct || '')}" placeholder="${esc(tp('projectPh'))}">
+      <div class="opts" id="ctSug"></div></div>` : ''}
     <div class="field"><label for="fNote">${t('note')} <span class="muted">(${t('optional')})</span></label><input class="inp" id="fNote" value="${esc(F.note || '')}"></div>
     <button type="submit" class="btn primary" id="fSubmit">${t('c_' + loai)}</button>` : ''}
   </form>`;
@@ -2173,6 +3095,7 @@ VIEWS.txn = function (F) {
   });
   const qEl = $('#fQty'); if (qEl) qEl.addEventListener('input', hint);
   hint();
+  bindCtSug(F);
 
   $('#f').addEventListener('submit', async ev => {
     ev.preventDefault(); sync();
@@ -2184,14 +3107,27 @@ VIEWS.txn = function (F) {
     if (needTu && qty > qtyAt(F.tu)) return toast(t('errNotEnough', { n: fmt(qtyAt(F.tu)) }), 'bad');
     const btn = $('#fSubmit'); btn.disabled = true;
     try {
-      const r = await api('txn', { loai, maVT: it.maVT, tuViTri: needTu ? F.tu : '', denViTri: needDen ? F.den : '', soLuong: qty, congTrinh: F.ct || '', ghiChu: F.note || '' });
-      updateStock(it.maVT, r.stock);
+      const r = await send('txn', { loai, maVT: it.maVT, tuViTri: needTu ? F.tu : '', denViTri: needDen ? F.den : '', soLuong: qty, congTrinh: (F.ct || '').trim(), ghiChu: F.note || '' });
+      if (r.data) updateStock(it.maVT, r.data.stock);
+      if (F.ct) addProject(F.ct);
       const qs = qtyU(qty, u);
-      toast(t('d_' + loai, { q: qs, l: loai === 'XUAT' ? F.tu : F.den, a: F.tu, b: F.den }));
+      toast(t('d_' + loai, { q: qs, l: loai === 'XUAT' ? F.tu : F.den, a: F.tu, b: F.den }) + qn(r));
       finishTo('item', { id: it.maVT });
     } catch (e) { toast(errMsg(e), 'bad'); btn.disabled = false; }
   });
 };
+// Gợi ý tên công trình đã dùng (viết thống nhất để sau này báo cáo theo công trình)
+function bindCtSug(F) {
+  const inp = $('#fCt'), box = $('#ctSug');
+  if (!inp || !box) return;
+  const draw = () => {
+    const v = inp.value.trim(), q = norm(v).trim();
+    const list = S.projects.filter(x => x !== v && (!q || norm(x).includes(q))).slice(0, 6);
+    box.innerHTML = list.map(x => `<button type="button" class="chip" data-act="ctPick" data-name="${esc(x)}">${esc(x)}</button>`).join('');
+  };
+  inp.addEventListener('input', () => { F.ct = inp.value; draw(); });
+  draw();
+}
 
 /* ---------------- Mượn – trả dụng cụ ---------------- */
 function loanItem(L) { return S.itemMap.get(L.maVT) || { maVT: L.maVT, tenVI: L.maVT, tenZH: '', donVi: '' }; }
@@ -2202,6 +3138,7 @@ function duePill(L) {
   if (late === 0) return `<span class="pill warn">${t('dueToday')}</span>`;
   return `<span class="pill grey">${t('dueShort')} ${esc(fmtDay(L.hanTra))}</span>`;
 }
+function pendPill() { return `<span class="pill pend">${t('pendingPill')}</span>`; }
 function loanRow(L, whoFirst) {
   const it = loanItem(L);
   const open = L.trangThai === 'DANG_MUON';
@@ -2216,7 +3153,7 @@ function loanRow(L, whoFirst) {
       ${whoFirst ? `<span class="nm">${who}</span>` :
         `<span class="nm">${esc(nm1(it))}</span>${nm2(it) ? `<span class="nm2" lang="zh-CN">${esc(nm2(it))}</span>` : ''}
         <span class="meta"><span class="plate">${esc(it.maVT)}</span>${who}</span>`}
-      <span class="meta"><span>${t('lentShort')} ${esc(fmtTime(L.time))}</span>${pills}</span>
+      <span class="meta"><span>${t('lentShort')} ${esc(fmtTime(L.time))}</span>${L.pending ? pendPill() : ''}${pills}</span>
       ${L.congTrinh ? `<span class="meta"><span>${esc(L.congTrinh)}</span></span>` : ''}
     </div>
     <div class="qty"><b>${fmt(open ? L.conLai : L.soLuong)}</b><small>${esc(unitName(it.donVi))}</small></div>
@@ -2305,7 +3242,8 @@ VIEWS.lend = function (F) {
     <div class="field"><label for="fDue">${t('dueDate')} <span class="req">*</span></label>
       <div class="opts">${[0, 1, 3, 7].map(n => `<button type="button" class="chip" data-act="due" data-d="${n}" aria-pressed="${F.due === addDays(n)}">${t('due_' + n)}</button>`).join('')}</div>
       <input class="inp" id="fDue" type="date" min="${addDays(0)}" value="${esc(F.due)}"></div>
-    <div class="field"><label for="fCt">${t('project')} <span class="muted">(${t('optional')})</span></label><input class="inp" id="fCt" value="${esc(F.ct || '')}" placeholder="${esc(tp('projectPh'))}"></div>
+    <div class="field"><label for="fCt">${t('project')} <span class="muted">(${t('optional')})</span></label><input class="inp" id="fCt" autocomplete="off" value="${esc(F.ct || '')}" placeholder="${esc(tp('projectPh'))}">
+      <div class="opts" id="ctSug"></div></div>
     <div class="field"><label for="fNote">${t('note')} <span class="muted">(${t('optional')})</span></label><input class="inp" id="fNote" value="${esc(F.note || '')}"></div>
     <button type="submit" class="btn primary" id="fSubmit" ${it && !have.length ? 'disabled' : ''}>${t('c_LEND')}</button>
   </form>`;
@@ -2344,6 +3282,7 @@ VIEWS.lend = function (F) {
   F._sync = sync;
   const tu = $('#fTu');
   if (tu) tu.addEventListener('change', () => { sync(); F.tu = tu.value; render(); });
+  bindCtSug(F);
 
   $('#f').addEventListener('submit', async ev => {
     ev.preventDefault(); sync();
@@ -2357,13 +3296,14 @@ VIEWS.lend = function (F) {
     if (!dayOf(F.due) || F.due < addDays(0)) return toast(t('errDue'), 'bad');
     const btn = $('#fSubmit'); btn.disabled = true;
     try {
-      const r = await api('lend', { maVT: it.maVT, tuViTri: F.tu, soLuong: qty, nguoiMuon: name, congTrinh: F.ct || '', hanTra: F.due, ghiChu: F.note || '' });
-      updateStock(it.maVT, r.stock);
-      upsertLoan(r.loan);
-      F.done.push({ maVT: it.maVT, name: nm1(it), qty, who: r.loan.nguoiMuon });
-      toast(t('d_LEND', { w: r.loan.nguoiMuon, q: qtyU(qty, u) }));
+      const r = await send('lend', { maVT: it.maVT, tuViTri: F.tu, soLuong: qty, nguoiMuon: name, congTrinh: (F.ct || '').trim(), hanTra: F.due, ghiChu: F.note || '' });
+      if (r.data) { updateStock(it.maVT, r.data.stock); upsertLoan(r.data.loan); }
+      if (F.ct) addProject(F.ct);
+      const who = r.data ? r.data.loan.nguoiMuon : name.replace(/[[\]]/g, '').trim();
+      F.done.push({ maVT: it.maVT, name: nm1(it), qty, who });
+      toast(t('d_LEND', { w: who, q: qtyU(qty, u) }) + qn(r));
       // Giữ người mượn, hạn trả, công trình để cho mượn tiếp món khác
-      Object.assign(F, { maVT: '', _init: false, tu: '', qty: '1', note: '', pickQ: '', who: r.loan.nguoiMuon });
+      Object.assign(F, { maVT: '', _init: false, tu: '', qty: '1', note: '', pickQ: '', who });
       render(); window.scrollTo(0, 0);
     } catch (e) { toast(errMsg(e), 'bad'); btn.disabled = false; }
   });
@@ -2395,6 +3335,7 @@ VIEWS.giveBack = function (p) {
     ${L.ghiChu ? `<dt>${t('note')}</dt><dd>${esc(L.ghiChu)}</dd>` : ''}
     ${hist.length ? `<dt>${t('returnLog')}</dt><dd class="hist-lines">${hist.map(h => `<span>${esc(h)}</span>`).join('')}</dd>` : ''}
   </dl>`;
+  if (open && isTmp(L.id)) { main.innerHTML = head + `<p class="note" style="margin-top:12px">${t('loanPendingSync')}</p>`; return; }
   if (!open || !can('muontra')) { main.innerHTML = head; return; }
   if (!p._init) { p._init = true; p.qty = String(L.conLai); p.den = L.tu; p.tt = 'TOT'; p.note = ''; }
   const qtyAt = m => { const s = (it._locs || []).find(x => x.maViTri === m); return s ? s.soLuong : 0; };
@@ -2429,13 +3370,403 @@ VIEWS.giveBack = function (p) {
     if (!lost && !p.den) return toast(t('errNoLoc'), 'bad');
     const btn = $('#fSubmit'); btn.disabled = true;
     try {
-      const r = await api('takeBack', { id: L.id, soLuong: qty, denViTri: lost ? '' : p.den, tinhTrang: p.tt, ghiChu: p.note });
-      updateStock(L.maVT, r.stock);
-      upsertLoan(r.loan);
-      toast(t(lost ? 'd_MAT' : 'd_TRA', { q: qtyU(qty, u), w: L.nguoiMuon }));
+      const r = await send('takeBack', { id: L.id, soLuong: qty, denViTri: lost ? '' : p.den, tinhTrang: p.tt, ghiChu: p.note }, { maVT: L.maVT, who: L.nguoiMuon });
+      if (r.data) { updateStock(L.maVT, r.data.stock); upsertLoan(r.data.loan); }
+      toast(t(lost ? 'd_MAT' : 'd_TRA', { q: qtyU(qty, u), w: L.nguoiMuon }) + qn(r));
       goBack();
     } catch (e) { toast(errMsg(e), 'bad'); btn.disabled = false; }
   });
+};
+
+/* ---------------- Đề xuất vật tư ---------------- */
+function reqPill(R) {
+  const cls = { CHO_DUYET: 'warn', DA_DUYET: 'move', HOAN_TAT: 'ok', TU_CHOI: 'bad', DA_HUY: 'grey' }[R.trangThai] || 'grey';
+  return `<span class="pill ${cls}">${t('st_' + R.trangThai)}</span>` + (R.pending ? pendPill() : '');
+}
+function needPill(R) {
+  if (!R.canNgay || !reqOpen(R)) return '';
+  const late = daysLate(R.canNgay);
+  if (late > 0) return `<span class="pill bad">${t('needLate', { n: late })}</span>`;
+  if (late === 0) return `<span class="pill warn">${t('needToday')}</span>`;
+  return `<span class="pill grey">${t('needOn', { x: fmtDay(R.canNgay) })}</span>`;
+}
+function reqApproved(R) { return R.trangThai === 'DA_DUYET' || R.trangThai === 'HOAN_TAT' || (R.trangThai === 'DA_HUY' && !!R.nguoiDuyet); }
+function linesSummary(R) {
+  const ok = reqApproved(R);
+  const xs = R.lines.filter(l => !ok || l.duyet > 0).map(l => {
+    const it = S.itemMap.get(l.maVT);
+    return (it ? nm1(it) : l.maVT) + ' × ' + fmt(ok ? l.duyet : l.sl);
+  });
+  return xs.slice(0, 3).join(', ') + (xs.length > 3 ? ', …' : '');
+}
+function reqRow(R) {
+  const ok = R.lines.filter(l => l.duyet > 0);
+  const partial = R.trangThai === 'DA_DUYET' && R.lines.some(l => l.daXuat > 0);
+  return `<button type="button" class="row" data-act="reqOpen" data-id="${esc(R.id)}">
+    <div class="row-main">
+      <span class="meta" style="margin-top:0">${isTmp(R.id) ? '' : `<span class="plate">${esc(R.id)}</span>`}${reqPill(R)}${needPill(R)}${partial ? `<span class="pill grey">${t('outProgress', { a: ok.filter(l => l.daXuat >= l.duyet).length, b: ok.length })}</span>` : ''}</span>
+      <span class="nm">${esc(R.congTrinh)}</span>
+      <span class="nm2">${esc(linesSummary(R))}</span>
+      <span class="meta"><span class="who">${ic('user')}${esc(R.nguoiTao)}</span><span>${esc(fmtTime(R.time))}</span></span>
+    </div>
+    <div class="qty"><b>${R.lines.length}</b><small>${t('nLinesShort')}</small></div>
+  </button>`;
+}
+
+VIEWS.reqs = function (p) {
+  if (!p.tab) p.tab = can('nhapxuat') && !can('duyet') ? 'ok' : 'wait';
+  if (p.f === undefined) p.f = '';
+  const wait = S.requests.filter(R => R.trangThai === 'CHO_DUYET');
+  const okL = S.requests.filter(R => R.trangThai === 'DA_DUYET');
+  main.innerHTML = `
+    ${can('dexuat') ? `<div style="margin-bottom:12px"><button type="button" class="btn signal tall full" data-act="reqNew">${ic('add')}<span class="bl">${t('reqNew')}</span></button></div>` : ''}
+    <div class="seg three" role="group">${[['wait', 'st_CHO_DUYET', wait.length], ['ok', 'st_DA_DUYET', okL.length], ['done', 'tabClosed', null]].map(([k, lab, n]) =>
+      `<button type="button" data-act="reqTab" data-tab="${k}" aria-pressed="${p.tab === k}">${esc(tv(lab))}<span class="zi" lang="zh-CN">${esc(tz(lab))}${n === null ? '' : `<span class="count">${n}</span>`}</span></button>`).join('')}</div>
+    <label class="search-box" for="reqF" style="margin-bottom:12px">${ic('search')}<input id="reqF" type="search" autocomplete="off" placeholder="${esc(tp('reqFilterPh'))}" value="${esc(p.f)}"></label>
+    <div id="reqBox"></div>`;
+  const draw = () => {
+    const box = $('#reqBox'); if (!box) return;
+    let src;
+    if (p.tab === 'done') {
+      const local = S.requests.filter(R => !reqOpen(R));
+      if (!S.closedReqs && !p.err && !local.length) { box.innerHTML = `<p class="empty">${t('loading')}</p>`; return; }
+      const seen = new Set(); src = [];
+      local.concat(S.closedReqs || []).forEach(R => { if (!seen.has(R.id)) { seen.add(R.id); src.push(R); } });
+      src.sort((a, b) => b.capNhat.localeCompare(a.capNhat));
+    } else src = p.tab === 'ok' ? okL : wait;
+    const toks = norm(p.f).trim().split(/\s+/).filter(Boolean);
+    if (toks.length) src = src.filter(R => {
+      const h = norm([R.id, R.congTrinh, R.nguoiTao, R.ghiChu].concat(R.lines.map(l => {
+        const it = S.itemMap.get(l.maVT); return l.maVT + ' ' + (it ? it.tenVI + ' ' + it.tenZH : '');
+      })).join(' '));
+      return toks.every(k => h.includes(k));
+    });
+    box.innerHTML = (src.length ? `<div class="list">${src.map(reqRow).join('')}</div>` : `<p class="empty">${t(toks.length ? 'noResults' : 'noReqs')}</p>`) +
+      (p.tab === 'done' && p.err ? `<p class="empty">${p.err}</p>` : '');
+  };
+  const f = $('#reqF');
+  f.addEventListener('input', () => { p.f = f.value; draw(); });
+  draw();
+  if (p.tab === 'done' && !p._loading) {
+    const at = cur(); p._loading = true; p.err = '';
+    api('requests', { done: true, limit: 150 }).then(list => { S.closedReqs = list; })
+      .catch(e => { p.err = errMsg(e); })
+      .finally(() => { p._loading = false; if (cur() === at) draw(); });
+  }
+};
+
+// Phiếu đang soạn (giữ trên máy, rời màn hình quay lại vẫn còn)
+function draftNew() { return { ct: '', need: '', note: '', lines: [], pickQ: '' }; }
+// Form đang mở: phiếu đang soạn (lưu trên máy) hoặc phiếu đang sửa (chỉ trong màn hình này)
+function reqF() { const p = cur().p || {}; return p.edit ? p.F : (S.draft || (S.draft = draftNew())); }
+function reqSave() { if (!(cur().p || {}).edit) saveDraft(); }
+function formAdd(maVT) {
+  const F = reqF(), k = String(maVT).toUpperCase();
+  if (!F.lines.some(l => l.maVT === k)) F.lines.push({ maVT: k, q: '' });
+  reqSave();
+  return F.lines.findIndex(l => l.maVT === k);
+}
+function reqToForm(R) {
+  return { ct: R.congTrinh, need: R.canNgay || '', note: R.ghiChu || '', pickQ: '',
+    lines: R.lines.filter(l => S.itemMap.has(l.maVT)).map(l => ({ maVT: l.maVT, q: String(l.sl) })) };
+}
+function draftAdd(maVT) {
+  if (!S.draft) S.draft = draftNew();
+  const k = String(maVT).toUpperCase();
+  if (!S.draft.lines.some(l => l.maVT === k)) S.draft.lines.push({ maVT: k, q: '' });
+  saveDraft();
+  return S.draft.lines.findIndex(l => l.maVT === k);
+}
+VIEWS.reqNew = function (p) {
+  // p.edit: số phiếu đang sửa (phiếu đã gửi); không có thì là phiếu mới đang soạn
+  const E = p.edit ? findReq(p.edit) : null;
+  if (p.edit && (!E || !reqEditable(E) || isTmp(E.id))) {
+    main.innerHTML = `<p class="note">${t(E && E.lines.some(l => l.daXuat > 0) ? 'errReqIssued' : E ? 'errReqState' : 'errNoReq')}</p>`;
+    return;
+  }
+  if (E && !p.F) p.F = reqToForm(E);
+  const F = reqF();
+  const lineRow = (l, i) => {
+    const it = S.itemMap.get(l.maVT) || { maVT: l.maVT, tenVI: l.maVT, donVi: '', _total: 0 };
+    return `<div class="rq-line">
+      <div class="row-main"><span class="nm">${esc(nm1(it))}</span>${nm2(it) ? `<span class="nm2" lang="zh-CN">${esc(nm2(it))}</span>` : ''}
+        <span class="meta"><span class="plate">${esc(it.maVT)}</span><span>${t('inStock')}: <b class="mono">${fmt(it._total || 0)}</b></span></span></div>
+      <label class="rq-q"><input class="inp mono" id="fL${i}" data-i="${i}" inputmode="decimal" autocomplete="off" value="${esc(l.q)}" placeholder="0" aria-label="${esc(tp('quantity'))}"><small>${esc(unitName(it.donVi))}</small></label>
+      <button type="button" class="icon-btn" data-act="lineDel" data-i="${i}" aria-label="${esc(tp('delete'))}">${ic('close')}</button>
+    </div>`;
+  };
+  const editNote = !E ? '' : E.trangThai === 'TU_CHOI'
+    ? `<div class="note">${t('editNoteRejected')}${E.yKien ? `<br><b>${esc(tp('approveNote'))}:</b> ${esc(E.yKien)}` : ''}</div>`
+    : E.trangThai === 'DA_DUYET' ? `<p class="note">${t('editNoteApproved')}</p>` : '';
+  main.innerHTML = `
+  <form id="f" class="form" novalidate autocomplete="off">
+    ${E ? `<div class="top" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="plate big">${esc(E.id)}</span>${reqPill(E)}</div>${editNote}` : ''}
+    <div class="field"><label for="fCt">${t('project')} <span class="req">*</span></label>
+      <input class="inp" id="fCt" autocomplete="off" value="${esc(F.ct)}" placeholder="${esc(tp('projectPh'))}">
+      <div class="opts" id="ctSug"></div></div>
+    <div class="field"><span class="lab">${t('reqLines')} <span class="req">*</span> <span class="count">${F.lines.length}</span></span>
+      ${F.lines.length ? `<div class="list" id="rqLines">${F.lines.map(lineRow).join('')}</div>` : `<p class="empty" style="margin:0">${t('reqNoLines')}</p>`}
+    </div>
+    <div class="field"><label for="fPick">${t('reqAddMore')}</label>
+      <div class="with-btn"><input class="inp" id="fPick" type="text" enterkeyhint="search" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="${esc(tp('pickItemPh'))}" value="${esc(F.pickQ)}">
+      <button type="button" class="sq" data-act="reqScan" aria-label="${tp('scan')}">${ic('scan')}</button></div>
+      <div id="pickRes"></div></div>
+    <div class="field"><label for="fNeed">${t('reqNeedBy')} <span class="muted">(${t('optional')})</span></label>
+      <div class="opts">${[['', 'needBy_none'], [addDays(0), 'due_0'], [addDays(1), 'due_1'], [addDays(3), 'due_3'], [addDays(7), 'due_7']].map(([v, k]) =>
+        `<button type="button" class="chip" data-act="needBy" data-v="${v}" aria-pressed="${F.need === v}">${t(k)}</button>`).join('')}</div>
+      <input class="inp" id="fNeed" type="date" min="${addDays(0)}" value="${esc(F.need)}"></div>
+    <div class="field"><label for="fNote">${t('note')} <span class="muted">(${t('optional')})</span></label><input class="inp" id="fNote" value="${esc(F.note)}"></div>
+    <button type="submit" class="btn primary" id="fSubmit">${t(!E ? 'reqSubmit' : E.trangThai === 'CHO_DUYET' ? 'saveEdit' : 'saveResubmit')}</button>
+  </form>`;
+  const sync = () => {
+    F.ct = $('#fCt').value; F.need = $('#fNeed').value; F.note = $('#fNote').value; F.pickQ = $('#fPick').value;
+    F.lines.forEach((l, i) => { const e = $('#fL' + i); if (e) l.q = e.value; });
+    reqSave();
+  };
+  p._sync = sync;
+  main.querySelectorAll('input').forEach(e => e.addEventListener('change', sync));
+  const pick = $('#fPick');
+  const show = () => {
+    F.pickQ = pick.value;
+    const q = pick.value.trim();
+    const res = q ? searchItems(q, 8) : [];
+    $('#pickRes').innerHTML = res.length ? `<div class="picker-res">${res.map(i => {
+      const had = F.lines.some(l => l.maVT === i.maVT.toUpperCase());
+      return `<button type="button" class="row" data-act="reqPick" data-id="${esc(i.maVT)}" ${had ? 'disabled' : ''}>
+        <div class="row-main"><span class="nm">${esc(nm1(i))}</span>${nm2(i) ? `<span class="nm2" lang="zh-CN">${esc(nm2(i))}</span>` : ''}
+        <span class="meta"><span class="plate">${esc(i.maVT)}</span>${i.quyCach ? `<span>${esc(i.quyCach)}</span>` : ''}${had ? `<span class="pill ok">✓</span>` : ''}</span></div>
+        <div class="qty"><b>${fmt(i._total)}</b><small>${esc(unitName(i.donVi))}</small></div></button>`;
+    }).join('')}</div>` : '';
+  };
+  pick.addEventListener('input', show); show();
+  bindCtSug(F);
+  const need = $('#fNeed');
+  need.addEventListener('change', () => {
+    F.need = need.value; reqSave();
+    main.querySelectorAll('[data-act="needBy"]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === F.need)));
+  });
+  $('#f').addEventListener('submit', async ev => {
+    ev.preventDefault(); sync();
+    const ct = F.ct.trim();
+    if (!ct) { toast(t('errProject'), 'bad'); $('#fCt').focus(); return; }
+    if (!F.lines.length) return toast(t('errReqEmpty'), 'bad');
+    for (let i = 0; i < F.lines.length; i++) {
+      if (parseQty(F.lines[i].q) > 0) continue;
+      const it = S.itemMap.get(F.lines[i].maVT);
+      toast(t('errReqQty', { x: it ? nm1(it) : F.lines[i].maVT }), 'bad');
+      const e = $('#fL' + i); if (e) e.focus();
+      return;
+    }
+    if (F.need && !dayOf(F.need)) return toast(t('errNeedBy'), 'bad');
+    const btn = $('#fSubmit'); btn.disabled = true;
+    const noiDung = { congTrinh: ct, canNgay: F.need || '', ghiChu: F.note.trim(), lines: F.lines.map(l => ({ maVT: l.maVT, soLuong: parseQty(l.q) })) };
+    if (E) {
+      try {
+        const r = await send('editRequest', Object.assign({ id: E.id, trangThai: E.trangThai }, noiDung), { ct });
+        if (r.data) upsertReq(r.data.request);
+        toast(t(E.trangThai === 'CHO_DUYET' ? 'd_EDIT' : 'd_RESUBMIT', { x: E.id }) + qn(r));
+        finishTo('req', { id: E.id });
+      } catch (e) { toast(errMsg(e), 'bad'); btn.disabled = false; }
+      return;
+    }
+    try {
+      const r = await send('request', noiDung);
+      if (r.data) upsertReq(r.data.request);
+      const id = r.data ? r.data.request.id : r.queued ? r.tmpId : r.id;
+      S.draft = null; saveDraft();
+      toast(t('d_REQ', { x: isTmp(id) ? '' : id }) + qn(r));
+      if (findReq(id)) go('req', { id }, true); else finishTo('reqs', {});
+    } catch (e) { toast(errMsg(e), 'bad'); btn.disabled = false; }
+  });
+};
+
+VIEWS.req = function (p) {
+  const R = findReq(p.id);
+  if (!R) { main.innerHTML = `<p class="empty">${t('errNoReq')}</p>`; return; }
+  p.id = R.id;   // phiếu vừa gửi xong: đổi sang số phiếu thật
+  const tmp = isTmp(R.id);
+  const mode = tmp ? 'view' : R.trangThai === 'CHO_DUYET' && can('duyet') ? 'approve' : R.trangThai === 'DA_DUYET' && can('nhapxuat') ? 'issue' : 'view';
+  const mineR = S.me && R.nguoiTaoId === S.me.id;
+  const anyOut = R.lines.some(l => l.daXuat > 0);
+  let closeKind = '';
+  if (!tmp && R.trangThai === 'CHO_DUYET' && (mineR || S.me.vaiTro === 'admin')) closeKind = 'cancel';
+  else if (!tmp && R.trangThai === 'DA_DUYET' && (can('nhapxuat') || (mineR && !anyOut))) closeKind = anyOut ? 'close' : 'cancel';
+  const hist = R.lichSu ? R.lichSu.split(' | ') : [];
+  const itemOf = l => S.itemMap.get(l.maVT) || { maVT: l.maVT, tenVI: l.maVT, tenZH: '', donVi: '', _total: 0, _locs: [] };
+  const nameBlock = it => `<span class="nm">${esc(nm1(it))}</span>${nm2(it) ? `<span class="nm2" lang="zh-CN">${esc(nm2(it))}</span>` : ''}`;
+  const showOk = reqApproved(R);
+  const trio = (l, it) => `<span class="trio"><span>${t('qtyReq')} <b>${fmt(l.sl)}</b></span>${showOk ? `<span>${t('qtyOk')} <b>${fmt(l.duyet)}</b></span>` : ''}${l.daXuat ? `<span>${t('qtyOut')} <b>${fmt(l.daXuat)}</b></span>` : ''}${reqOpen(R) ? `<span>${t('inStock')} <b>${fmt(it._total || 0)}</b></span>` : ''}</span>`;
+  const head = `
+  <div class="head">
+    <div class="top">${tmp ? '' : `<span class="plate big">${esc(R.id)}</span>`}${reqPill(R)}${needPill(R)}</div>
+    <h1>${esc(R.congTrinh)}</h1>
+  </div>
+  <dl class="facts loan">
+    <dt>${t('requester')}</dt><dd><span class="who">${ic('user')}${esc(R.nguoiTao)}</span> · ${esc(fmtTime(R.time))}</dd>
+    ${R.canNgay ? `<dt>${t('reqNeedBy')}</dt><dd>${esc(fmtDay(R.canNgay))}</dd>` : ''}
+    ${R.ghiChu ? `<dt>${t('note')}</dt><dd>${esc(R.ghiChu)}</dd>` : ''}
+    ${R.nguoiDuyet ? `<dt>${t('approver')}</dt><dd>${esc(R.nguoiDuyet)}${R.tgDuyet ? ' · ' + esc(fmtTime(R.tgDuyet)) : ''}</dd>` : ''}
+    ${R.yKien ? `<dt>${t('approveNote')}</dt><dd>${esc(R.yKien)}</dd>` : ''}
+  </dl>
+  ${tmp ? `<p class="note" style="margin-top:12px">${t('reqPendingSync')}</p>` : ''}`;
+  const canEdit = !tmp && (mineR || S.me.vaiTro === 'admin') && reqEditable(R);
+  const canCopy = !reqOpen(R) && R.trangThai !== 'TU_CHOI' && can('dexuat');
+  const btns = [
+    canEdit ? `<button type="button" class="btn small ${R.trangThai === 'TU_CHOI' ? 'signal' : ''}" data-act="reqEdit" data-id="${esc(R.id)}">${ic('edit')}${t(R.trangThai === 'TU_CHOI' ? 'editResubmit' : 'editReq')}</button>` : '',
+    canCopy ? `<button type="button" class="btn small" data-act="reqCopy" data-id="${esc(R.id)}">${ic('add')}${t('copyReq')}</button>` : '',
+    closeKind ? `<button type="button" class="btn small danger" data-act="reqClose" data-id="${esc(R.id)}" data-kind="${closeKind}">${t(closeKind === 'close' ? 'closeReq' : 'cancelReq')}</button>` : ''
+  ].filter(Boolean);
+  const tail = (btns.length ? `<div class="links" id="reqBtns">${btns.join('')}</div>` : '') +
+    (hist.length ? `<h2 class="sec">${t('history2')}</h2><div class="lich">${hist.map(h => `<span>${esc(h)}</span>`).join('')}</div>` : '');
+
+  if (mode === 'view') {
+    main.innerHTML = head + `<h2 class="sec">${t('reqLines')} <span class="count">${R.lines.length}</span></h2>
+      <div class="list">${R.lines.map(l => {
+        const it = itemOf(l);
+        return `<button type="button" class="row" data-act="item" data-id="${esc(l.maVT)}"><div class="row-main">${nameBlock(it)}
+          <span class="meta"><span class="plate">${esc(l.maVT)}</span></span>${trio(l, it)}</div>
+          <div class="qty"><b>${fmt(showOk ? l.duyet : l.sl)}</b><small>${esc(unitName(it.donVi))}</small></div></button>`;
+      }).join('')}</div>${tail}`;
+    return;
+  }
+
+  if (mode === 'approve') {
+    if (!p.A) p.A = { q: R.lines.map(l => String(l.sl)), yk: '' };
+    const A = p.A;
+    main.innerHTML = head + `
+    <form id="f" class="form" novalidate autocomplete="off" style="margin-top:16px">
+      <div class="field"><span class="lab">${t('reqLines')} <span class="count">${R.lines.length}</span></span>
+      <div class="list">${R.lines.map((l, i) => {
+        const it = itemOf(l);
+        return `<div class="rq-line"><div class="row-main">${nameBlock(it)}<span class="meta"><span class="plate">${esc(l.maVT)}</span></span>${trio(l, it)}</div>
+          <label class="rq-q"><small>${t('qtyApprove')}</small><input class="inp mono" id="fA${i}" inputmode="decimal" autocomplete="off" value="${esc(A.q[i])}"><small>${esc(unitName(it.donVi))}</small></label></div>`;
+      }).join('')}</div></div>
+      <div class="field"><label for="fYk">${t('approveNote')}</label><input class="inp" id="fYk" value="${esc(A.yk)}" placeholder="${esc(tp('approveNotePh'))}"></div>
+      <div class="btn-row"><button type="button" class="btn danger" id="bReject">${t('reject')}</button>
+        <button type="submit" class="btn primary" id="fSubmit">${ic('check')}${t('approve')}</button></div>
+    </form>${tail}`;
+    const sync = () => { R.lines.forEach((l, i) => { A.q[i] = $('#fA' + i).value; }); A.yk = $('#fYk').value; };
+    p._sync = sync;
+    const decide = async dongY => {
+      sync();
+      const lines = R.lines.map((l, i) => ({ maVT: l.maVT, duyet: parseQty(A.q[i]) }));
+      if (dongY) {
+        const bi = lines.findIndex(x => !(x.duyet >= 0));
+        if (bi >= 0) { toast(t('errQty0'), 'bad'); $('#fA' + bi).focus(); return; }
+        if (!lines.some(x => x.duyet > 0)) return toast(t('errReqEmpty'), 'bad');
+      } else if (!A.yk.trim()) { toast(t('errReason'), 'bad'); $('#fYk').focus(); return; }
+      const bs = [$('#fSubmit'), $('#bReject')]; bs.forEach(b => { b.disabled = true; });
+      try {
+        const r = await send('approve', { id: R.id, dongY, lines: dongY ? lines : [], yKien: A.yk.trim() }, { ct: R.congTrinh });
+        if (r.data) upsertReq(r.data.request);
+        toast(t(dongY ? 'd_APPROVE' : 'd_REJECT', { x: R.id }) + qn(r));
+        p.A = null;
+        if (NAV.length > 1) goBack(); else render();
+      } catch (e) { toast(errMsg(e), 'bad'); bs.forEach(b => { b.disabled = false; }); }
+    };
+    $('#f').addEventListener('submit', ev => { ev.preventDefault(); decide(true); });
+    $('#bReject').addEventListener('click', () => decide(false));
+    return;
+  }
+
+  // mode === 'issue': thủ kho xuất theo phiếu, mặc định lấy ở vị trí còn nhiều nhất
+  const rem = l => Math.round((l.duyet - l.daXuat) * 1000) / 1000;
+  const qAt = (it, m) => { const s = (it._locs || []).find(x => x.maViTri === m); return s ? s.soLuong : 0; };
+  if (!p.I) {
+    p.I = { loc: [], q: [], note: '' };
+    R.lines.forEach((l, i) => {
+      const best = (itemOf(l)._locs || [])[0], r = rem(l);
+      p.I.loc[i] = best ? best.maViTri : '';
+      p.I.q[i] = r > 0 && best ? String(Math.min(r, best.soLuong)) : '';
+    });
+  }
+  const I = p.I;
+  main.innerHTML = head + `
+  <form id="f" class="form" novalidate autocomplete="off" style="margin-top:16px">
+    <h2 class="sec" style="margin:0">${t('issueTitle')}</h2>
+    ${R.lines.map((l, i) => {
+      const it = itemOf(l), r = rem(l);
+      const top = `<div class="row-main">${nameBlock(it)}<span class="meta"><span class="plate">${esc(l.maVT)}</span></span>
+        <span class="trio"><span>${t('qtyOk')} <b>${fmt(l.duyet)}</b></span>${l.daXuat ? `<span>${t('qtyOut')} <b>${fmt(l.daXuat)}</b></span>` : ''}<span>${t('qtyLeft')} <b>${fmt(Math.max(r, 0))}</b></span><span>${esc(unitName(it.donVi))}</span></span></div>`;
+      if (r <= 0) return `<div class="iss done">${top}<span><span class="pill ok">✓ ${t('issuedAll')}</span></span></div>`;
+      if (!(it._locs || []).length) return `<div class="iss">${top}<p class="note" style="margin:0">${t('noStockAny')}</p></div>`;
+      return `<div class="iss">${top}
+        <div class="two">
+          <select class="inp" id="fL${i}" aria-label="${esc(tp('fromLoc'))}">${locOptions(I.loc[i], x => qAt(it, x.maViTri) > 0, m => qAt(it, m), it.donVi)}</select>
+          <input class="inp mono" id="fQ${i}" inputmode="decimal" autocomplete="off" value="${esc(I.q[i])}" placeholder="0" aria-label="${esc(tp('quantity'))}">
+        </div></div>`;
+    }).join('')}
+    <p class="help muted" style="margin:0;font-size:12.5px">${t('issueHelp')}</p>
+    <div class="field"><label for="fNote">${t('note')} <span class="muted">(${t('optional')})</span></label><input class="inp" id="fNote" value="${esc(I.note)}"></div>
+    <button type="submit" class="btn primary" id="fSubmit">${ic('XUAT')}${t('issueConfirm')}</button>
+  </form>${tail}`;
+  const sync = () => {
+    R.lines.forEach((l, i) => { const a = $('#fL' + i), b = $('#fQ' + i); if (a) I.loc[i] = a.value; if (b) I.q[i] = b.value; });
+    I.note = $('#fNote').value;
+  };
+  p._sync = sync;
+  R.lines.forEach((l, i) => {
+    const a = $('#fL' + i);
+    if (a) a.addEventListener('change', () => { sync(); I.q[i] = a.value ? String(Math.min(rem(l), qAt(itemOf(l), a.value))) : ''; render(); });
+  });
+  $('#f').addEventListener('submit', async ev => {
+    ev.preventDefault(); sync();
+    const lines = [];
+    for (let i = 0; i < R.lines.length; i++) {
+      const l = R.lines[i], it = itemOf(l), el = $('#fQ' + i);
+      if (!el) continue;
+      const q = parseQty(I.q[i]);
+      if (isNaN(q) || q === 0) continue;
+      if (q < 0) { toast(t('errQty'), 'bad'); el.focus(); return; }
+      if (!I.loc[i]) return toast(t('errNoLoc'), 'bad');
+      if (q > rem(l)) return toast(t('errIssueTooMany', { x: l.maVT, n: fmt(rem(l)) }), 'bad');
+      if (q > qAt(it, I.loc[i])) return toast(t('errNotEnoughItem', { x: l.maVT, n: fmt(qAt(it, I.loc[i])) }), 'bad');
+      lines.push({ maVT: l.maVT, tuViTri: I.loc[i], soLuong: q });
+    }
+    if (!lines.length) return toast(t('errReqEmpty'), 'bad');
+    const btn = $('#fSubmit'); btn.disabled = true;
+    try {
+      const r = await send('issue', { id: R.id, lines, ghiChu: I.note.trim() }, { ct: R.congTrinh });
+      if (r.data) { updateStockMany(lines.map(x => x.maVT), r.data.stock); upsertReq(r.data.request); }
+      toast(t('d_ISSUE', { x: R.id }) + qn(r));
+      p.I = null; render(); window.scrollTo(0, 0);
+    } catch (e) { toast(errMsg(e), 'bad'); btn.disabled = false; }
+  });
+};
+
+/* ---------------- Hàng chờ gửi ---------------- */
+function opDesc(op) {
+  const p = op.p || {}, info = op.i || {};
+  const itm = (m, q) => {
+    const it = S.itemMap.get(String(m || '').toUpperCase());
+    return `<span class="okline"><span class="plate">${esc(m)}</span><span>${esc(it ? nm1(it) : '')}</span>${q !== undefined ? `<b class="mono">× ${fmt(q)}</b>` : ''}</span>`;
+  };
+  const where = (a, b) => (a || b ? `<span class="mono">${esc([a, b].filter(Boolean).join(' → '))}</span>` : '');
+  const reqName = id => `<span class="okline">${isTmp(realId(id)) ? '' : `<span class="plate">${esc(realId(id))}</span>`}<span>${esc(info.ct || '')}</span></span>`;
+  switch (op.a) {
+    case 'txn': return `<b>${t('a_' + p.loai)}</b>${itm(p.maVT, p.soLuong)}${where(p.tuViTri, p.denViTri)}`;
+    case 'lend': return `<b>${t('lend')}</b>${itm(p.maVT, p.soLuong)}<span class="who">${ic('user')}${esc(p.nguoiMuon)}</span>`;
+    case 'takeBack': return `<b>${t(p.tinhTrang === 'MAT' ? 't_MAT' : 't_TRA')}</b>${itm(info.maVT, p.soLuong)}<span class="who">${ic('user')}${esc(info.who || '')}</span>`;
+    case 'request': return `<b>${t('reqNew')}</b><span>${esc(p.congTrinh)}</span>${(p.lines || []).map(x => itm(x.maVT, x.soLuong)).join('')}`;
+    case 'editRequest': return `<b>${t('reqEdit')}</b>${reqName(p.id)}${(p.lines || []).map(x => itm(x.maVT, x.soLuong)).join('')}`;
+    case 'approve': return `<b>${t(p.dongY === false ? 'reject' : 'approve')}</b>${reqName(p.id)}`;
+    case 'issue': return `<b>${t('issueTitle')}</b>${reqName(p.id)}${(p.lines || []).map(x => itm(x.maVT, x.soLuong)).join('')}`;
+    case 'closeRequest': return `<b>${t('closeReq')}</b>${reqName(p.id)}`;
+  }
+  return esc(op.a);
+}
+VIEWS.outbox = function () {
+  const ops = myOps().filter(o => o.st !== 'ok');
+  main.innerHTML = `
+    <p class="note" style="margin:0 0 12px;background:var(--sunk);color:var(--muted)">${t('outboxHelp')}</p>
+    ${ops.some(o => o.st === 'cho') ? `<button type="button" class="btn primary" data-act="sendNow" ${flushP ? 'disabled' : ''}>${ic('send')}${t('sendNow')}</button>` : ''}
+    ${ops.length ? `<div class="list" id="obList" style="margin-top:12px">${ops.map(op => `<div class="log-item">
+      <div class="log-top"><span class="badge ${op.st === 'loi' ? 'b-xuat' : 'b-chuyen'}">${t('st_' + op.st)}</span><span class="muted" style="font-size:12.5px">${esc(fmtTime(op.t))}</span></div>
+      <div class="hist-lines">${opDesc(op)}</div>
+      ${op.st === 'loi' ? `<p class="note" style="margin:2px 0 0;background:var(--badbg);color:var(--bad)">${errMsg(op.err)}</p>` : ''}
+      <div class="links" style="margin-top:4px">${op.st === 'loi' ? `<button type="button" class="btn small" data-act="opRetry" data-id="${esc(op.id)}">${ic('send')}${t('resend')}</button>` : ''}
+        <button type="button" class="btn small danger" data-act="opDiscard" data-id="${esc(op.id)}">${ic('trash')}${t('discard')}</button></div>
+    </div>`).join('')}</div>` : `<p class="empty">${t('outboxEmpty')}</p>`}`;
 };
 
 /* ---------------- Thêm / sửa vật tư ---------------- */
@@ -2715,7 +4046,7 @@ VIEWS.pin = function () {
     if (!/^\d{6}$/.test(b)) return toast(t('errPinFormat'), 'bad');
     if (b !== c) return toast(t('errPinMatch'), 'bad');
     const btn = $('#fSubmit'); btn.disabled = true;
-    try { await api('changePin', { pinCu: a, pinMoi: b }); toast(t('pinChanged')); goBack(); }
+    try { await api('changePin', { pinCu: a, pinMoi: b }); rememberPin(b, S.me); toast(t('pinChanged')); goBack(); }
     catch (e) { toast(errMsg(e), 'bad'); btn.disabled = false; }
   });
 };
@@ -2733,9 +4064,15 @@ function toast(msg, kind) {
 }
 function userMenu() {
   if (!S.me) return;
-  openSheet(`<h3>${esc(S.me.ten)}</h3><span class="muted">${roleName(S.me.vaiTro)}</span>
+  const nOps = myOps().filter(o => o.st !== 'ok').length;
+  const swOk = !!(navigator.serviceWorker && navigator.serviceWorker.controller);
+  openSheet(`<h3>${esc(S.me.ten)}</h3><span class="muted">${roleName(S.me.vaiTro)} · ${esc(tp('version'))} ${esc(APP_VER)}</span>
+    ${S.dataAt ? `<span class="muted" style="font-size:13px">${t('dataAt', { x: fmtTime(S.dataAt) })}</span>` : ''}
+    ${DEMO ? '' : `<span class="muted" style="font-size:13px">${t(swOk ? 'offReady' : 'offNotReady')}</span>`}
     <div class="btns">
       <button type="button" class="btn" data-act="reload">${ic('reload')}${t('reload')}</button>
+      ${nOps ? `<button type="button" class="btn" data-act="view" data-v="outbox">${ic('send')}${t('outbox')} (${nOps})</button>` : ''}
+      ${DEMO ? `<button type="button" class="btn" data-act="simNet">${ic('cloudOff')}${t(S.simDown ? 'simOn' : 'simOff')}</button>` : ''}
       <button type="button" class="btn" data-act="view" data-v="pin">${ic('key')}${t('changePin')}</button>
       <button type="button" class="btn" data-act="logout">${ic('logout')}${t('logout')}</button>
       <button type="button" class="btn" data-act="sheetClose">${t('close')}</button>
@@ -2831,14 +4168,28 @@ const ACT = {
   userMenu: () => userMenu(),
   sheetBg: (el, ev) => { if (ev.target === el) closeSheet(); },
   sheetClose: () => closeSheet(),
-  logout: () => { closeSheet(); logout(); },
-  reload: async () => { closeSheet(); try { await loadData(); render(); toast(t('reloaded')); } catch (e) { toast(errMsg(e), 'bad'); } },
+  logout: () => {
+    closeSheet();
+    const n = myOps().filter(o => o.st !== 'ok').length;
+    if (!n) return logout();
+    openSheet(`<h3>${t('logoutPending', { n })}</h3><div class="btns">
+      <button type="button" class="btn primary" data-act="logoutGo">${ic('logout')}${t('logoutAnyway')}</button>
+      <button type="button" class="btn" data-act="sheetClose">${t('cancel')}</button></div>`);
+  },
+  logoutGo: () => { closeSheet(); logout(); },
+  reload: async () => {
+    closeSheet();
+    try {
+      if (waitingOps().length) return await flush(true);
+      await loadData(); render(); toast(t('reloaded'));
+    } catch (e) { toast(errMsg(e), 'bad'); }
+  },
   demoPin: el => { pinBuf = ''; doLogin(el.dataset.pin); },
   pinKey: el => pinKey(el.dataset.k),
   scan: () => openScanner(openCode),
   item: el => go('item', { id: el.dataset.id }),
   loc: el => go('loc', { id: el.dataset.id }),
-  view: el => { closeSheet(); go(el.dataset.v, {}); },
+  view: el => { closeSheet(); if (cur().v === el.dataset.v) render(); else go(el.dataset.v, {}); },
   grp: el => { cur().p.g = el.dataset.g; render(); },
   txn: el => go('txn', { loai: el.dataset.loai, maVT: el.dataset.id || '', tu: el.dataset.tu || '', den: el.dataset.den || '' }),
   pick: el => { const F = cur().p; if (F._sync) F._sync(); F.maVT = el.dataset.id; F._init = false; F.pickQ = ''; render(); },
@@ -2884,6 +4235,91 @@ const ACT = {
     const F = cur().p; F.who = el.dataset.name;
     const w = $('#fWho'); if (w) { w.value = F.who; w.dispatchEvent(new Event('input')); }
   },
+  // Đề xuất vật tư
+  reqNew: () => go('reqNew', {}),
+  reqOpen: el => go('req', { id: el.dataset.id }),
+  reqTab: el => { cur().p.tab = el.dataset.tab; render(); },
+  reqAdd: el => { draftAdd(el.dataset.id); go('reqNew', {}); },
+  reqPick: el => {
+    const p = cur().p; if (p._sync) p._sync();
+    const i = formAdd(el.dataset.id); reqF().pickQ = ''; reqSave(); render();
+    const q = $('#fL' + i); if (q) q.focus();
+  },
+  reqScan: () => {
+    const p0 = cur().p; if (p0._sync) p0._sync();
+    openScanner(code => {
+      const it = findItemByCode(code);
+      if (!it) return toast(t('unknownCode', { x: code }), 'bad');
+      formAdd(it.maVT); render();
+    });
+  },
+  lineDel: el => { const p = cur().p; if (p._sync) p._sync(); reqF().lines.splice(Number(el.dataset.i), 1); reqSave(); render(); },
+  needBy: el => {
+    const F = reqF();
+    F.need = el.dataset.v; reqSave();
+    const d = $('#fNeed'); if (d) d.value = F.need;
+    document.querySelectorAll('[data-act="needBy"]').forEach(b => b.setAttribute('aria-pressed', String(b === el)));
+  },
+  ctPick: el => {
+    const onReq = cur().v === 'reqNew', F = onReq ? reqF() : cur().p;
+    F.ct = el.dataset.name;
+    const w = $('#fCt'); if (w) { w.value = F.ct; w.dispatchEvent(new Event('input')); }
+    if (onReq) reqSave();
+  },
+  reqEdit: el => go('reqNew', { edit: el.dataset.id }),
+  reqCopy: el => {
+    const d = S.draft;
+    if (d && (d.lines.length || d.ct.trim())) {
+      return openSheet(`<h3>${t('copyQ')}</h3><div class="btns">
+        <button type="button" class="btn primary" data-act="reqCopyGo" data-id="${esc(el.dataset.id)}">${t('copyGo')}</button>
+        <button type="button" class="btn" data-act="sheetClose">${t('back')}</button></div>`);
+    }
+    ACT.reqCopyGo(el);
+  },
+  reqCopyGo: el => {
+    const R = findReq(el.dataset.id); if (!R) return;
+    closeSheet();
+    S.draft = reqToForm(R); saveDraft();
+    go('reqNew', {});
+    toast(t('d_COPY'));
+  },
+  reqClose: el => {
+    const kind = el.dataset.kind;
+    openSheet(`<h3>${t(kind === 'close' ? 'closeReqQ' : 'cancelReqQ')}</h3>
+      <input class="inp" id="fReason" autocomplete="off" placeholder="${esc(tp('reasonPh'))}">
+      <div class="btns"><button type="button" class="btn primary" data-act="reqCloseGo" data-id="${esc(el.dataset.id)}" data-kind="${kind}">${t(kind === 'close' ? 'closeReq' : 'cancelReq')}</button>
+      <button type="button" class="btn" data-act="sheetClose">${t('back')}</button></div>`);
+  },
+  reqCloseGo: async el => {
+    const id = el.dataset.id, kind = el.dataset.kind, R = findReq(id);
+    const lyDo = (($('#fReason') || {}).value || '').trim();
+    el.disabled = true;
+    try {
+      const r = await send('closeRequest', { id, lyDo }, { ct: R ? R.congTrinh : '' });
+      if (r.data) upsertReq(r.data.request);
+      closeSheet();
+      toast(t(kind === 'close' ? 'd_CLOSE' : 'd_CANCEL', { x: id }) + qn(r));
+      const p = cur().p; p.A = null; p.I = null; render();
+    } catch (e) { toast(errMsg(e), 'bad'); el.disabled = false; }
+  },
+  // Mạng yếu
+  sendNow: () => { flush(true); render(); },
+  opRetry: el => {
+    const op = S.Q.find(o => o.id === el.dataset.id); if (!op) return;
+    op.st = 'cho'; delete op.err; saveQ(); rebuild(); render();
+    if (!S.offline) flush(true); else reconnect();
+  },
+  opDiscard: el => openSheet(`<h3>${t('discardQ')}</h3><div class="btns">
+    <button type="button" class="btn primary" data-act="opDiscardGo" data-id="${esc(el.dataset.id)}">${ic('trash')}${t('discard')}</button>
+    <button type="button" class="btn" data-act="sheetClose">${t('back')}</button></div>`),
+  opDiscardGo: el => { S.Q = S.Q.filter(o => o.id !== el.dataset.id); saveQ(); closeSheet(); rebuild(); render(); },
+  simNet: () => {
+    closeSheet();
+    S.simDown = !S.simDown;
+    if (S.simDown) setOffline(true);
+    else if (S.me) reconnect(true, true); else setOffline(false);
+    render();
+  },
   scanReturn: () => openScanner(code => {
     const it = findItemByCode(code);
     if (!it) return toast(t('unknownCode', { x: code }), 'bad');
@@ -2926,7 +4362,10 @@ function resumeApp() {
 }
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) { hiddenAt = Date.now(); return; }
-  if (hiddenAt && Date.now() - hiddenAt > 1000) resumeApp();
+  if (hiddenAt && Date.now() - hiddenAt > 1000) {
+    resumeApp();
+    if (S.me && (S.offline || waitingOps().length)) reconnect(false, true);
+  }
   hiddenAt = 0;
 });
 window.addEventListener('pageshow', e => { if (e.persisted) resumeApp(); });
@@ -2939,16 +4378,32 @@ document.addEventListener('click', ev => {
 });
 
 /* ---------------- Khởi động ---------------- */
+// Cho phép mở app khi mất mạng: file sw.js đặt cạnh index.html trên GitHub
+function registerSW() {
+  if (IS_PREVIEW || DEMO || !('serviceWorker' in navigator)) return;
+  if (location.protocol !== 'https:' && location.hostname !== 'localhost') return;
+  navigator.serviceWorker.register('sw.js').catch(() => { /* chưa tải sw.js lên: app vẫn chạy khi có mạng */ });
+}
 (async function boot() {
   NAV.push({ v: 'login', p: {} });
+  S.Q = pjson('kho_q') || [];
   const tk = stor('s', 'kho_tk');
   if (tk) {
     S.token = tk;
-    try { await loadData(); NAV.length = 0; NAV.push({ v: 'home', p: {} }); poke(); }
-    catch (e) { S.token = null; stor('s', 'kho_tk', null); NAV.length = 0; NAV.push({ v: 'login', p: {} }); }
+    try { S.sessionMe = JSON.parse(stor('s', 'kho_me') || 'null'); } catch (e) { S.sessionMe = null; }
+    const toHome = () => { NAV.length = 0; NAV.push({ v: 'home', p: {} }); poke(); };
+    try { await loadData(); toHome(); if (waitingOps().length) flush(); }
+    catch (e) {
+      // Mất mạng lúc mở lại app: dùng dữ liệu lưu trên máy, có mạng sẽ tự cập nhật
+      if (e.code === 'MANG' && S.sessionMe && useSnap()) toHome();
+      else { S.token = null; S.sessionMe = null; stor('s', 'kho_tk', null); NAV.length = 0; NAV.push({ v: 'login', p: {} }); }
+    }
   }
   render();
+  registerSW();
 })();
+setInterval(() => { if (S.me && !document.hidden && (S.offline || waitingOps().length)) reconnect(); }, SYNC_SEC * 1000);
+window.addEventListener('online', () => { if (S.me) reconnect(true, true); });
 </script>
 </body>
 </html>
