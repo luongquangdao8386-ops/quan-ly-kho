@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#f5c400">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -55,6 +55,9 @@ const API_URL = "https://script.google.com/macros/s/AKfycbz3SdE8FTY9K1aRXu4Y1v0W
 [hidden]{display:none!important}
 img,svg{max-width:100%}
 html{-webkit-text-size-adjust:100%}
+/* Chạm nhanh hoặc chạm lệch không làm phóng to màn hình */
+html,body{touch-action:manipulation}
+button,.keypad,.tiles,.acts,.chip,.seg{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.45 var(--sans);-webkit-tap-highlight-color:transparent}
 body.noscroll{overflow:hidden}
 button,input,select,textarea{font:inherit;color:inherit}
