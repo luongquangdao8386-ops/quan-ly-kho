@@ -58,7 +58,16 @@ body.noscroll{overflow:hidden}
 button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
 :focus-visible{outline:2.5px solid var(--focus);outline-offset:2px}
-.zh{font-family:var(--zh)}
+.zh,[lang="zh-CN"]{font-family:var(--zh)}
+/* Song ngữ: chữ Trung đi kèm chữ Việt */
+.zi{margin-left:.4em;font-weight:500;opacity:.72}
+.tile .zi,.act .zi,.pin-label .zi,.toast .zi,.pin-msg .zi,.scan-msg .zi,.help .zi,.note .zi,.empty .zi,.sheet h3 .zi,.seg .zi{display:block;margin-left:0}
+.tile .zi{font-size:12.5px;margin-top:1px}
+.act .zi{font-size:11px}
+.sheet h3 .zi{font-size:15px;margin-top:2px}
+h2.sec .zi{text-transform:none;letter-spacing:0}
+.qty .pill{white-space:normal;text-align:right;justify-content:flex-end;flex-wrap:wrap}
+.nm2[lang="zh-CN"],.zs{font-family:var(--zh)}
 .mono{font-family:var(--mono)}
 .ic{width:22px;height:22px;flex:none}
 
@@ -70,7 +79,6 @@ button{cursor:pointer}
 .bar-title small{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .icon-btn{width:40px;height:40px;border:0;background:transparent;border-radius:10px;display:grid;place-items:center;color:var(--ink)}
 .icon-btn:active{background:var(--sunk)}
-.lang-btn{height:34px;min-width:52px;padding:0 10px;border:1.5px solid var(--ink);border-radius:8px;background:transparent;font-weight:600;font-size:13.5px}
 .stripe{height:5px;background:repeating-linear-gradient(-45deg,var(--stripe-a) 0 9px,var(--stripe-b) 9px 18px)}
 .busy{position:absolute;left:0;right:0;bottom:-3px;height:3px;overflow:hidden}
 .busy::after{content:"";position:absolute;inset:0;width:35%;background:var(--signal);animation:slide 1s ease-in-out infinite}
@@ -135,7 +143,7 @@ h2.sec{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--
 .stats b{font-family:var(--mono);color:var(--ink);font-size:15px}
 .stats .w b{color:var(--warn)}
 .tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(98px,1fr));gap:8px}
-.tile{display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--card);text-align:left;font-size:13.5px;font-weight:600;line-height:1.25;min-height:84px}
+.tile{display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--card);text-align:left;font-size:13.5px;font-weight:600;line-height:1.25;min-height:84px}
 .tile:active{background:var(--sunk)}
 .tile .ic{width:24px;height:24px}
 .tile.t-nhap .ic{color:var(--ok)}
@@ -223,7 +231,7 @@ textarea.inp{height:auto;min-height:70px;padding:10px 12px;resize:vertical}
 
 /* Tem */
 .seg{display:grid;grid-template-columns:1fr 1fr;border:1.5px solid var(--ink);border-radius:10px;overflow:hidden}
-.seg button{border:0;background:var(--card);height:42px;font-weight:600}
+.seg button{border:0;background:var(--card);min-height:48px;padding:4px 6px;font-weight:600;line-height:1.2}
 .seg button[aria-pressed="true"]{background:var(--action);color:var(--action-ink)}
 .sel-row{display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--line);cursor:pointer}
 .sel-row:last-child{border-bottom:0}
@@ -288,7 +296,6 @@ textarea.inp{height:auto;min-height:70px;padding:10px 12px;resize:vertical}
     <div class="bar-in">
       <button class="icon-btn" id="btnBack" type="button" data-act="back" hidden></button>
       <div class="bar-title"><b id="barTitle">Kho Cơ Điện</b><small id="barSub">机电仓库</small></div>
-      <button class="lang-btn" id="btnLang" type="button" data-act="lang">中文</button>
       <button class="icon-btn" id="btnUser" type="button" data-act="userMenu" hidden></button>
     </div>
     <div class="stripe"></div>
@@ -1143,10 +1150,11 @@ const TX = {
   sessionExpired: ['Phiên đăng nhập đã hết. Nhập lại PIN.', '登录已过期，请重新输入PIN。'],
   network: ['Không kết nối được máy chủ. Kiểm tra mạng rồi thử lại.', '无法连接服务器，请检查网络后重试。'],
   noPerm: ['Tài khoản của bạn không có quyền làm việc này.', '您的账号没有此操作权限。'],
-  demoBanner: ['<b>Bản xem thử</b> · dữ liệu mẫu, tải lại trang sẽ mất thay đổi.', '<b>演示版</b> · 示例数据，刷新页面后更改将丢失。'],
-  demoLocal: [' Dán API_URL vào file để dùng dữ liệu thật.', ' 在文件中填写API_URL即可使用真实数据。'],
+  demoTitle: ['Bản xem thử', '演示版'],
+  demoBanner: ['Dữ liệu mẫu, tải lại trang sẽ mất thay đổi.', '示例数据，刷新页面后更改将丢失。'],
+  demoLocal: ['Dán API_URL vào file để dùng dữ liệu thật.', '在文件中填写API_URL即可使用真实数据。'],
   demoPins: ['PIN mẫu (bấm để vào):', '示例PIN（点击登录）：'],
-  searchPh: ['Tìm tên, mã, quy cách', '搜索名称、编码、规格'],
+  searchPh: ['Tìm vật tư', '搜索'],
   scan: ['Quét', '扫码'],
   a_NHAP: ['Nhập kho', '入库'], a_XUAT: ['Xuất kho', '出库'], a_CHUYEN: ['Chuyển vị trí', '移库'], a_KIEMKE: ['Kiểm kê', '盘点'],
   t_NHAP: ['Nhập', '入库'], t_XUAT: ['Xuất', '出库'], t_CHUYEN: ['Chuyển', '移库'], t_KIEMKE: ['Kiểm kê', '盘点'],
@@ -1254,19 +1262,22 @@ const ROLES = ['admin', 'kysu', 'thukho', 'congnhan'];
 
 /* ---------------- Trạng thái ---------------- */
 const S = {
-  lang: 'vi', token: null, me: null, items: [], locs: [], stock: [],
+  token: null, me: null, items: [], locs: [], stock: [],
   itemMap: new Map(), locMap: new Map(), byItem: new Map(), byLoc: new Map(), q: '', grp: ''
 };
 const NAV = [];
 const $ = s => document.querySelector(s);
 const main = $('#main');
 
-function L() { return S.lang === 'zh' ? 1 : 0; }
+function fill(s, v) { return v ? s.replace(/\{(\w+)\}/g, (m, n) => (v[n] === undefined ? '' : v[n])) : s; }
+function tv(k, v) { return fill(TX[k] ? TX[k][0] : k, v); }
+function tz(k, v) { return fill(TX[k] ? TX[k][1] : k, v); }
+// t(): HTML song ngữ "Tiếng Việt <span>中文</span>" (đã escape). tp(): chữ thường "Việt · 中文" cho thuộc tính.
 function t(k, v) {
-  const e = TX[k]; let s = e ? e[L()] : k;
-  if (v) s = s.replace(/\{(\w+)\}/g, (m, n) => (v[n] === undefined ? '' : v[n]));
-  return s;
+  const a = tv(k, v), c = tz(k, v);
+  return esc(a) + (a === c ? '' : '<span class="zi" lang="zh-CN">' + esc(c) + '</span>');
 }
+function tp(k, v) { const a = tv(k, v), c = tz(k, v); return a === c ? a : a + ' · ' + c; }
 function esc(s) {
   return String(s === undefined || s === null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
@@ -1289,27 +1300,32 @@ function norm(s) {
     .replace(/[đĐ]/g, 'd').replace(/[ΦφØø⌀]/g, 'phi').toLowerCase();
 }
 function compact(s) { return norm(s).replace(/[\s\-_.,/×x*()°"'’:;+–—]+/g, ''); }
-function nf() { return new Intl.NumberFormat(S.lang === 'zh' ? 'zh-CN' : 'vi-VN', { maximumFractionDigits: 3 }); }
-function fmt(n) { return nf().format(Number(n) || 0); }
-function unitName(u) { return UNITS[u] ? UNITS[u][L()] : (u || ''); }
-function qtyU(n, u) { const un = unitName(u); return fmt(n) + (S.lang === 'zh' ? ' ' + un : ' ' + un); }
-function grpName(g) { return GROUPS[g] ? GROUPS[g][L()] : (g || ''); }
+// Số dạng 1 050 và 12.5: người Việt và người Trung đọc giống nhau
+const NF = new Intl.NumberFormat('en-US', { maximumFractionDigits: 3 });
+function fmt(n) { return NF.format(Number(n) || 0).replace(/,/g, '\u202f'); }
+function unitName(u) { return UNITS[u] ? UNITS[u][0] + ' ' + UNITS[u][1] : (u || ''); }
+function qtyU(n, u) { return fmt(n) + ' ' + unitName(u); }
+function grpName(g) { return GROUPS[g] ? GROUPS[g][0] + ' · ' + GROUPS[g][1] : (g || ''); }
 function roleName(r) { return t('role_' + r); }
-function nm1(it) { return S.lang === 'zh' ? (it.tenZH || it.tenVI) : (it.tenVI || it.tenZH); }
-function nm2(it) { const a = nm1(it), b = S.lang === 'zh' ? it.tenVI : it.tenZH; return b && b !== a ? b : ''; }
-function locDesc(l) { return S.lang === 'zh' ? (l.moTaZH || l.moTaVI) : (l.moTaVI || l.moTaZH); }
+function nm1(it) { return it.tenVI || it.tenZH; }
+function nm2(it) { return it.tenVI && it.tenZH && it.tenZH !== it.tenVI ? it.tenZH : ''; }
+function locDesc(l) { return l.moTaVI || l.moTaZH; }
+function locDesc2(l) { return l.moTaVI && l.moTaZH && l.moTaZH !== l.moTaVI ? l.moTaZH : ''; }
+function locFull(l) { return [locDesc(l), locDesc2(l)].filter(Boolean).join(' / '); }
 function locParts(l) {
   if (!l.kho && !l.day) return '';
-  return S.lang === 'zh'
-    ? [l.kho && '仓库' + l.kho, l.day && l.day + '排', l.ke && l.ke + '号架', l.tang && l.tang + '层'].filter(Boolean).join(' · ')
-    : [l.kho && 'Kho ' + l.kho, l.day && 'Dãy ' + l.day, l.ke && 'Kệ ' + l.ke, l.tang && 'Tầng ' + l.tang].filter(Boolean).join(' · ');
+  return [l.kho && 'Kho ' + l.kho, l.day && 'Dãy ' + l.day, l.ke && 'Kệ ' + l.ke, l.tang && 'Tầng ' + l.tang].filter(Boolean).join(' · ');
+}
+function locPartsZ(l) {
+  if (!l.kho && !l.day) return '';
+  return [l.kho && '仓库' + l.kho, l.day && l.day + '排', l.ke && l.ke + '号架', l.tang && l.tang + '层'].filter(Boolean).join(' · ');
 }
 function fmtTime(s) {
   const d = new Date(s); if (isNaN(d)) return '';
   const p = n => String(n).padStart(2, '0');
   return p(d.getDate()) + '/' + p(d.getMonth() + 1) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
 }
-function parseQty(v) { const s = String(v || '').trim().replace(',', '.'); return s === '' ? NaN : Number(s); }
+function parseQty(v) { const s = String(v || '').trim().replace(/[\s\u202f]/g, '').replace(',', '.'); return s === '' ? NaN : Number(s); }
 function can(q) { return !!(S.me && QUYEN[q].includes(S.me.vaiTro)); }
 
 /* ---------------- Dữ liệu ---------------- */
@@ -1476,29 +1492,29 @@ function finishTo(v, p) {
 }
 function cur() { return NAV[NAV.length - 1] || { v: 'login', p: {} }; }
 
+const K = k => [tv(k), tz(k)];
 const TITLES = {
-  item: p => p.id, loc: p => p.id, items: () => t('itemsAll'), locs: () => t('locations'),
-  txn: p => t('a_' + p.loai), itemForm: p => (p.id ? t('editItem') : t('addItem')), locForm: p => (p.id ? t('editLoc') : t('addLoc')),
-  labels: () => t('labels'), log: () => t('log'), users: () => t('users'), userForm: p => (p.id ? t('editUser') : t('addUser')), pin: () => t('changePin')
+  item: p => [p.id, tp('item')], loc: p => [p.id, tp('location')], items: () => K('itemsAll'), locs: () => K('locations'),
+  txn: p => K('a_' + p.loai), itemForm: p => K(p.id ? 'editItem' : 'addItem'), locForm: p => K(p.id ? 'editLoc' : 'addLoc'),
+  labels: () => K('labels'), log: () => K('log'), users: () => K('users'), userForm: p => K(p.id ? 'editUser' : 'addUser'), pin: () => K('changePin')
 };
 const VIEWS = {};
 function render() {
   const c = cur();
-  document.documentElement.lang = S.lang === 'zh' ? 'zh-CN' : 'vi';
-  $('#btnLang').textContent = S.lang === 'zh' ? 'Tiếng Việt' : '中文';
-  $('#btnLang').setAttribute('aria-label', S.lang === 'zh' ? 'Chuyển sang tiếng Việt' : '切换到中文');
   const home = c.v === 'home' || c.v === 'login';
-  $('#barTitle').textContent = home ? t('appName') : (TITLES[c.v] ? TITLES[c.v](c.p) : t('appName'));
-  $('#barSub').textContent = home ? TX.appName[1 - L()] : (S.me ? (S.me.ten === roleName(S.me.vaiTro) ? S.me.ten : S.me.ten + ' · ' + roleName(S.me.vaiTro)) : '');
+  const tt = !home && TITLES[c.v] ? TITLES[c.v](c.p) : K('appName');
+  $('#barTitle').textContent = tt[0];
+  $('#barSub').textContent = tt[1];
+  $('#barSub').lang = c.v === 'item' || c.v === 'loc' ? '' : 'zh-CN';
   $('#barTitle').className = c.v === 'item' || c.v === 'loc' ? 'mono' : '';
   $('#btnBack').hidden = NAV.length <= 1 || c.v === 'login';
   $('#btnBack').innerHTML = ic('back');
-  $('#btnBack').setAttribute('aria-label', t('back'));
+  $('#btnBack').setAttribute('aria-label', tp('back'));
   $('#btnUser').hidden = !S.token;
   $('#btnUser').innerHTML = ic('user');
   $('#btnUser').setAttribute('aria-label', S.me ? S.me.ten : '');
   $('#demo').hidden = !DEMO;
-  $('#demoText').innerHTML = t('demoBanner') + (IS_PREVIEW ? '' : esc(t('demoLocal')));
+  $('#demoText').innerHTML = '<b>' + esc(tp('demoTitle')) + '</b> · ' + t('demoBanner') + (IS_PREVIEW ? '' : ' ' + t('demoLocal'));
   (VIEWS[c.v] || VIEWS.home)(c.p);
 }
 
@@ -1535,7 +1551,7 @@ async function pinKey(k) {
 }
 async function doLogin(pin) {
   const dots = $('#dots'); dots.dataset.wait = '1';
-  $('#pinMsg').textContent = t('loading');
+  $('#pinMsg').innerHTML = t('loading');
   try {
     const r = await api('login', { pin });
     S.token = r.token; S.me = r.user; stor('s', 'kho_tk', r.token);
@@ -1543,7 +1559,7 @@ async function doLogin(pin) {
     NAV.length = 0; go('home'); poke();
   } catch (e) {
     pinBuf = ''; delete dots.dataset.wait; pinDots();
-    $('#pinMsg').textContent = errMsg(e);
+    $('#pinMsg').innerHTML = errMsg(e);
     dots.classList.remove('shake'); void dots.offsetWidth; dots.classList.add('shake');
   }
 }
@@ -1577,7 +1593,7 @@ function itemRow(it, extra) {
   return `<button type="button" class="row" data-act="item" data-id="${esc(it.maVT)}">
     <div class="row-main">
       <span class="nm">${esc(nm1(it))}</span>
-      ${nm2(it) ? `<span class="nm2">${esc(nm2(it))}</span>` : ''}
+      ${nm2(it) ? `<span class="nm2" lang="zh-CN">${esc(nm2(it))}</span>` : ''}
       <span class="meta"><span class="plate">${esc(it.maVT)}</span>${it.quyCach ? `<span>${esc(it.quyCach)}</span>` : ''}</span>
       ${locs ? `<span class="meta">${locs}</span>` : ''}
       ${extra || ''}
@@ -1591,7 +1607,7 @@ function locRow(l) {
   return `<button type="button" class="row" data-act="loc" data-id="${esc(l.maViTri)}">
     <div class="row-main">
       <span><span class="plate loc big">${esc(l.maViTri)}</span></span>
-      <span class="nm2">${esc(locDesc(l))}</span>
+      <span class="nm2">${esc(locDesc(l))}</span>${locDesc2(l) ? `<span class="nm2" lang="zh-CN">${esc(locDesc2(l))}</span>` : ''}
     </div>
     <div class="qty"><small>${t('nItems', { n })}</small></div>
   </button>`;
@@ -1599,7 +1615,7 @@ function locRow(l) {
 VIEWS.home = function () {
   main.innerHTML = `
   <div class="search" role="search">
-    <label class="search-box" for="q">${ic('search')}<input id="q" type="search" enterkeyhint="search" autocomplete="off" placeholder="${esc(t('searchPh'))}" value="${esc(S.q)}"></label>
+    <label class="search-box" for="q">${ic('search')}<input id="q" type="search" enterkeyhint="search" autocomplete="off" placeholder="${esc(tp('searchPh'))}" value="${esc(S.q)}"></label>
     <button class="scan-btn" type="button" data-act="scan">${ic('scan')}<span>${t('scan')}</span></button>
   </div>
   <div id="homeBody"></div>`;
@@ -1621,7 +1637,7 @@ function homeBody() {
     el.innerHTML = (its.length ? `<h2 class="sec">${t('results')} <span class="count">${its.length}</span></h2><div class="list">${its.map(i => itemRow(i)).join('')}</div>` : '') +
       (ls.length ? `<h2 class="sec">${t('resultsLoc')} <span class="count">${ls.length}</span></h2><div class="list">${ls.map(locRow).join('')}</div>` : '') +
       (!its.length && !ls.length ? `<p class="empty">${t('noResults')}</p>` +
-        (can('danhmuc') ? `<button type="button" class="btn" data-act="itemForm" data-name="${esc(q)}">${ic('add')}${esc(t('addNamed', { x: q }))}</button>` : '') : '');
+        (can('danhmuc') ? `<button type="button" class="btn" data-act="itemForm" data-name="${esc(q)}">${ic('add')}${esc(tp('addNamed', { x: q }))}</button>` : '') : '');
     return;
   }
   const low = S.items.filter(i => i._low);
@@ -1664,7 +1680,7 @@ VIEWS.item = function (p) {
   <div class="head">
     <div class="top"><span class="plate big">${esc(it.maVT)}</span><span class="pill grey">${esc(grpName(it.nhom))}</span></div>
     <h1>${esc(nm1(it))}</h1>
-    ${nm2(it) ? `<div class="nm2" style="font-size:15px">${esc(nm2(it))}</div>` : ''}
+    ${nm2(it) ? `<div class="nm2" lang="zh-CN" style="font-size:15px">${esc(nm2(it))}</div>` : ''}
   </div>
   <dl class="facts">
     ${it.quyCach ? `<dt>${t('spec')}</dt><dd>${esc(it.quyCach)}</dd>` : ''}
@@ -1683,7 +1699,7 @@ VIEWS.item = function (p) {
   ${it._locs.length ? `<div class="list">${it._locs.map(s => {
     const l = S.locMap.get(s.maViTri) || { maViTri: s.maViTri };
     return `<button type="button" class="row" data-act="loc" data-id="${esc(s.maViTri)}">
-      <div class="row-main"><span><span class="plate loc big">${esc(s.maViTri)}</span></span><span class="nm2">${esc(locDesc(l) || '')}</span>
+      <div class="row-main"><span><span class="plate loc big">${esc(s.maViTri)}</span></span><span class="nm2">${esc(locFull(l))}</span>
       <span class="meta">${esc(locParts(l))}</span></div>
       <div class="qty"><b>${fmt(s.soLuong)}</b><small>${esc(unitName(u))}</small></div></button>`;
   }).join('')}</div>` : `<p class="empty">${t('notStored')}</p>`}
@@ -1717,7 +1733,7 @@ async function loadHistory(q, sel, withItem) {
     if (cur() !== at) return;
     const el = $(sel); if (el) el.innerHTML = logList(rows, !withItem);
   } catch (e) {
-    const el = $(sel); if (el && cur() === at) el.innerHTML = `<p class="empty">${esc(errMsg(e))}</p>`;
+    const el = $(sel); if (el && cur() === at) el.innerHTML = `<p class="empty">${errMsg(e)}</p>`;
   }
 }
 
@@ -1735,9 +1751,9 @@ VIEWS.loc = function (p) {
   main.innerHTML = `
   <div class="head">
     <div class="top"><span class="plate loc huge">${esc(l.maViTri)}</span></div>
-    ${locParts(l) ? `<div class="muted">${esc(locParts(l))}</div>` : ''}
+    ${locParts(l) ? `<div class="muted">${esc(locParts(l))}<br><span lang="zh-CN">${esc(locPartsZ(l))}</span></div>` : ''}
     ${l.moTaVI || l.moTaZH ? `<h1>${esc(locDesc(l))}</h1>` : ''}
-    ${(S.lang === 'zh' ? l.moTaVI : l.moTaZH) && l.moTaVI !== l.moTaZH ? `<div class="nm2" style="font-size:15px">${esc(S.lang === 'zh' ? l.moTaVI : l.moTaZH)}</div>` : ''}
+    ${locDesc2(l) ? `<div class="nm2" lang="zh-CN" style="font-size:15px">${esc(locDesc2(l))}</div>` : ''}
   </div>
   ${can('nhapxuat') ? `<div class="links">
     <button type="button" class="btn small" data-act="txn" data-loai="NHAP" data-den="${esc(l.maViTri)}">${ic('NHAP')}${t('inHere')}</button>
@@ -1746,7 +1762,7 @@ VIEWS.loc = function (p) {
   ${rows.length ? `<div class="list">${rows.map(s => {
     const it = S.itemMap.get(s.maVT) || { maVT: s.maVT, tenVI: s.maVT, donVi: '' };
     return `<button type="button" class="row" data-act="item" data-id="${esc(s.maVT)}">
-      <div class="row-main"><span class="nm">${esc(nm1(it))}</span>${nm2(it) ? `<span class="nm2">${esc(nm2(it))}</span>` : ''}
+      <div class="row-main"><span class="nm">${esc(nm1(it))}</span>${nm2(it) ? `<span class="nm2" lang="zh-CN">${esc(nm2(it))}</span>` : ''}
       <span class="meta"><span class="plate">${esc(s.maVT)}</span>${it.quyCach ? `<span>${esc(it.quyCach)}</span>` : ''}</span></div>
       <div class="qty"><b>${fmt(s.soLuong)}</b><small>${esc(unitName(it.donVi))}</small></div></button>`;
   }).join('')}</div>` : `<p class="empty">${t('emptyLoc')}</p>`}
@@ -1757,9 +1773,9 @@ VIEWS.loc = function (p) {
 
 /* ---------------- Nhập / xuất / chuyển / kiểm kê ---------------- */
 function locOptions(sel, filterFn, qtyFn, unit) {
-  return `<option value="">${t('pickLoc')}</option>` + S.locs.filter(filterFn || (() => true)).map(l => {
+  return `<option value="">${esc(tp('pickLoc'))}</option>` + S.locs.filter(filterFn || (() => true)).map(l => {
     const q = qtyFn ? qtyFn(l.maViTri) : 0;
-    return `<option value="${esc(l.maViTri)}" ${sel === l.maViTri ? 'selected' : ''}>${esc(l.maViTri)} · ${esc(locDesc(l))}${q ? ' — ' + fmt(q) + ' ' + esc(unitName(unit)) : ''}</option>`;
+    return `<option value="${esc(l.maViTri)}" ${sel === l.maViTri ? 'selected' : ''}>${esc(l.maViTri)} · ${esc(locFull(l))}${q ? ' — ' + fmt(q) + ' ' + esc(unitName(unit)) : ''}</option>`;
   }).join('');
 }
 VIEWS.txn = function (F) {
@@ -1775,10 +1791,10 @@ VIEWS.txn = function (F) {
   const u = it ? it.donVi : '';
   const fromField = (label) => `<div class="field"><label for="fTu">${label} <span class="req">*</span></label>
     <div class="with-btn"><select class="inp" id="fTu">${locOptions(F.tu, l => qtyAt(l.maViTri) > 0, qtyAt, u)}</select>
-    <button type="button" class="sq" data-act="scanLoc" data-f="tu" aria-label="${t('scan')}">${ic('scan')}</button></div></div>`;
+    <button type="button" class="sq" data-act="scanLoc" data-f="tu" aria-label="${tp('scan')}">${ic('scan')}</button></div></div>`;
   const toField = (label, exclude) => `<div class="field"><label for="fDen">${label} <span class="req">*</span></label>
     <div class="with-btn"><select class="inp" id="fDen">${locOptions(F.den, l => l.maViTri !== exclude, qtyAt, u)}</select>
-    <button type="button" class="sq" data-act="scanLoc" data-f="den" aria-label="${t('scan')}">${ic('scan')}</button></div></div>`;
+    <button type="button" class="sq" data-act="scanLoc" data-f="den" aria-label="${tp('scan')}">${ic('scan')}</button></div></div>`;
   let locs = '';
   if (it) {
     if (loai === 'NHAP') locs = toField(t('toLoc'));
@@ -1791,18 +1807,18 @@ VIEWS.txn = function (F) {
   main.innerHTML = `
   <form id="f" class="form" novalidate>
     <div class="field"><span class="lab">${t('item')} <span class="req">*</span></span>
-      ${it ? `<div class="picked"><div class="row-main"><span class="nm">${esc(nm1(it))}</span>${nm2(it) ? `<span class="nm2">${esc(nm2(it))}</span>` : ''}
+      ${it ? `<div class="picked"><div class="row-main"><span class="nm">${esc(nm1(it))}</span>${nm2(it) ? `<span class="nm2" lang="zh-CN">${esc(nm2(it))}</span>` : ''}
         <span class="meta"><span class="plate">${esc(it.maVT)}</span><span>${t('total')}: <b class="mono">${fmt(it._total)}</b> ${esc(unitName(u))}</span></span></div>
         <button type="button" class="btn small" data-act="unpick">${t('change')}</button></div>`
-      : `<div class="with-btn"><input class="inp" id="fPick" autocomplete="off" placeholder="${esc(t('pickItemPh'))}" value="${esc(F.pickQ || '')}">
-        <button type="button" class="sq" data-act="scanItem" aria-label="${t('scan')}">${ic('scan')}</button></div><div id="pickRes"></div>`}
+      : `<div class="with-btn"><input class="inp" id="fPick" autocomplete="off" placeholder="${esc(tp('pickItemPh'))}" value="${esc(F.pickQ || '')}">
+        <button type="button" class="sq" data-act="scanItem" aria-label="${tp('scan')}">${ic('scan')}</button></div><div id="pickRes"></div>`}
     </div>
     ${locs}
     ${it && !noStock ? `
     <div class="field"><label for="fQty">${loai === 'KIEMKE' ? t('actualQty') : t('quantity')} (${esc(unitName(u))}) <span class="req">*</span></label>
       <input class="inp mono" id="fQty" inputmode="decimal" autocomplete="off" value="${esc(F.qty || '')}" placeholder="0">
       <div class="hintline" id="qtyHint"></div></div>
-    ${loai === 'XUAT' ? `<div class="field"><label for="fCt">${t('project')}</label><input class="inp" id="fCt" value="${esc(F.ct || '')}" placeholder="${esc(t('projectPh'))}"></div>` : ''}
+    ${loai === 'XUAT' ? `<div class="field"><label for="fCt">${t('project')}</label><input class="inp" id="fCt" value="${esc(F.ct || '')}" placeholder="${esc(tp('projectPh'))}"></div>` : ''}
     <div class="field"><label for="fNote">${t('note')} <span class="muted">(${t('optional')})</span></label><input class="inp" id="fNote" value="${esc(F.note || '')}"></div>
     <button type="submit" class="btn primary" id="fSubmit">${t('c_' + loai)}</button>` : ''}
   </form>`;
@@ -1876,7 +1892,7 @@ VIEWS.itemForm = function (p) {
   <form id="f" class="form" novalidate>
     <div class="field"><label for="fNhom">${t('group')} <span class="req">*</span></label><select class="inp" id="fNhom">${grpOpts}</select></div>
     <div class="field"><label for="fMa">${t('code')}</label>
-      ${it ? `<div><span class="plate big">${esc(it.maVT)}</span></div>` : `<input class="inp code" id="fMa" autocomplete="off" value="${esc(F.maVT)}" placeholder="${esc(t('autoCode'))}">
+      ${it ? `<div><span class="plate big">${esc(it.maVT)}</span></div>` : `<input class="inp code" id="fMa" autocomplete="off" value="${esc(F.maVT)}" placeholder="${esc(tp('autoCode'))}">
       <p class="preview-code" id="codePrev"></p>`}
     </div>
     <div class="field"><label for="fTenVI">${t('nameVI')}</label><input class="inp" id="fTenVI" value="${esc(F.tenVI)}" placeholder="VD: Dây điện đơn CV 4mm²"></div>
@@ -1888,7 +1904,7 @@ VIEWS.itemForm = function (p) {
     </div>
     <div class="field"><label for="fBC">${t('barcode')} <span class="muted">(${t('optional')})</span></label>
       <div class="with-btn"><input class="inp mono" id="fBC" autocomplete="off" value="${esc(F.barcode)}">
-      <button type="button" class="sq" data-act="scanBarcode" aria-label="${t('scan')}">${ic('scan')}</button></div></div>
+      <button type="button" class="sq" data-act="scanBarcode" aria-label="${tp('scan')}">${ic('scan')}</button></div></div>
     <div class="field"><label for="fNote">${t('note')}</label><input class="inp" id="fNote" value="${esc(F.ghiChu)}"></div>
     ${!it && can('nhapxuat') ? `<div class="box"><span class="box-title">${t('initialStock')}</span>
       <div class="field"><label for="fVTD">${t('location')}</label><select class="inp" id="fVTD">${locOptions(F.viTriDau)}</select></div>
@@ -1916,7 +1932,7 @@ VIEWS.itemForm = function (p) {
       });
       upsert(S.items, 'maVT', r.item);
       if (r.stock) updateStock(r.item.maVT, r.stock);
-      toast(t('saved') + ' · ' + r.item.maVT);
+      toast(t('saved') + ' · ' + esc(r.item.maVT));
       finishTo('item', { id: r.item.maVT });
     } catch (e) { toast(errMsg(e), 'bad'); btn.disabled = false; }
   });
@@ -1932,10 +1948,10 @@ VIEWS.locForm = function (p) {
     ${l ? `<div><span class="plate loc huge">${esc(l.maViTri)}</span></div>` : ''}
     <div class="field"><span class="lab">${t('wh')} · ${t('aisle')} · ${t('rack')} · ${t('level')} <span class="req">*</span></span>
       <div class="four">
-        <input class="inp" id="fKho" aria-label="${t('wh')}" value="${esc(F.kho)}" placeholder="K1" ${l ? 'disabled' : ''}>
-        <input class="inp" id="fDay" aria-label="${t('aisle')}" value="${esc(F.day)}" placeholder="A" ${l ? 'disabled' : ''}>
-        <input class="inp" id="fKe" aria-label="${t('rack')}" value="${esc(F.ke)}" placeholder="03" inputmode="numeric" ${l ? 'disabled' : ''}>
-        <input class="inp" id="fTang" aria-label="${t('level')}" value="${esc(F.tang)}" placeholder="2" inputmode="numeric" ${l ? 'disabled' : ''}>
+        <input class="inp" id="fKho" aria-label="${tp('wh')}" value="${esc(F.kho)}" placeholder="K1" ${l ? 'disabled' : ''}>
+        <input class="inp" id="fDay" aria-label="${tp('aisle')}" value="${esc(F.day)}" placeholder="A" ${l ? 'disabled' : ''}>
+        <input class="inp" id="fKe" aria-label="${tp('rack')}" value="${esc(F.ke)}" placeholder="03" inputmode="numeric" ${l ? 'disabled' : ''}>
+        <input class="inp" id="fTang" aria-label="${tp('level')}" value="${esc(F.tang)}" placeholder="2" inputmode="numeric" ${l ? 'disabled' : ''}>
       </div>
       ${l ? '' : `<p class="preview-code" id="codePrev"></p>`}
     </div>
@@ -1956,7 +1972,7 @@ VIEWS.locForm = function (p) {
     try {
       const r = await api('saveLocation', { maGoc: l ? l.maViTri : '', kho: F.kho, day: F.day, ke: F.ke, tang: F.tang, moTaVI: F.moTaVI, moTaZH: F.moTaZH });
       upsert(S.locs, 'maViTri', r.location);
-      toast(t('saved') + ' · ' + r.location.maViTri);
+      toast(t('saved') + ' · ' + esc(r.location.maViTri));
       finishTo('loc', { id: r.location.maViTri });
     } catch (e) { toast(errMsg(e), 'bad'); btn.disabled = false; }
   });
@@ -2012,7 +2028,7 @@ VIEWS.labels = function (p) {
   <div class="form">
     <div class="seg" role="group"><button type="button" data-act="lblKind" data-kind="item" aria-pressed="${p.kind === 'item'}">${t('lblItems')}</button>
       <button type="button" data-act="lblKind" data-kind="loc" aria-pressed="${p.kind === 'loc'}">${t('lblLocs')}</button></div>
-    <label class="search-box" for="lblF">${ic('search')}<input id="lblF" type="search" autocomplete="off" placeholder="${esc(t('filterPh'))}" value="${esc(p.f)}"></label>
+    <label class="search-box" for="lblF">${ic('search')}<input id="lblF" type="search" autocomplete="off" placeholder="${esc(tp('filterPh'))}" value="${esc(p.f)}"></label>
     <div class="toolbar">
       <div class="links" style="margin:0"><button type="button" class="btn small" data-act="lblAll">${t('selectAll')}</button><button type="button" class="btn small" data-act="lblNone">${t('clearSel')}</button></div>
       <div style="display:flex;align-items:center;gap:8px"><span class="muted" style="font-size:13px">${t('copies')}</span>
@@ -2041,7 +2057,7 @@ VIEWS.labels = function (p) {
       const c = o[key].toUpperCase();
       return `<label class="sel-row"><input type="checkbox" data-code="${esc(c)}" ${sel.has(c) ? 'checked' : ''}>
         <span class="row-main"><span><span class="plate ${p.kind === 'loc' ? 'loc' : ''}">${esc(o[key])}</span></span>
-        <span class="nm2">${esc(p.kind === 'item' ? nm1(o) : locDesc(o))}</span></span></label>`;
+        <span class="nm2">${esc(p.kind === 'item' ? [nm1(o), nm2(o)].filter(Boolean).join(' / ') : locFull(o))}</span></span></label>`;
     }).join('') || `<p class="empty" style="padding:0 14px">${t('noResults')}</p>`;
     $('#lblList').querySelectorAll('input[type=checkbox]').forEach(cb => cb.addEventListener('change', () => {
       if (cb.checked) sel.add(cb.dataset.code); else sel.delete(cb.dataset.code);
@@ -2088,7 +2104,7 @@ VIEWS.users = function () {
     $('#uBox').innerHTML = `<div class="list">${list.map(u => `<button type="button" class="row" data-act="userForm" data-id="${esc(u.id)}">
       <div class="row-main"><span class="nm">${esc(u.ten)}</span><span class="meta"><span class="plate">${esc(u.id)}</span><span>${roleName(u.vaiTro)}</span></span></div>
       <div class="qty"><span class="pill ${u.hoatDong ? 'ok' : 'grey'}">${u.hoatDong ? t('active') : t('locked')}</span></div></button>`).join('')}</div>`;
-  }).catch(e => { if (cur() === at) $('#uBox').innerHTML = `<p class="empty">${esc(errMsg(e))}</p>`; });
+  }).catch(e => { if (cur() === at) $('#uBox').innerHTML = `<p class="empty">${errMsg(e)}</p>`; });
 };
 VIEWS.userForm = function (p) {
   const u = p.id ? (S.users || []).find(x => x.id === p.id) : null;
@@ -2102,7 +2118,7 @@ VIEWS.userForm = function (p) {
       <div class="radio-list">${ROLES.map(r => `<label class="radio"><input type="radio" name="role" value="${r}" ${F.vaiTro === r ? 'checked' : ''}>
         <span><b>${roleName(r)}</b><small>${t('rd_' + r)}</small></span></label>`).join('')}</div></div>
     <div class="field"><label for="fPin">${t('pin6')} ${u ? '' : '<span class="req">*</span>'}</label>
-      <input class="inp mono" id="fPin" inputmode="numeric" maxlength="6" autocomplete="new-password" value="${esc(F.pin)}" placeholder="${u ? esc(t('pinKeep')) : '••••••'}">
+      <input class="inp mono" id="fPin" inputmode="numeric" maxlength="6" autocomplete="new-password" value="${esc(F.pin)}" placeholder="${u ? esc(tp('pinKeep')) : '••••••'}">
       <p class="help">${t('pinTip')}</p></div>
     ${u ? `<label class="check"><input type="checkbox" id="fAct" ${F.hoatDong ? 'checked' : ''}>${t('active')}</label>` : ''}
     <button type="submit" class="btn primary" id="fSubmit">${t('save')}</button>
@@ -2153,7 +2169,7 @@ function closeSheet() { $('#sheetRoot').innerHTML = ''; }
 let toastT;
 function toast(msg, kind) {
   const el = $('#toast');
-  el.textContent = msg; el.className = 'toast' + (kind ? ' ' + kind : ''); el.hidden = false;
+  el.innerHTML = msg; el.className = 'toast' + (kind ? ' ' + kind : ''); el.hidden = false;
   clearTimeout(toastT); toastT = setTimeout(() => { el.hidden = true; }, kind === 'bad' ? 4200 : 2800);
 }
 function userMenu() {
@@ -2181,15 +2197,15 @@ function scanCfg(F) {
 async function openScanner(cb) {
   SC.cb = cb; SC.done = false; const gen = ++SC.gen;
   $('#scanner').hidden = false; document.body.classList.add('noscroll');
-  $('#scanTitle').textContent = t('scanTitle');
-  $('#scanClose').innerHTML = ic('close'); $('#scanClose').setAttribute('aria-label', t('close'));
+  $('#scanTitle').innerHTML = t('scanTitle');
+  $('#scanClose').innerHTML = ic('close'); $('#scanClose').setAttribute('aria-label', tp('close'));
   $('#scanPhotoBtn').innerHTML = ic('camera') + t('scanPhoto');
-  $('#scanCode').value = ''; $('#scanCode').placeholder = t('scanManual');
+  $('#scanCode').value = ''; $('#scanCode').placeholder = tp('scanManual');
   const msg = $('#scanMsg'), reader = $('#reader');
   if (IS_PREVIEW || !(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
-    reader.hidden = true; msg.textContent = IS_PREVIEW ? t('scanPreview') : t('scanNoCam'); return;
+    reader.hidden = true; msg.innerHTML = IS_PREVIEW ? t('scanPreview') : t('scanNoCam'); return;
   }
-  reader.hidden = false; msg.textContent = t('loading');
+  reader.hidden = false; msg.innerHTML = t('loading');
   try {
     await loadScript(LIB_SCAN);
     if (gen !== SC.gen) return;
@@ -2201,10 +2217,10 @@ async function openScanner(cb) {
       qrbox: (w, h) => ({ width: Math.floor(Math.min(w, 360) * 0.85), height: Math.floor(Math.min(h, 360) * 0.6) })
     }, text => gotCode(text), () => {});
     if (gen !== SC.gen) { stopLive(); return; }
-    msg.textContent = t('scanHint');
+    msg.innerHTML = t('scanHint');
   } catch (e) {
     if (gen !== SC.gen) return;
-    SC.q = null; reader.hidden = true; msg.textContent = t('scanNoCam');
+    SC.q = null; reader.hidden = true; msg.innerHTML = t('scanNoCam');
   }
 }
 function stopLive() {
@@ -2229,7 +2245,7 @@ $('#scanManual').addEventListener('submit', e => { e.preventDefault(); gotCode($
 $('#scanPhotoBtn').addEventListener('click', () => { stopLive(); $('#reader').hidden = true; $('#scanFile').value = ''; $('#scanFile').click(); });
 $('#scanFile').addEventListener('change', async () => {
   const file = $('#scanFile').files[0]; if (!file) return;
-  const msg = $('#scanMsg'); msg.textContent = t('scanReading');
+  const msg = $('#scanMsg'); msg.innerHTML = t('scanReading');
   try {
     await loadScript(LIB_SCAN);
     const { Q, F } = scanLib();
@@ -2237,14 +2253,14 @@ $('#scanFile').addEventListener('change', async () => {
     const text = await q.scanFile(file, false);
     try { q.clear(); } catch (e) { /* bỏ qua */ }
     gotCode(text);
-  } catch (e) { msg.textContent = t('scanFail'); }
+  } catch (e) { msg.innerHTML = t('scanFail'); }
 });
 function openCode(code) {
   const it = findItemByCode(code);
   if (it) return go('item', { id: it.maVT });
   const l = S.locMap.get(code.toUpperCase());
   if (l) return go('loc', { id: l.maViTri });
-  openSheet(`<h3>${esc(t('unknownCode', { x: code }))}</h3><div class="btns">
+  openSheet(`<h3>${t('unknownCode', { x: code })}</h3><div class="btns">
     ${can('danhmuc') ? `<button type="button" class="btn signal" data-act="addBarcode" data-code="${esc(code)}">${ic('add')}${t('addWithBarcode')}</button>` : ''}
     <button type="button" class="btn" data-act="searchCode" data-code="${esc(code)}">${ic('search')}${t('searchIt')}</button>
     <button type="button" class="btn" data-act="sheetClose">${t('close')}</button></div>`);
@@ -2253,11 +2269,6 @@ function openCode(code) {
 /* ---------------- Bấm nút (uỷ quyền sự kiện) ---------------- */
 const ACT = {
   back: () => goBack(),
-  lang: () => {
-    const c = cur(); if (c.p && c.p.F && c.p.F._sync) { try { c.p.F._sync(); } catch (e) { /* bỏ qua */ } }
-    if (c.v === 'txn' && c.p._sync) { try { c.p._sync(); } catch (e) { /* bỏ qua */ } }
-    S.lang = S.lang === 'zh' ? 'vi' : 'zh'; stor('l', 'kho_lang', S.lang); reindex(); render();
-  },
   userMenu: () => userMenu(),
   sheetBg: (el, ev) => { if (ev.target === el) closeSheet(); },
   sheetClose: () => closeSheet(),
@@ -2283,7 +2294,7 @@ const ACT = {
     const l = S.locMap.get(code.toUpperCase());
     if (!l) return toast(t('unknownCode', { x: code }), 'bad');
     const sel = $(f === 'tu' ? '#fTu' : '#fDen');
-    if (sel && ![...sel.options].some(o => o.value === l.maViTri)) return toast(t('errNoLoc') + ' ' + l.maViTri, 'bad');
+    if (sel && ![...sel.options].some(o => o.value === l.maViTri)) return toast(t('errNoLoc') + ' ' + esc(l.maViTri), 'bad');
     F[f] = l.maViTri; render();
   }); },
   scanBarcode: () => { const p = cur().p; if (p.F && p.F._sync) p.F._sync(); openScanner(code => { p.F.barcode = code; render(); }); },
@@ -2310,7 +2321,6 @@ document.addEventListener('click', ev => {
 
 /* ---------------- Khởi động ---------------- */
 (async function boot() {
-  const lang = stor('l', 'kho_lang'); if (lang === 'zh' || lang === 'vi') S.lang = lang;
   NAV.push({ v: 'login', p: {} });
   const tk = stor('s', 'kho_tk');
   if (tk) {
