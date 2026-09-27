@@ -58,6 +58,9 @@ html{-webkit-text-size-adjust:100%}
 /* Chạm nhanh hoặc chạm lệch không làm phóng to màn hình */
 html,body{touch-action:manipulation}
 button,.keypad,.tiles,.acts,.chip,.seg{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+/* iPhone: ô nhập luôn chạm và gõ được (tránh lỗi ô "chết" của web app ngoài màn hình chính) */
+input,textarea,select{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default;touch-action:auto}
+@supports (-webkit-touch-callout:none){.inp,.search-box input,.scan-tools .inp{transform:translateZ(0)}}
 body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.45 var(--sans);-webkit-tap-highlight-color:transparent}
 body.noscroll{overflow:hidden}
 button,input,select,textarea{font:inherit;color:inherit}
@@ -1596,7 +1599,7 @@ function fmtTime(s) {
 }
 function parseQty(v) { const s = String(v || '').trim().replace(/[\s\u202f]/g, '').replace(',', '.'); return s === '' ? NaN : Number(s); }
 function can(q) { return !!(S.me && QUYEN[q].includes(S.me.vaiTro)); }
-// Ng\u00e0y yyyy-mm-dd theo gi\u1edd tr\u00ean \u0111i\u1ec7n tho\u1ea1i
+// Ngày yyyy-mm-dd theo giờ trên điện thoại
 function ymd(d) { const p = n => String(n).padStart(2, '0'); return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()); }
 function dayOf(s) { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || ''); return m ? new Date(+m[1], +m[2] - 1, +m[3]) : null; }
 function addDays(n) { const d = new Date(); d.setDate(d.getDate() + n); return ymd(d); }
@@ -2118,11 +2121,11 @@ VIEWS.txn = function (F) {
   const noStock = it && (loai === 'XUAT' || loai === 'CHUYEN') && !have.length;
   main.innerHTML = `
   <form id="f" class="form" novalidate>
-    <div class="field"><span class="lab">${t('item')} <span class="req">*</span></span>
+    <div class="field"><label class="lab" ${it ? '' : 'for="fPick"'}>${t('item')} <span class="req">*</span></label>
       ${it ? `<div class="picked"><div class="row-main"><span class="nm">${esc(nm1(it))}</span>${nm2(it) ? `<span class="nm2" lang="zh-CN">${esc(nm2(it))}</span>` : ''}
         <span class="meta"><span class="plate">${esc(it.maVT)}</span><span>${t('total')}: <b class="mono">${fmt(it._total)}</b> ${esc(unitName(u))}</span></span></div>
         <button type="button" class="btn small" data-act="unpick">${t('change')}</button></div>`
-      : `<div class="with-btn"><input class="inp" id="fPick" autocomplete="off" placeholder="${esc(tp('pickItemPh'))}" value="${esc(F.pickQ || '')}">
+      : `<div class="with-btn"><input class="inp" id="fPick" type="text" enterkeyhint="search" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="${esc(tp('pickItemPh'))}" value="${esc(F.pickQ || '')}">
         <button type="button" class="sq" data-act="scanItem" aria-label="${tp('scan')}">${ic('scan')}</button></div><div id="pickRes"></div>`}
     </div>
     ${locs}
@@ -2145,7 +2148,6 @@ VIEWS.txn = function (F) {
         <div class="qty"><b>${fmt(i._total)}</b><small>${esc(unitName(i.donVi))}</small></div></button>`).join('')}</div>` : '';
     };
     pick.addEventListener('input', show); show();
-    if (!F.pickQ) setTimeout(() => pick.focus(), 50);
   }
   const hint = () => {
     const h = $('#qtyHint'); if (!h || !it) return;
@@ -2282,11 +2284,11 @@ VIEWS.lend = function (F) {
     <p class="help">${t('lendMore')}</p>
     <button type="button" class="btn" data-act="lendDone">${t('done')}</button></div>` : ''}
   <form id="f" class="form" novalidate autocomplete="off" ${F.done.length ? 'style="margin-top:14px"' : ''}>
-    <div class="field"><span class="lab">${t('tool')} <span class="req">*</span></span>
+    <div class="field"><label class="lab" ${it ? '' : 'for="fPick"'}>${t('tool')} <span class="req">*</span></label>
       ${it ? `<div class="picked"><div class="row-main"><span class="nm">${esc(nm1(it))}</span>${nm2(it) ? `<span class="nm2" lang="zh-CN">${esc(nm2(it))}</span>` : ''}
         <span class="meta"><span class="plate">${esc(it.maVT)}</span><span>${t('total')}: <b class="mono">${fmt(it._total)}</b> ${esc(unitName(u))}</span></span></div>
         <button type="button" class="btn small" data-act="unpick">${t('change')}</button></div>`
-      : `<div class="with-btn"><input class="inp" id="fPick" autocomplete="off" placeholder="${esc(tp('pickItemPh'))}" value="${esc(F.pickQ || '')}">
+      : `<div class="with-btn"><input class="inp" id="fPick" type="text" enterkeyhint="search" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="${esc(tp('pickItemPh'))}" value="${esc(F.pickQ || '')}">
         <button type="button" class="sq" data-act="scanItem" aria-label="${tp('scan')}">${ic('scan')}</button></div><div id="pickRes"></div>`}
     </div>
     ${it && !have.length ? `<p class="note">${t('noStockLend')}</p>` : ''}
@@ -2891,6 +2893,44 @@ const ACT = {
     const p = cur().p; p.tab = 'open'; p.f = it.maVT; render();
   })
 };
+/* ---------------- iPhone: chạm vào ô nhập phải mở được bàn phím ---------------- */
+// iOS chỉ mở bàn phím khi ô được focus ngay trong lần chạm. Nếu ô đang "kẹt" (có focus mà không có bàn phím)
+// thì chạm lại không có tác dụng → nhả focus lúc bắt đầu chạm, rồi focus lại khi nhấc tay.
+const TEXT_IN = 'input:not([type=checkbox]):not([type=radio]):not([type=file]):not([type=date]):not([disabled]):not([readonly]),textarea';
+function kbOpen() { const v = window.visualViewport; return !!v && v.height < window.innerHeight * 0.8; }
+const TAP = { el: null, x: 0, y: 0 };
+document.addEventListener('touchstart', e => {
+  const el = e.target.closest ? e.target.closest(TEXT_IN) : null;
+  TAP.el = el;
+  if (!el) return;
+  const p = e.touches[0]; TAP.x = p.clientX; TAP.y = p.clientY;
+  if (el === document.activeElement && !kbOpen()) el.blur();
+}, { passive: true });
+document.addEventListener('touchmove', e => {
+  if (!TAP.el) return;
+  const p = e.touches[0];
+  if (Math.abs(p.clientX - TAP.x) > 10 || Math.abs(p.clientY - TAP.y) > 10) TAP.el = null;   // đang cuộn, không phải chạm
+}, { passive: true });
+document.addEventListener('touchend', () => {
+  const el = TAP.el; TAP.el = null;
+  if (el && el.isConnected && el !== document.activeElement) { try { el.focus(); } catch (err) { /* bỏ qua */ } }
+}, { passive: true });
+// Mở lại app từ nền (iOS hay làm ô nhập "chết"): nhả focus và vẽ lại màn hình hiện tại
+let hiddenAt = 0;
+function resumeApp() {
+  const a = document.activeElement; if (a && a.blur && a !== document.body) a.blur();
+  if (!$('#scanner').hidden || $('#sheetRoot').firstChild) return;
+  const p = cur().p || {};
+  try { if (p._sync) p._sync(); if (p.F && p.F._sync) p.F._sync(); } catch (err) { /* bỏ qua */ }
+  render();
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) { hiddenAt = Date.now(); return; }
+  if (hiddenAt && Date.now() - hiddenAt > 1000) resumeApp();
+  hiddenAt = 0;
+});
+window.addEventListener('pageshow', e => { if (e.persisted) resumeApp(); });
+
 document.addEventListener('click', ev => {
   const el = ev.target.closest('[data-act]');
   if (!el || el.disabled) return;
