@@ -114,6 +114,12 @@ h2.sec{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--
 .b-xuat{background:var(--badbg);color:var(--bad)}
 .b-chuyen{background:var(--movebg);color:var(--move)}
 .b-kiemke{background:var(--countbg);color:var(--count)}
+.b-muon{background:var(--movebg);color:var(--move)}
+.b-tra{background:var(--okbg);color:var(--ok)}
+.b-mat{background:var(--badbg);color:var(--bad)}
+.pill.move{background:var(--movebg);color:var(--move)}
+.who{display:inline-flex;align-items:center;gap:4px;font-weight:600;color:var(--ink)}
+.who .ic{width:15px;height:15px;color:var(--muted)}
 
 /* Đăng nhập */
 .login{max-width:360px;margin:0 auto;padding-top:18px;display:flex;flex-direction:column;align-items:center;gap:14px}
@@ -156,6 +162,10 @@ h2.sec{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--
 .tile.t-xuat .ic{color:var(--bad)}
 .tile.t-chuyen .ic{color:var(--move)}
 .tile.t-kiemke .ic{color:var(--count)}
+.tile{position:relative}
+.tile.t-muon .ic{color:var(--move)}
+.tile-badge{position:absolute;top:9px;right:9px;min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:var(--movebg);color:var(--move);font:700 12px/22px var(--mono);text-align:center}
+.tile-badge.late{background:var(--bad);color:#fff}
 
 /* Danh sách */
 .list{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:12px;background:var(--card);overflow:hidden}
@@ -234,6 +244,28 @@ textarea.inp{height:auto;min-height:70px;padding:10px 12px;resize:vertical}
 .preview-code{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
 .box{padding:12px 14px;border:1px dashed var(--line);border-radius:12px;display:flex;flex-direction:column;gap:10px}
 .box-title{font-weight:600;font-size:14px}
+.opts{display:flex;flex-wrap:wrap;gap:6px}
+.opts .chip{padding:6px 12px}
+.inp[type=date]{-webkit-appearance:none;appearance:none;display:flex;align-items:center;line-height:44px;min-width:0}
+.inp[type=date]::-webkit-date-and-time-value{text-align:left}
+.okbox{display:flex;flex-direction:column;gap:8px;padding:12px 14px;border-radius:12px;background:var(--okbg);border:1px solid var(--ok)}
+.okbox>b{color:var(--ok)}
+.okline{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;font-size:14px}
+.okbox .help{margin:0;font-size:12.5px;color:var(--muted)}
+.okbox .btn{align-self:flex-start}
+.btn.full{width:100%}
+.hist-lines{display:flex;flex-direction:column;gap:4px}
+/* Nút hai dòng: chữ Việt trên, chữ Trung dưới */
+.btn.tall{height:auto;min-height:56px;padding:8px 12px;justify-content:flex-start;gap:10px}
+.bl{display:flex;flex-direction:column;align-items:flex-start;line-height:1.2;text-align:left}
+.bl .zi{margin-left:0;font-size:12.5px}
+.seg.three{grid-template-columns:repeat(3,1fr);margin-bottom:12px}
+.seg.three button{font-size:14px;padding:6px 2px}
+.seg.three button+button{border-left:1.5px solid var(--ink)}
+.seg .count{margin-left:4px}
+.seg button[aria-pressed="true"] .count{background:var(--signal);color:var(--signal-ink)}
+.facts.loan{grid-template-columns:minmax(92px,36%) 1fr}
+.facts.loan dt .zi{display:block;margin-left:0;font-size:12.5px}
 
 /* Tem */
 .seg{display:grid;grid-template-columns:1fr 1fr;border:1.5px solid var(--ink);border-radius:10px;overflow:hidden}
@@ -468,13 +500,13 @@ __ss.insertSheet('Trang tính1');
 
 /**
  * ==================================================================
- *  KHO CƠ ĐIỆN · 机电仓库  —  Máy chủ (Google Apps Script)   v1.0
+ *  KHO CƠ ĐIỆN · 机电仓库  —  Máy chủ (Google Apps Script)   v1.1
  * ==================================================================
  *  CÁCH CÀI (tóm tắt, xem hướng dẫn đầy đủ trong tin nhắn):
  *   1. Tạo Google Sheet mới → Tiện ích mở rộng → Apps Script.
  *   2. Xoá hết code có sẵn, dán TOÀN BỘ file này vào, bấm Lưu.
  *   3. Chọn hàm "caiDat" ở thanh trên → bấm Chạy → cấp quyền.
- *      Sheet sẽ tự tạo 6 trang và dữ liệu mẫu.
+ *      Sheet sẽ tự tạo 7 trang và dữ liệu mẫu.
  *   4. Triển khai → Tuỳ chọn triển khai mới → loại "Ứng dụng web".
  *      Thực thi với: Tôi · Người có quyền truy cập: Bất kỳ ai → Triển khai.
  *   5. Sao chép URL (kết thúc bằng /exec) dán vào API_URL trong index.html.
@@ -487,10 +519,14 @@ __ss.insertSheet('Trang tính1');
  *
  *  Sửa code xong muốn giữ nguyên đường link: Triển khai → Quản lý triển khai
  *  → biểu tượng bút chì → Phiên bản: "Phiên bản mới" → Triển khai.
+ *
+ *  NÂNG CẤP TỪ BẢN 1.0: chỉ cần dán code mới và triển khai phiên bản mới.
+ *  KHÔNG cần chạy lại caiDat — trang "MuonTra" (mượn – trả dụng cụ) tự tạo
+ *  khi cho mượn lần đầu.
  * ==================================================================
  */
 
-const PHIEN_BAN = '1.0';
+const PHIEN_BAN = '1.1';
 
 // Các trang (sheet) và cột. Không đổi tên cột.
 const BANG = {
@@ -499,8 +535,14 @@ const BANG = {
   TonKho:    ['MaVT', 'MaViTri', 'SoLuong', 'CapNhat'],
   GiaoDich:  ['ID', 'ThoiGian', 'Loai', 'MaVT', 'TuViTri', 'DenViTri', 'SoLuong', 'CongTrinh', 'GhiChu', 'NguoiDung'],
   NguoiDung: ['ID', 'Ten', 'PinHash', 'VaiTro', 'HoatDong', 'NgayTao'],
-  NhatKy:    ['ThoiGian', 'NguoiDung', 'HanhDong', 'ChiTiet']
+  NhatKy:    ['ThoiGian', 'NguoiDung', 'HanhDong', 'ChiTiet'],
+  // Phiếu mượn dụng cụ. DaTra = số đã trả về kho (gồm cả hỏng), Hong ⊂ DaTra, Mat = số báo mất.
+  MuonTra:   ['ID', 'ThoiGian', 'MaVT', 'TuViTri', 'SoLuong', 'NguoiMuon', 'CongTrinh', 'HanTra', 'GhiChu',
+              'NguoiChoMuon', 'DaTra', 'Hong', 'Mat', 'TrangThai', 'CapNhat', 'LichSuTra']
 };
+
+// Trang thêm sau bản 1.0: tự tạo khi cần, người dùng không phải chạy lại caiDat.
+const BANG_MOI = ['MuonTra'];
 
 // Cột luôn lưu dạng chữ (giữ số 0 ở đầu mã vạch, không tự đổi thành ngày tháng).
 const COT_CHU = {
@@ -509,15 +551,18 @@ const COT_CHU = {
   TonKho:    ['MaVT', 'MaViTri'],
   GiaoDich:  ['ID', 'Loai', 'MaVT', 'TuViTri', 'DenViTri', 'CongTrinh', 'GhiChu', 'NguoiDung'],
   NguoiDung: ['ID', 'Ten', 'PinHash', 'VaiTro'],
-  NhatKy:    ['NguoiDung', 'HanhDong', 'ChiTiet']
+  NhatKy:    ['NguoiDung', 'HanhDong', 'ChiTiet'],
+  MuonTra:   ['ID', 'MaVT', 'TuViTri', 'NguoiMuon', 'CongTrinh', 'HanTra', 'GhiChu', 'NguoiChoMuon', 'TrangThai', 'LichSuTra']
 };
 
 const VAI_TRO = ['admin', 'kysu', 'thukho', 'congnhan'];
 
 // Ai được làm gì. Muốn cho Kỹ sư nhập/xuất thì thêm 'kysu' vào dòng nhapxuat.
+// Xem danh sách dụng cụ đang cho mượn: mọi người đã đăng nhập.
 const QUYEN = {
   nhapxuat:  ['admin', 'thukho'],
   danhmuc:   ['admin', 'thukho'],
+  muontra:   ['admin', 'thukho'],
   nhatky:    ['admin', 'kysu', 'thukho'],
   nguoidung: ['admin']
 };
@@ -525,8 +570,10 @@ const QUYEN = {
 // Tiền tố mã tự tạo theo nhóm vật tư.
 const TIEN_TO = { dien: 'DI', nuoc: 'NU', pccc: 'PC', hvac: 'HV', phukien: 'PK', dungcu: 'DC' };
 
-const LOAI_GD = ['NHAP', 'XUAT', 'CHUYEN', 'KIEMKE'];
-const HANH_DONG_GHI = ['login', 'txn', 'saveItem', 'saveLocation', 'saveUser', 'changePin'];
+const LOAI_GD = ['NHAP', 'XUAT', 'CHUYEN', 'KIEMKE'];   // loại gửi được qua action 'txn'
+// MUON (cho mượn: trừ tồn), TRA (trả: cộng tồn), MAT (báo mất: không đổi tồn) chỉ tạo qua lend / takeBack.
+const TINH_TRANG = ['TOT', 'HONG', 'MAT'];
+const HANH_DONG_GHI = ['login', 'txn', 'saveItem', 'saveLocation', 'saveUser', 'changePin', 'lend', 'takeBack'];
 const PHIEN_GIAY = 21600;      // phiên đăng nhập tối đa 6 giờ
 const SAI_TOI_DA = 5;          // sai PIN 5 lần trên 1 máy → khoá 5 phút
 const SAI_TOAN_HE_THONG = 30;  // tổng 30 lần sai trong 10 phút → khoá đăng nhập 10 phút
@@ -581,6 +628,9 @@ function dieuHuong(req) {
     case 'users':        canQuyen(u, 'nguoidung'); return dsNguoiDung();
     case 'saveUser':     canQuyen(u, 'nguoidung'); return luuNguoiDung(u, p);
     case 'changePin':    return doiPin(u, p);
+    case 'lend':         canQuyen(u, 'muontra'); return choMuon(u, p);
+    case 'takeBack':     canQuyen(u, 'muontra'); return nhanTra(u, p);
+    case 'loans':        return dsPhieuMuon(p);
   }
   throw loi('KHONG_HIEU', a);
 }
@@ -600,19 +650,50 @@ function laDung(v) { return v === true || v === 1 || hoa(v) === 'TRUE'; }
 function sach(v, max) { return str(v).replace(/^[=+@]+/, '').slice(0, max || 200); }
 function ma(v, max) { return sach(v, max || 40).toUpperCase().replace(/\s+/g, '-'); }
 
+// Ngày dạng yyyy-mm-dd theo múi giờ của dự án Apps Script.
+function ngayChu(v) {
+  if (!(v instanceof Date)) return str(v);
+  const p = function (n) { return ('0' + n).slice(-2); };
+  return v.getFullYear() + '-' + p(v.getMonth() + 1) + '-' + p(v.getDate());
+}
+function gioChu(d) {
+  const p = function (n) { return ('0' + n).slice(-2); };
+  return p(d.getDate()) + '/' + p(d.getMonth() + 1) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+}
+function laNgay(s) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(str(s));
+  if (!m) return false;
+  const d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+  return d.getFullYear() === Number(m[1]) && d.getMonth() === Number(m[2]) - 1 && d.getDate() === Number(m[3]);
+}
+
+function taoTrang(ss, ten) {
+  const sh = ss.insertSheet(ten), cols = BANG[ten];
+  dinhDangChu(sh, ten, 1, sh.getMaxRows());
+  sh.getRange(1, 1, 1, cols.length).setValues([cols]).setFontWeight('bold').setBackground('#f5c400');
+  sh.setFrozenRows(1);
+  return sh;
+}
+
 function sheet(ten) {
-  const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(ten);
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sh = ss.getSheetByName(ten);
+  // Trang mới (sau bản 1.0) chỉ được tạo trong thao tác ghi, vì các thao tác ghi chạy trong khoá.
+  if (!sh && BANG_MOI.indexOf(ten) >= 0) sh = taoTrang(ss, ten);
   if (!sh) throw loi('CHUA_CAI_DAT', ten);
   return sh;
 }
 
-function docBang(ten) {
+// Đọc bảng thành mảng đối tượng (bỏ dòng trống). tuDong: dòng bắt đầu (mặc định 2, ngay dưới tiêu đề).
+function docBang(ten, tuDong) {
+  if (BANG_MOI.indexOf(ten) >= 0 && !SpreadsheetApp.getActiveSpreadsheet().getSheetByName(ten)) return [];
+  const bat = Math.max(2, tuDong || 2);
   const sh = sheet(ten), n = sh.getLastRow(), cols = BANG[ten];
-  if (n < 2) return [];
-  const vals = sh.getRange(2, 1, n - 1, cols.length).getValues();
+  if (n < bat) return [];
+  const vals = sh.getRange(bat, 1, n - bat + 1, cols.length).getValues();
   const out = [];
   for (let i = 0; i < vals.length; i++) {
-    const o = { _row: i + 2 };
+    const o = { _row: i + bat };
     let rong = true;
     for (let j = 0; j < cols.length; j++) {
       o[cols[j]] = vals[i][j];
@@ -724,6 +805,7 @@ function viTriRa(r) {
 }
 
 function taiDuLieu(u) {
+  const muon = taiPhieuMuon();
   return {
     me: congKhai(u),
     items: docBang('VatTu').map(vatTuRa),
@@ -731,6 +813,8 @@ function taiDuLieu(u) {
     stock: docBang('TonKho')
       .filter(function (r) { return so(r.SoLuong) !== 0; })
       .map(function (r) { return { maVT: hoa(r.MaVT), maViTri: hoa(r.MaViTri), soLuong: so(r.SoLuong) }; }),
+    loans: muon.loans,
+    borrowers: muon.borrowers,
     time: new Date().toISOString()
   };
 }
@@ -767,8 +851,13 @@ function maGiaoDich() {
 }
 
 function giaoDich(u, p) {
+  if (LOAI_GD.indexOf(str(p.loai)) < 0) throw loi('THIEU_DU_LIEU', 'loai');
+  return { stock: thucHienGD(u, p).stock };
+}
+
+// Ghi một giao dịch và cập nhật tồn. Dùng chung cho nhập/xuất/chuyển/kiểm kê và mượn/trả/mất.
+function thucHienGD(u, p) {
   const loai = str(p.loai);
-  if (LOAI_GD.indexOf(loai) < 0) throw loi('THIEU_DU_LIEU', 'loai');
   const maVT = hoa(p.maVT);
   if (!docBang('VatTu').some(function (v) { return hoa(v.MaVT) === maVT; })) throw loi('KHONG_CO_VT', maVT);
 
@@ -801,13 +890,15 @@ function giaoDich(u, p) {
   }
 
   let tu = '', den = '', slGhi = sl, ghiChu = sach(p.ghiChu, 300);
-  if (loai === 'NHAP') {
+  if (loai === 'NHAP' || loai === 'TRA') {
     den = kiemViTri(p.denViTri);
     datTon(den, hienCo(den) + sl);
-  } else if (loai === 'XUAT') {
+  } else if (loai === 'XUAT' || loai === 'MUON') {
     tu = kiemViTri(p.tuViTri);
     if (hienCo(tu) < sl) throw loi('KHONG_DU_TON', String(hienCo(tu)));
     datTon(tu, hienCo(tu) - sl);
+  } else if (loai === 'MAT') {
+    // Dụng cụ đã trừ tồn lúc cho mượn; báo mất chỉ ghi lại, không đổi tồn.
   } else if (loai === 'CHUYEN') {
     tu = kiemViTri(p.tuViTri);
     den = kiemViTri(p.denViTri);
@@ -829,10 +920,116 @@ function giaoDich(u, p) {
   });
 
   return {
+    maVT: maVT, tu: tu, den: den, soLuong: sl,
     stock: ton
       .filter(function (r) { return hoa(r.MaVT) === maVT && so(r.SoLuong) !== 0; })
       .map(function (r) { return { maVT: maVT, maViTri: hoa(r.MaViTri), soLuong: so(r.SoLuong) }; })
   };
+}
+
+/* ------------------------------------------------------------------ */
+/*  Mượn – trả dụng cụ                                                */
+/* ------------------------------------------------------------------ */
+
+function maPhieuMuon() {
+  return 'MT' + Date.now().toString(36).toUpperCase() + Math.floor(Math.random() * 1296).toString(36).toUpperCase();
+}
+
+function muonRa(r) {
+  const sl = so(r.SoLuong), daTra = so(r.DaTra), mat = so(r.Mat);
+  return {
+    id: str(r.ID), time: iso(r.ThoiGian), maVT: hoa(r.MaVT), tu: hoa(r.TuViTri), soLuong: sl,
+    nguoiMuon: str(r.NguoiMuon), congTrinh: str(r.CongTrinh), hanTra: ngayChu(r.HanTra), ghiChu: str(r.GhiChu),
+    nguoiChoMuon: str(r.NguoiChoMuon), daTra: daTra, hong: so(r.Hong), mat: mat,
+    conLai: lamTron(sl - daTra - mat), trangThai: str(r.TrangThai), capNhat: iso(r.CapNhat), lichSuTra: str(r.LichSuTra)
+  };
+}
+function dangMuon(r) { return str(r.TrangThai) === 'DANG_MUON'; }
+
+// Phiếu đang mượn + tên người mượn gần đây (để gợi ý khi gõ). Chỉ đọc phần cuối trang cho nhanh.
+function taiPhieuMuon() {
+  const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('MuonTra');
+  const rong = { loans: [], borrowers: [] };
+  if (!sh) return rong;
+  const n = sh.getLastRow();
+  if (n < 2) return rong;
+  const tt = sh.getRange(2, BANG.MuonTra.indexOf('TrangThai') + 1, n - 1, 1).getValues();
+  let dau = Math.max(0, tt.length - 400);
+  for (let i = 0; i < dau; i++) { if (str(tt[i][0]) === 'DANG_MUON') { dau = i; break; } }
+  const rows = docBang('MuonTra', dau + 2);
+  const ten = [];
+  for (let i = rows.length - 1; i >= 0 && ten.length < 40; i--) {
+    const x = str(rows[i].NguoiMuon);
+    if (x && ten.indexOf(x) < 0) ten.push(x);
+  }
+  return { loans: rows.filter(dangMuon).map(muonRa), borrowers: ten };
+}
+
+// Danh sách phiếu (mặc định: đã trả xong), mới nhất trước.
+function dsPhieuMuon(p) {
+  const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('MuonTra');
+  if (!sh) return [];
+  const rows = docBang('MuonTra', Math.max(2, sh.getLastRow() - 1499));
+  const maVT = hoa(p.maVT), daTra = p.daTra !== false;
+  const gioiHan = Math.min(Math.max(so(p.limit) || 100, 1), 300);
+  return rows
+    .filter(function (r) { return str(r.ID) && dangMuon(r) !== daTra && (!maVT || hoa(r.MaVT) === maVT); })
+    .map(muonRa)
+    .sort(function (a, b) { return a.capNhat < b.capNhat ? 1 : a.capNhat > b.capNhat ? -1 : 0; })
+    .slice(0, gioiHan);
+}
+
+function choMuon(u, p) {
+  const nguoi = sach(p.nguoiMuon, 60).replace(/[\[\]]/g, '').trim();
+  if (!nguoi) throw loi('THIEU_NGUOI_MUON');
+  const han = str(p.hanTra);
+  if (!laNgay(han)) throw loi('HAN_TRA');
+  const ct = sach(p.congTrinh, 120), ghiChu = sach(p.ghiChu, 200);
+  const kq = thucHienGD(u, {
+    loai: 'MUON', maVT: p.maVT, tuViTri: p.tuViTri, soLuong: p.soLuong, congTrinh: ct,
+    ghiChu: ('[' + nguoi + '] ' + ghiChu).trim()
+  });
+  const m = {
+    ID: maPhieuMuon(), ThoiGian: new Date(), MaVT: kq.maVT, TuViTri: kq.tu, SoLuong: kq.soLuong,
+    NguoiMuon: nguoi, CongTrinh: ct, HanTra: han, GhiChu: ghiChu, NguoiChoMuon: str(u.Ten),
+    DaTra: 0, Hong: 0, Mat: 0, TrangThai: 'DANG_MUON', CapNhat: new Date(), LichSuTra: ''
+  };
+  themDong('MuonTra', m);
+  return { stock: kq.stock, loan: muonRa(m) };
+}
+
+function nhanTra(u, p) {
+  const id = str(p.id);
+  const m = id ? docBang('MuonTra').filter(function (r) { return str(r.ID) === id; })[0] : null;
+  if (!m) throw loi('KHONG_CO_PHIEU', id);
+  const conLai = lamTron(so(m.SoLuong) - so(m.DaTra) - so(m.Mat));
+  if (!dangMuon(m) || conLai <= 0) throw loi('DA_TRA_XONG');
+  const sl = lamTron(Number(p.soLuong));
+  if (!isFinite(sl) || sl <= 0) throw loi('SO_LUONG');
+  if (sl > conLai) throw loi('TRA_QUA_SO', String(conLai));
+  const tt = TINH_TRANG.indexOf(str(p.tinhTrang)) >= 0 ? str(p.tinhTrang) : 'TOT';
+  const ghiChu = sach(p.ghiChu, 200);
+  const nhan = { TOT: '', HONG: 'Hỏng 损坏', MAT: 'Mất 丢失' }[tt];
+  const noiDung = ('[' + str(m.NguoiMuon) + '] ' + [nhan, ghiChu].filter(function (x) { return x; }).join(' · ')).trim();
+
+  const kq = tt === 'MAT'
+    ? thucHienGD(u, { loai: 'MAT', maVT: m.MaVT, soLuong: sl, congTrinh: m.CongTrinh, ghiChu: noiDung })
+    : thucHienGD(u, { loai: 'TRA', maVT: m.MaVT, denViTri: str(p.denViTri) || str(m.TuViTri), soLuong: sl, congTrinh: m.CongTrinh, ghiChu: noiDung });
+
+  if (tt === 'MAT') m.Mat = lamTron(so(m.Mat) + sl);
+  else {
+    m.DaTra = lamTron(so(m.DaTra) + sl);
+    if (tt === 'HONG') m.Hong = lamTron(so(m.Hong) + sl);
+  }
+  const xong = lamTron(so(m.SoLuong) - so(m.DaTra) - so(m.Mat)) <= 0;
+  m.TrangThai = xong ? 'DA_TRA' : 'DANG_MUON';
+  m.CapNhat = new Date();
+  const dong = gioChu(m.CapNhat) + ' · ' + { TOT: 'Trả 归还', HONG: 'Trả 归还 · Hỏng 损坏', MAT: 'Mất 丢失' }[tt] +
+    ' ' + sl + (kq.den ? ' → ' + kq.den : '') + (ghiChu ? ' · ' + ghiChu : '') + ' (' + str(u.Ten) + ')';
+  m.LichSuTra = (str(m.LichSuTra) ? str(m.LichSuTra) + ' | ' : '') + dong;
+  m.LichSuTra = m.LichSuTra.slice(-2000);
+  suaDong('MuonTra', m._row, m);
+  return { stock: kq.stock, loan: muonRa(m) };
 }
 
 /* ------------------------------------------------------------------ */
@@ -983,8 +1180,8 @@ function caiDat() {
   if (!props.getProperty('SALT')) props.setProperty('SALT', Utilities.getUuid());
 
   Object.keys(BANG).forEach(function (ten) {
-    let sh = ss.getSheetByName(ten);
-    if (!sh) sh = ss.insertSheet(ten);
+    const sh = ss.getSheetByName(ten);
+    if (!sh) { taoTrang(ss, ten); return; }
     const cols = BANG[ten];
     dinhDangChu(sh, ten, 1, sh.getMaxRows());
     sh.getRange(1, 1, 1, cols.length).setValues([cols]).setFontWeight('bold').setBackground('#f5c400');
@@ -1008,12 +1205,14 @@ function caiDat() {
     // Tính ngược tồn đầu kỳ từ tồn hiện tại và các giao dịch mẫu
     const dau = {};
     const khoa = function (m, v) { return m + '|' + v; };
+    const coMuon = trong('MuonTra');
     MAU.ton.forEach(function (r) { dau[khoa(r[0], r[1])] = r[2]; });
     MAU.giaoDich.slice().reverse().forEach(function (g) {
       const loai = g[0], m = g[1], tu = g[2], den = g[3], sl = g[4];
       if (loai === 'XUAT' || loai === 'CHUYEN') dau[khoa(m, tu)] = (dau[khoa(m, tu)] || 0) + sl;
       if (loai === 'CHUYEN') dau[khoa(m, den)] = (dau[khoa(m, den)] || 0) - sl;
     });
+    if (coMuon) MAU.muonTra.forEach(function (r) { dau[khoa(r[0], r[1])] = (dau[khoa(r[0], r[1])] || 0) + r[2]; });
     const gd = [];
     Object.keys(dau).forEach(function (k) {
       if (dau[k] <= 0) return;
@@ -1023,6 +1222,18 @@ function caiDat() {
     MAU.giaoDich.forEach(function (g, i) {
       gd.push({ t: now - g[6] * gio, ID: 'GD-MAU-X' + (i + 1), Loai: g[0], MaVT: g[1], TuViTri: g[2], DenViTri: g[3], SoLuong: g[4], CongTrinh: g[5], GhiChu: '', NguoiDung: g[7] });
     });
+    if (coMuon) {
+      const phieu = MAU.muonTra.map(function (r, i) {
+        const t = now - r[5] * gio;
+        gd.push({ t: t, ID: 'GD-MAU-M' + (i + 1), Loai: 'MUON', MaVT: r[0], TuViTri: r[1], DenViTri: '', SoLuong: r[2], CongTrinh: r[4], GhiChu: '[' + r[3] + ']', NguoiDung: r[7] });
+        return {
+          ID: 'MT-MAU-' + (i + 1), ThoiGian: new Date(t), MaVT: r[0], TuViTri: r[1], SoLuong: r[2], NguoiMuon: r[3], CongTrinh: r[4],
+          HanTra: ngayChu(new Date(t + r[6] * 24 * gio)), GhiChu: '', NguoiChoMuon: r[7], DaTra: 0, Hong: 0, Mat: 0,
+          TrangThai: 'DANG_MUON', CapNhat: new Date(t), LichSuTra: ''
+        };
+      });
+      themNhieu('MuonTra', phieu);
+    }
     gd.sort(function (a, b) { return a.t - b.t; });
     themNhieu('GiaoDich', gd.map(function (g) { g.ThoiGian = new Date(g.t); return g; }));
     themNhieu('TonKho', MAU.ton.map(function (r) {
@@ -1042,9 +1253,9 @@ function caiDat() {
   return 'Đã cài đặt xong. Tiếp theo: Triển khai → Ứng dụng web.';
 }
 
-/** Xoá toàn bộ vật tư, vị trí, tồn kho, giao dịch (giữ người dùng và nhật ký). */
+/** Xoá toàn bộ vật tư, vị trí, tồn kho, giao dịch, phiếu mượn (giữ người dùng và nhật ký). */
 function xoaDuLieuMau() {
-  ['VatTu', 'ViTri', 'TonKho', 'GiaoDich'].forEach(function (ten) {
+  ['VatTu', 'ViTri', 'TonKho', 'GiaoDich', 'MuonTra'].forEach(function (ten) {
     const sh = sheet(ten), n = sh.getLastRow();
     if (n >= 2) sh.deleteRows(2, n - 1);
   });
@@ -1120,6 +1331,12 @@ const MAU = {
     ['XUAT', 'PC-0001', 'K1-B-02-1', '', 60, 'Toà nhà B – PCCC tầng 3', 26, 'Thủ kho Lan'],
     ['XUAT', 'DI-0008', 'K1-A-02-2', '', 18, 'Toà nhà B – văn phòng tầng 2', 5, 'Thủ kho Lan']
   ],
+  // Dụng cụ đang cho mượn: MaVT, Từ vị trí, SL, Người mượn, Công trình, Số giờ trước, Hạn trả sau (ngày), Người cho mượn
+  muonTra: [
+    ['DC-0002', 'K1-D-01-1', 1, 'Tổ trưởng Vương', 'Toà nhà B – cấp nước WC', 48, 2, 'Thủ kho Lan'],
+    ['DC-0001', 'K1-D-01-1', 1, 'Tuấn – tổ điện', 'Toà nhà B – khoan treo ống tầng 3', 24, 0, 'Thủ kho Lan'],
+    ['DC-0003', 'K1-D-01-1', 1, '王师傅 – 空调组', 'Xưởng A – lắp điều hoà', 3, 2, 'Thủ kho Lan']
+  ],
   // ID, Tên, PIN, Vai trò
   nguoiDung: [
     ['U001', 'Quản trị', '111111', 'admin'],
@@ -1145,7 +1362,7 @@ const LIB_QR = 'https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js';
 const IDLE_MIN = 15;
 const LOGO = '<svg viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="112" fill="#16211F"/><path d="M104 184V124Q104 104 124 104H184M328 104H388Q408 104 408 124V184M408 328V388Q408 408 388 408H328M184 408H124Q104 408 104 388V328" stroke="#F5C400" stroke-width="30" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M256 164L348 210L256 256L164 210Z" fill="#F5C400"/><path d="M256 164L348 210V306L256 352L164 306V210ZM164 210L256 256L348 210M256 256V352" stroke="#F5C400" stroke-width="24" stroke-linejoin="round" fill="none"/><path d="M312 244L284 294H304L292 334L324 280H304L318 244Z" fill="#F5C400"/></svg>';
 // Giống QUYEN trong Code.gs (máy chủ vẫn kiểm tra lại mọi thao tác)
-const QUYEN = { nhapxuat: ['admin', 'thukho'], danhmuc: ['admin', 'thukho'], nhatky: ['admin', 'kysu', 'thukho'], nguoidung: ['admin'] };
+const QUYEN = { nhapxuat: ['admin', 'thukho'], danhmuc: ['admin', 'thukho'], muontra: ['admin', 'thukho'], nhatky: ['admin', 'kysu', 'thukho'], nguoidung: ['admin'] };
 const TIEN_TO = { dien: 'DI', nuoc: 'NU', pccc: 'PC', hvac: 'HV', phukien: 'PK', dungcu: 'DC' };
 
 /* ---------------- Song ngữ ---------------- */
@@ -1253,10 +1470,54 @@ const TX = {
   role_admin: ['Quản trị', '管理员'], role_kysu: ['Kỹ sư', '工程师'], role_thukho: ['Thủ kho', '仓管员'], role_congnhan: ['Công nhân', '工人'],
   rd_admin: ['Toàn quyền, quản lý người dùng và PIN', '全部权限，管理用户和PIN'],
   rd_kysu: ['Xem tồn kho, vị trí và nhật ký', '查看库存、库位和记录'],
-  rd_thukho: ['Nhập, xuất, chuyển, kiểm kê, thêm vật tư, in tem', '出入库、移库、盘点、新增物料、打印标签'],
-  rd_congnhan: ['Tìm vật tư và xem vị trí', '查询物料和库位'],
+  rd_thukho: ['Nhập, xuất, chuyển, kiểm kê, cho mượn – nhận trả dụng cụ, thêm vật tư, in tem', '出入库、移库、盘点、工具借还、新增物料、打印标签'],
+  rd_congnhan: ['Tìm vật tư, xem vị trí và dụng cụ đang cho mượn', '查询物料、库位和借出的工具'],
   by: ['bởi', '操作人'],
-  optional: ['tuỳ chọn', '可选']
+  optional: ['tuỳ chọn', '可选'],
+  // Mượn – trả dụng cụ
+  loans: ['Mượn – trả dụng cụ', '工具借还'],
+  lend: ['Cho mượn', '借出'], lendTitle: ['Cho mượn dụng cụ', '借出工具'],
+  returnTitle: ['Nhận trả dụng cụ', '工具归还'], loanDetail: ['Phiếu mượn', '借用单'],
+  t_MUON: ['Cho mượn', '借出'], t_TRA: ['Trả', '归还'], t_MAT: ['Báo mất', '丢失'],
+  tool: ['Dụng cụ', '工具'], toolsAvail: ['Dụng cụ trong kho', '在库工具'],
+  borrower: ['Người mượn', '借用人'], borrowerPh: ['VD: Tuấn – tổ điện', '例：王师傅 空调组'],
+  dueDate: ['Hạn trả', '归还期限'],
+  due_0: ['Hôm nay', '今天'], due_1: ['Ngày mai', '明天'], due_3: ['3 ngày', '3天'], due_7: ['1 tuần', '1周'],
+  lentShort: ['Mượn', '借出'], dueShort: ['Hạn', '期限'],
+  overdueN: ['Quá hạn {n} ngày', '逾期{n}天'], dueToday: ['Hạn hôm nay', '今天到期'],
+  onLoan: ['Đang mượn', '借用中'], overdue: ['Quá hạn', '已逾期'], returned: ['Đã trả', '已归还'],
+  overdueHome: ['Quá hạn trả', '逾期未还'], statLent: ['đang cho mượn', '件借出'],
+  lentOut: ['Đang cho mượn', '借出中'], noLoansItem: ['Không có ai đang mượn.', '目前无人借用。'],
+  noLoans: ['Không có dụng cụ nào đang cho mượn.', '暂无借出的工具。'],
+  noLate: ['Không có phiếu quá hạn.', '没有逾期的借用。'],
+  noReturned: ['Chưa có phiếu đã trả.', '暂无归还记录。'],
+  loanFilterPh: ['Lọc theo người mượn hoặc dụng cụ', '按借用人或工具筛选'],
+  scanReturn: ['Quét trả', '扫码归还'],
+  noOpenLoanFor: ['Mã {x} không có phiếu mượn nào đang mở.', '编码{x}没有未归还的借用单。'],
+  qtyLent: ['Số lượng mượn', '借出数量'], stillHeld: ['Còn giữ', '未还'],
+  returnedSoFar: ['Đã trả', '已还'], lostQty: ['Mất', '丢失'], damagedQty: ['Hỏng', '损坏'],
+  lentAt: ['Ngày mượn', '借出时间'], lentBy: ['Người cho mượn', '经办人'], closedAt: ['Trả xong', '归还完毕'],
+  returnLog: ['Lịch sử trả', '归还记录'],
+  partial: ['Đã trả {a}/{b}', '已还{a}/{b}'],
+  returnQty: ['Số lượng trả', '归还数量'], lostQtyInp: ['Số lượng mất', '丢失数量'], returnTo: ['Trả về vị trí', '归还库位'],
+  condition: ['Tình trạng', '状况'],
+  cond_TOT: ['Tốt', '完好'], cond_HONG: ['Hỏng', '损坏'], cond_MAT: ['Mất', '丢失'],
+  cd_TOT: ['Nhập lại kho bình thường', '正常归还入库'],
+  cd_HONG: ['Vẫn nhập lại kho, ghi chú là hỏng', '仍归还入库，并记录损坏'],
+  cd_MAT: ['Không nhập lại kho, đóng phần mất', '不入库，登记丢失'],
+  c_LEND: ['Xác nhận cho mượn', '确认借出'], c_TRA: ['Xác nhận trả', '确认归还'], c_MAT: ['Xác nhận báo mất', '确认丢失'],
+  d_LEND: ['Đã cho {w} mượn {q}', '已借给{w}：{q}'],
+  d_TRA: ['Đã nhận lại {q} từ {w}', '已收回{w}归还的{q}'],
+  d_MAT: ['Đã ghi mất {q} ({w})', '已登记丢失{q}（{w}）'],
+  lentList: ['Vừa cho mượn', '刚借出'],
+  lendMore: ['Chọn tiếp dụng cụ để cho người này mượn thêm, hoặc bấm Xong.', '可继续选择工具借给此人，或点“完成”。'],
+  done: ['Xong', '完成'],
+  noStockLend: ['Dụng cụ này không còn trong kho để cho mượn.', '该工具已无库存可借。'],
+  errBorrower: ['Nhập tên người mượn.', '请填写借用人。'],
+  errDue: ['Chọn hạn trả từ hôm nay trở đi.', '请选择今天或以后的归还日期。'],
+  errNoLoan: ['Không tìm thấy phiếu mượn này.', '找不到该借用单。'],
+  errLoanClosed: ['Phiếu này đã trả xong.', '该借用单已全部归还。'],
+  errReturnTooMany: ['Chỉ còn {n} chưa trả.', '仅剩{n}未还。']
 };
 const UNITS = {
   cai: ['cái', '个'], chiec: ['chiếc', '台'], bo: ['bộ', '套'], met: ['m', '米'], cuon: ['cuộn', '卷'], cay: ['cây', '根'],
@@ -1270,7 +1531,7 @@ const ROLES = ['admin', 'kysu', 'thukho', 'congnhan'];
 
 /* ---------------- Trạng thái ---------------- */
 const S = {
-  token: null, me: null, items: [], locs: [], stock: [],
+  token: null, me: null, items: [], locs: [], stock: [], loans: [], borrowers: [], closedLoans: null,
   itemMap: new Map(), locMap: new Map(), byItem: new Map(), byLoc: new Map(), q: '', grp: ''
 };
 const NAV = [];
@@ -1335,10 +1596,17 @@ function fmtTime(s) {
 }
 function parseQty(v) { const s = String(v || '').trim().replace(/[\s\u202f]/g, '').replace(',', '.'); return s === '' ? NaN : Number(s); }
 function can(q) { return !!(S.me && QUYEN[q].includes(S.me.vaiTro)); }
+// Ng\u00e0y yyyy-mm-dd theo gi\u1edd tr\u00ean \u0111i\u1ec7n tho\u1ea1i
+function ymd(d) { const p = n => String(n).padStart(2, '0'); return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()); }
+function dayOf(s) { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || ''); return m ? new Date(+m[1], +m[2] - 1, +m[3]) : null; }
+function addDays(n) { const d = new Date(); d.setDate(d.getDate() + n); return ymd(d); }
+function daysLate(han) { const a = dayOf(han); if (!a) return 0; return Math.round((dayOf(ymd(new Date())) - a) / 864e5); }
+function fmtDay(s) { const d = dayOf(s); if (!d) return s || ''; const p = n => String(n).padStart(2, '0'); return p(d.getDate()) + '/' + p(d.getMonth() + 1) + (d.getFullYear() !== new Date().getFullYear() ? '/' + d.getFullYear() : ''); }
 
 /* ---------------- Dữ liệu ---------------- */
 function setData(d) {
   S.me = d.me; S.items = d.items; S.locs = d.locations; S.stock = d.stock;
+  S.loans = d.loans || []; S.borrowers = d.borrowers || []; S.closedLoans = null;
   reindex();
 }
 function reindex() {
@@ -1366,7 +1634,22 @@ function reindex() {
     l._n = norm(hay); l._c = compact(hay);
     l._items = (S.byLoc.get(l.maViTri.toUpperCase()) || []);
   }
+  // Phiếu mượn: hạn sớm nhất lên trước; cộng số đang cho mượn vào từng vật tư
+  S.loans.sort((a, b) => a.hanTra.localeCompare(b.hanTra) || a.time.localeCompare(b.time));
+  const lent = new Map();
+  for (const L of S.loans) lent.set(L.maVT, (lent.get(L.maVT) || 0) + L.conLai);
+  for (const it of S.items) it._lent = lent.get(it.maVT.toUpperCase()) || 0;
 }
+function upsertLoan(L) {
+  S.loans = S.loans.filter(x => x.id !== L.id);
+  if (L.trangThai === 'DANG_MUON') S.loans.push(L);
+  if (S.closedLoans) S.closedLoans = S.closedLoans.filter(x => x.id !== L.id);
+  if (S.closedLoans && L.trangThai !== 'DANG_MUON') S.closedLoans.unshift(L);
+  S.borrowers = [L.nguoiMuon].concat(S.borrowers.filter(x => x !== L.nguoiMuon));
+  reindex();
+}
+function findLoan(id) { return S.loans.find(x => x.id === id) || (S.closedLoans || []).find(x => x.id === id) || null; }
+function lateLoans() { return S.loans.filter(L => daysLate(L.hanTra) > 0); }
 function updateStock(maVT, rows) {
   const k = maVT.toUpperCase();
   S.stock = S.stock.filter(s => s.maVT !== k).concat(rows || []);
@@ -1437,9 +1720,11 @@ async function api(action, payload) {
 function errMsg(e) {
   const m = { KHONG_QUYEN: 'noPerm', SO_LUONG: 'errQty', TRUNG_VITRI: 'errSameLoc', TRUNG_BARCODE: 'errDupBarcode', THIEU_TEN: 'errNeedName',
     THIEU_DU_LIEU: 'errMissing', KHONG_CO_VT: 'errNoItem', KHONG_CO_VITRI: 'errNoLoc', PIN_DINH_DANG: 'errPinFormat', PIN_TRUNG: 'errPinUsed',
-    PIN_CU_SAI: 'errPinOld', ADMIN_CUOI: 'errLastAdmin', CHUA_CAI_DAT: 'errSetup', MANG: 'network', HET_PHIEN: 'sessionExpired', KHOA: 'pinLocked' };
+    PIN_CU_SAI: 'errPinOld', ADMIN_CUOI: 'errLastAdmin', CHUA_CAI_DAT: 'errSetup', MANG: 'network', HET_PHIEN: 'sessionExpired', KHOA: 'pinLocked',
+    THIEU_NGUOI_MUON: 'errBorrower', HAN_TRA: 'errDue', KHONG_CO_PHIEU: 'errNoLoan', DA_TRA_XONG: 'errLoanClosed' };
   if (!e || !e.code) return t('errGeneric', { x: String(e && e.message || e) });
   if (e.code === 'KHONG_DU_TON') return t('errNotEnough', { n: fmt(e.message) });
+  if (e.code === 'TRA_QUA_SO') return t('errReturnTooMany', { n: fmt(e.message) });
   if (e.code === 'TRUNG_MA') return t('errDupCode', { x: e.message });
   if (e.code === 'PIN_SAI') return t('pinWrong', { n: e.message });
   return m[e.code] ? t(m[e.code]) : t('errGeneric', { x: e.message || e.code });
@@ -1467,7 +1752,10 @@ const IC = {
   edit: '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/>',
   reload: '<path d="M20 12a8 8 0 1 1-2.4-5.7M20 4v5h-5"/>',
   logout: '<path d="M10 4H5.5A1.5 1.5 0 0 0 4 5.5v13A1.5 1.5 0 0 0 5.5 20H10M15 8l4 4-4 4M19 12H9"/>',
-  print: '<path d="M7 9V4h10v5M7 17H5a1 1 0 0 1-1-1v-6a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1h-2"/><rect x="7" y="14" width="10" height="6"/>'
+  print: '<path d="M7 9V4h10v5M7 17H5a1 1 0 0 1-1-1v-6a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1h-2"/><rect x="7" y="14" width="10" height="6"/>',
+  tool: '<path d="M14.7 3.6a4.6 4.6 0 0 0-4.9 6.1L3.9 15.6a1.9 1.9 0 0 0 2.7 2.7l5.9-5.9a4.6 4.6 0 0 0 6.1-4.9l-2.6 2.6-2.6-.6-.6-2.6z"/><path d="M15 17.5h6m0 0-2.2-2.2M21 17.5l-2.2 2.2"/>',
+  lend: '<path d="M4 12h12m0 0-4.5-4.5M16 12l-4.5 4.5M20 5v14"/>',
+  ret: '<path d="M20 12H8m0 0 4.5-4.5M8 12l4.5 4.5M4 5v14"/>'
 };
 function ic(n) {
   return '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + (IC[n] || '') + '</svg>';
@@ -1504,7 +1792,9 @@ const K = k => [tv(k), tz(k)];
 const TITLES = {
   item: p => [p.id, tp('item')], loc: p => [p.id, tp('location')], items: () => K('itemsAll'), locs: () => K('locations'),
   txn: p => K('a_' + p.loai), itemForm: p => K(p.id ? 'editItem' : 'addItem'), locForm: p => K(p.id ? 'editLoc' : 'addLoc'),
-  labels: () => K('labels'), log: () => K('log'), users: () => K('users'), userForm: p => K(p.id ? 'editUser' : 'addUser'), pin: () => K('changePin')
+  labels: () => K('labels'), log: () => K('log'), users: () => K('users'), userForm: p => K(p.id ? 'editUser' : 'addUser'), pin: () => K('changePin'),
+  loans: () => K('loans'), lend: () => K('lendTitle'),
+  giveBack: p => { const L = findLoan(p.id); return K(L && L.trangThai === 'DANG_MUON' && can('muontra') ? 'returnTitle' : 'loanDetail'); }
 };
 const VIEWS = {};
 function render() {
@@ -1605,7 +1895,7 @@ function itemRow(it, extra) {
       <span class="nm">${esc(nm1(it))}</span>
       ${nm2(it) ? `<span class="nm2" lang="zh-CN">${esc(nm2(it))}</span>` : ''}
       <span class="meta"><span class="plate">${esc(it.maVT)}</span>${it.quyCach ? `<span>${esc(it.quyCach)}</span>` : ''}</span>
-      ${locs ? `<span class="meta">${locs}</span>` : ''}
+      ${locs || it._lent ? `<span class="meta">${locs}${it._lent ? `<span class="pill move">${t('lentShort')} ${fmt(it._lent)}</span>` : ''}</span>` : ''}
       ${extra || ''}
     </div>
     <div class="qty ${it._low ? 'low' : ''}"><b>${fmt(it._total)}</b><small>${esc(unitName(it.donVi))}</small>
@@ -1651,8 +1941,10 @@ function homeBody() {
     return;
   }
   const low = S.items.filter(i => i._low);
+  const late = lateLoans();
   const tiles = [];
   if (can('nhapxuat')) ['NHAP', 'XUAT', 'CHUYEN', 'KIEMKE'].forEach(l => tiles.push(`<button type="button" class="tile t-${l.toLowerCase()}" data-act="txn" data-loai="${l}">${ic(l)}${t('a_' + l)}</button>`));
+  tiles.push(`<button type="button" class="tile t-muon" data-act="view" data-v="loans">${ic('tool')}${t('loans')}${S.loans.length ? `<span class="tile-badge ${late.length ? 'late' : ''}">${S.loans.length}</span>` : ''}</button>`);
   if (can('danhmuc')) tiles.push(`<button type="button" class="tile" data-act="itemForm">${ic('add')}${t('addItem')}</button>`);
   tiles.push(`<button type="button" class="tile" data-act="view" data-v="items">${ic('items')}${t('itemsAll')}</button>`);
   tiles.push(`<button type="button" class="tile" data-act="view" data-v="locs">${ic('locs')}${t('locations')}</button>`);
@@ -1661,10 +1953,13 @@ function homeBody() {
   if (can('nguoidung')) tiles.push(`<button type="button" class="tile" data-act="view" data-v="users">${ic('users')}${t('users')}</button>`);
   el.innerHTML = `
     <div class="stats"><span><b>${S.items.length}</b> ${t('statItems')}</span><span><b>${S.locs.length}</b> ${t('statLocs')}</span>
-      <span class="${low.length ? 'w' : ''}"><b>${low.length}</b> ${t('statLow')}</span></div>
+      <span class="${low.length ? 'w' : ''}"><b>${low.length}</b> ${t('statLow')}</span>
+      ${S.loans.length ? `<span class="${late.length ? 'w' : ''}"><b>${S.loans.length}</b> ${t('statLent')}</span>` : ''}</div>
     <nav class="tiles">${tiles.join('')}</nav>
+    ${late.length ? `<h2 class="sec">${t('overdueHome')} <span class="count">${late.length}</span></h2>
+      <div class="list" id="lateList">${late.map(L => loanRow(L)).join('')}</div>` : ''}
     <h2 class="sec">${t('lowStock')} <span class="count">${low.length}</span></h2>
-    ${low.length ? `<div class="list">${low.map(i => itemRow(i)).join('')}</div>` : `<p class="empty">${t('lowStockNone')}</p>`}`;
+    ${low.length ? `<div class="list" id="lowList">${low.map(i => itemRow(i)).join('')}</div>` : `<p class="empty">${t('lowStockNone')}</p>`}`;
 }
 
 /* ---------------- Danh mục vật tư ---------------- */
@@ -1703,6 +1998,7 @@ VIEWS.item = function (p) {
     <span class="lbl2">${t('total')}</span>
     <span class="num">${fmt(it._total)}<small>${esc(unitName(u))}</small></span>
     ${it._low ? `<span class="pill warn">${t('belowMin', { n: fmt(it.tonToiThieu) })}</span>` : ''}
+    ${it._lent ? `<span class="pill move">${t('lentOut')}: ${fmt(it._lent)}</span>` : ''}
   </div>
   ${acts}
   <h2 class="sec">${t('whereStored')}</h2>
@@ -1713,6 +2009,7 @@ VIEWS.item = function (p) {
       <span class="meta">${esc(locParts(l))}</span></div>
       <div class="qty"><b>${fmt(s.soLuong)}</b><small>${esc(unitName(u))}</small></div></button>`;
   }).join('')}</div>` : `<p class="empty">${t('notStored')}</p>`}
+  ${lentSection(it)}
   ${can('danhmuc') ? `<div class="links">
     <button type="button" class="btn small" data-act="itemForm" data-id="${esc(it.maVT)}">${ic('edit')}${t('edit')}</button>
     <button type="button" class="btn small" data-act="labels" data-kind="item" data-id="${esc(it.maVT)}">${ic('labels')}${t('labels')}</button></div>` : ''}
@@ -1724,14 +2021,19 @@ function logList(rows, withItem) {
   return `<div class="list">${rows.map(g => {
     const it = S.itemMap.get(g.maVT);
     const u = it ? it.donVi : '';
-    const sign = g.loai === 'XUAT' ? -1 : g.loai === 'NHAP' ? 1 : g.loai === 'KIEMKE' ? Math.sign(g.soLuong) : 0;
-    const q = (sign > 0 ? '+' : sign < 0 && g.loai === 'XUAT' ? '−' : '') + fmt(g.loai === 'KIEMKE' ? g.soLuong : Math.abs(g.soLuong));
+    const sign = { XUAT: -1, MUON: -1, NHAP: 1, TRA: 1, MAT: -1 }[g.loai] || (g.loai === 'KIEMKE' ? Math.sign(g.soLuong) : 0);
+    // MAT: dụng cụ đã trừ tồn lúc cho mượn nên chỉ hiện số, không có dấu trừ
+    const q = g.loai === 'KIEMKE' ? (g.soLuong > 0 ? '+' : '') + fmt(g.soLuong)
+      : (sign > 0 ? '+' : sign < 0 && g.loai !== 'MAT' ? '−' : '') + fmt(Math.abs(g.soLuong));
     const where = g.loai === 'CHUYEN' ? `${esc(g.tu)} → ${esc(g.den)}` : esc(g.tu || g.den);
+    // Mượn/trả: ghi chú dạng "[Người mượn] nội dung"
+    const m = /^(MUON|TRA|MAT)$/.test(g.loai) ? /^\[([^\]]*)\]\s*(.*)$/.exec(g.ghiChu || '') : null;
+    const note = m ? m[2] : g.ghiChu;
     return `<div class="log-item">
       <div class="log-top"><span class="badge b-${g.loai.toLowerCase()}">${t('t_' + g.loai)}</span>
         <span class="log-q ${sign < 0 ? 'neg' : sign > 0 ? 'pos' : ''}">${q} ${esc(unitName(u))}</span></div>
       ${withItem ? `<div><span class="nm">${esc(it ? nm1(it) : g.maVT)}</span> <span class="plate">${esc(g.maVT)}</span></div>` : ''}
-      <div class="log-sub"><span class="mono">${where}</span>${g.congTrinh ? `<span>${esc(g.congTrinh)}</span>` : ''}${g.ghiChu ? `<span>${esc(g.ghiChu)}</span>` : ''}
+      <div class="log-sub">${where ? `<span class="mono">${where}</span>` : ''}${m ? `<span class="who">${ic('user')}${esc(m[1])}</span>` : ''}${g.congTrinh ? `<span>${esc(g.congTrinh)}</span>` : ''}${note ? `<span>${esc(note)}</span>` : ''}
         <span>${esc(g.nguoi)} · ${fmtTime(g.time)}</span></div>
     </div>`;
   }).join('')}</div>`;
@@ -1885,6 +2187,251 @@ VIEWS.txn = function (F) {
       const qs = qtyU(qty, u);
       toast(t('d_' + loai, { q: qs, l: loai === 'XUAT' ? F.tu : F.den, a: F.tu, b: F.den }));
       finishTo('item', { id: it.maVT });
+    } catch (e) { toast(errMsg(e), 'bad'); btn.disabled = false; }
+  });
+};
+
+/* ---------------- Mượn – trả dụng cụ ---------------- */
+function loanItem(L) { return S.itemMap.get(L.maVT) || { maVT: L.maVT, tenVI: L.maVT, tenZH: '', donVi: '' }; }
+function duePill(L) {
+  if (L.trangThai !== 'DANG_MUON') return '';
+  const late = daysLate(L.hanTra);
+  if (late > 0) return `<span class="pill bad">${t('overdueN', { n: late })}</span>`;
+  if (late === 0) return `<span class="pill warn">${t('dueToday')}</span>`;
+  return `<span class="pill grey">${t('dueShort')} ${esc(fmtDay(L.hanTra))}</span>`;
+}
+function loanRow(L, whoFirst) {
+  const it = loanItem(L);
+  const open = L.trangThai === 'DANG_MUON';
+  const who = `<span class="who">${ic('user')}${esc(L.nguoiMuon)}</span>`;
+  const pills = open
+    ? duePill(L) + (L.daTra || L.mat ? `<span class="pill grey">${t('partial', { a: fmt(L.daTra + L.mat), b: fmt(L.soLuong) })}</span>` : '')
+    : `<span class="pill ok">${t('closedAt')} ${esc(fmtTime(L.capNhat))}</span>` +
+      (L.hong ? `<span class="pill warn">${t('damagedQty')} ${fmt(L.hong)}</span>` : '') +
+      (L.mat ? `<span class="pill bad">${t('lostQty')} ${fmt(L.mat)}</span>` : '');
+  return `<button type="button" class="row" data-act="loanOpen" data-id="${esc(L.id)}">
+    <div class="row-main">
+      ${whoFirst ? `<span class="nm">${who}</span>` :
+        `<span class="nm">${esc(nm1(it))}</span>${nm2(it) ? `<span class="nm2" lang="zh-CN">${esc(nm2(it))}</span>` : ''}
+        <span class="meta"><span class="plate">${esc(it.maVT)}</span>${who}</span>`}
+      <span class="meta"><span>${t('lentShort')} ${esc(fmtTime(L.time))}</span>${pills}</span>
+      ${L.congTrinh ? `<span class="meta"><span>${esc(L.congTrinh)}</span></span>` : ''}
+    </div>
+    <div class="qty"><b>${fmt(open ? L.conLai : L.soLuong)}</b><small>${esc(unitName(it.donVi))}</small></div>
+  </button>`;
+}
+// Mục "Đang cho mượn" trên trang vật tư: hiện khi có người đang mượn, hoặc với nhóm Dụng cụ
+function lentSection(it) {
+  const lent = S.loans.filter(L => L.maVT === it.maVT.toUpperCase());
+  if (!lent.length && !(it.nhom === 'dungcu' && can('muontra'))) return '';
+  return `<h2 class="sec">${t('lentOut')} <span class="count">${lent.length}</span></h2>
+    ${lent.length ? `<div class="list">${lent.map(L => loanRow(L, true)).join('')}</div>` : `<p class="empty">${t('noLoansItem')}</p>`}
+    ${can('muontra') && it._total > 0 ? `<div class="links"><button type="button" class="btn small" data-act="lend" data-id="${esc(it.maVT)}">${ic('lend')}${t('lend')}</button></div>` : ''}`;
+}
+
+VIEWS.loans = function (p) {
+  p.tab = p.tab || 'open';
+  if (p.f === undefined) p.f = '';
+  const late = lateLoans();
+  main.innerHTML = `
+    ${can('muontra') ? `<div class="two" style="margin-bottom:12px">
+      <button type="button" class="btn signal tall" data-act="lend">${ic('lend')}<span class="bl">${t('lend')}</span></button>
+      <button type="button" class="btn tall" data-act="scanReturn">${ic('scan')}<span class="bl">${t('scanReturn')}</span></button></div>` : ''}
+    <div class="seg three" role="group">${[['open', 'onLoan', S.loans.length], ['late', 'overdue', late.length], ['done', 'returned', null]].map(([k, lab, n]) =>
+      `<button type="button" data-act="loanTab" data-tab="${k}" aria-pressed="${p.tab === k}">${esc(tv(lab))}<span class="zi" lang="zh-CN">${esc(tz(lab))}${n === null ? '' : `<span class="count">${n}</span>`}</span></button>`).join('')}</div>
+    <label class="search-box" for="loanF" style="margin-bottom:12px">${ic('search')}<input id="loanF" type="search" autocomplete="off" placeholder="${esc(tp('loanFilterPh'))}" value="${esc(p.f)}"></label>
+    <div id="loanBox"></div>`;
+  const draw = () => {
+    const box = $('#loanBox'); if (!box) return;
+    let src = p.tab === 'done' ? S.closedLoans : p.tab === 'late' ? late : S.loans;
+    if (!src) { box.innerHTML = `<p class="empty">${t('loading')}</p>`; return; }
+    const toks = norm(p.f).trim().split(/\s+/).filter(Boolean);
+    if (toks.length) src = src.filter(L => {
+      const it = loanItem(L), h = norm([L.maVT, it.barcode, it.tenVI, it.tenZH, L.nguoiMuon, L.congTrinh].join(' '));
+      return toks.every(k => h.includes(k));
+    });
+    box.innerHTML = src.length ? `<div class="list">${src.map(L => loanRow(L)).join('')}</div>`
+      : `<p class="empty">${t(toks.length ? 'noResults' : p.tab === 'done' ? 'noReturned' : p.tab === 'late' ? 'noLate' : 'noLoans')}</p>`;
+  };
+  const f = $('#loanF');
+  f.addEventListener('input', () => { p.f = f.value; draw(); });
+  draw();
+  if (p.tab === 'done') {
+    const at = cur();
+    api('loans', { daTra: true, limit: 150 }).then(list => { S.closedLoans = list; if (cur() === at) draw(); })
+      .catch(e => { const box = $('#loanBox'); if (box && cur() === at) box.innerHTML = `<p class="empty">${errMsg(e)}</p>`; });
+  }
+};
+
+VIEWS.lend = function (F) {
+  if (!F.done) F.done = [];
+  if (F.due === undefined) F.due = addDays(0);
+  if (F.qty === undefined) F.qty = '1';
+  const it = F.maVT ? S.itemMap.get(F.maVT.toUpperCase()) : null;
+  const have = it ? it._locs : [];
+  const qtyAt = m => { const s = have.find(x => x.maViTri === m); return s ? s.soLuong : 0; };
+  if (it && !F._init) { F._init = true; if (!qtyAt(F.tu)) F.tu = have.length ? have[0].maViTri : ''; }
+  const u = it ? it.donVi : '';
+  const pickRow = i => `<button type="button" class="row" data-act="pick" data-id="${esc(i.maVT)}">
+    <div class="row-main"><span class="nm">${esc(nm1(i))}</span>${nm2(i) ? `<span class="nm2" lang="zh-CN">${esc(nm2(i))}</span>` : ''}
+      <span class="meta"><span class="plate">${esc(i.maVT)}</span>${i.quyCach ? `<span>${esc(i.quyCach)}</span>` : ''}</span></div>
+    <div class="qty"><b>${fmt(i._total)}</b><small>${esc(unitName(i.donVi))}</small></div></button>`;
+  main.innerHTML = `
+  ${F.done.length ? `<div class="okbox" id="lentBox"><b>${t('lentList')}</b>
+    ${F.done.map(d => `<div class="okline"><span class="plate">${esc(d.maVT)}</span><span>${esc(d.name)}</span><b class="mono">× ${fmt(d.qty)}</b><span class="who">${ic('user')}${esc(d.who)}</span></div>`).join('')}
+    <p class="help">${t('lendMore')}</p>
+    <button type="button" class="btn" data-act="lendDone">${t('done')}</button></div>` : ''}
+  <form id="f" class="form" novalidate autocomplete="off" ${F.done.length ? 'style="margin-top:14px"' : ''}>
+    <div class="field"><span class="lab">${t('tool')} <span class="req">*</span></span>
+      ${it ? `<div class="picked"><div class="row-main"><span class="nm">${esc(nm1(it))}</span>${nm2(it) ? `<span class="nm2" lang="zh-CN">${esc(nm2(it))}</span>` : ''}
+        <span class="meta"><span class="plate">${esc(it.maVT)}</span><span>${t('total')}: <b class="mono">${fmt(it._total)}</b> ${esc(unitName(u))}</span></span></div>
+        <button type="button" class="btn small" data-act="unpick">${t('change')}</button></div>`
+      : `<div class="with-btn"><input class="inp" id="fPick" autocomplete="off" placeholder="${esc(tp('pickItemPh'))}" value="${esc(F.pickQ || '')}">
+        <button type="button" class="sq" data-act="scanItem" aria-label="${tp('scan')}">${ic('scan')}</button></div><div id="pickRes"></div>`}
+    </div>
+    ${it && !have.length ? `<p class="note">${t('noStockLend')}</p>` : ''}
+    ${it && have.length ? `
+    <div class="field"><label for="fTu">${t('fromLoc')} <span class="req">*</span></label>
+      <div class="with-btn"><select class="inp" id="fTu">${locOptions(F.tu, l => qtyAt(l.maViTri) > 0, qtyAt, u)}</select>
+      <button type="button" class="sq" data-act="scanLoc" data-f="tu" aria-label="${tp('scan')}">${ic('scan')}</button></div></div>
+    <div class="field"><label for="fQty">${t('quantity')} (${esc(unitName(u))}) <span class="req">*</span></label>
+      <input class="inp mono" id="fQty" inputmode="decimal" autocomplete="off" value="${esc(F.qty)}" placeholder="1">
+      <div class="hintline">${F.tu ? `<span>${t('available')}: <b>${fmt(qtyAt(F.tu))}</b> ${esc(unitName(u))}</span>` : ''}</div></div>` : ''}
+    <div class="field"><label for="fWho">${t('borrower')} <span class="req">*</span></label>
+      <input class="inp" id="fWho" autocomplete="off" value="${esc(F.who || '')}" placeholder="${esc(tp('borrowerPh'))}">
+      <div class="opts" id="whoSug"></div></div>
+    <div class="field"><label for="fDue">${t('dueDate')} <span class="req">*</span></label>
+      <div class="opts">${[0, 1, 3, 7].map(n => `<button type="button" class="chip" data-act="due" data-d="${n}" aria-pressed="${F.due === addDays(n)}">${t('due_' + n)}</button>`).join('')}</div>
+      <input class="inp" id="fDue" type="date" min="${addDays(0)}" value="${esc(F.due)}"></div>
+    <div class="field"><label for="fCt">${t('project')} <span class="muted">(${t('optional')})</span></label><input class="inp" id="fCt" value="${esc(F.ct || '')}" placeholder="${esc(tp('projectPh'))}"></div>
+    <div class="field"><label for="fNote">${t('note')} <span class="muted">(${t('optional')})</span></label><input class="inp" id="fNote" value="${esc(F.note || '')}"></div>
+    <button type="submit" class="btn primary" id="fSubmit" ${it && !have.length ? 'disabled' : ''}>${t('c_LEND')}</button>
+  </form>`;
+
+  // Chọn dụng cụ: chưa gõ gì thì hiện sẵn các dụng cụ còn trong kho
+  const pick = $('#fPick');
+  if (pick) {
+    const tools = S.items.filter(i => i.nhom === 'dungcu' && i._total > 0);
+    const show = () => {
+      F.pickQ = pick.value;
+      const q = pick.value.trim();
+      const res = q ? searchItems(q, 8) : tools;
+      $('#pickRes').innerHTML = res.length ? (q ? '' : `<p class="hintline" style="margin:8px 0 6px">${t('toolsAvail')}</p>`) +
+        `<div class="picker-res">${res.map(pickRow).join('')}</div>` : '';
+    };
+    pick.addEventListener('input', show); show();
+  }
+  // Gợi ý người mượn gần đây
+  const who = $('#fWho');
+  const sug = () => {
+    const v = who.value.trim(), q = norm(v).trim();
+    const names = [...new Set(S.borrowers.concat(S.loans.map(L => L.nguoiMuon)))]
+      .filter(n => n && n !== v && (!q || norm(n).includes(q))).slice(0, 6);
+    $('#whoSug').innerHTML = names.map(n => `<button type="button" class="chip" data-act="whoPick" data-name="${esc(n)}">${esc(n)}</button>`).join('');
+  };
+  who.addEventListener('input', sug); sug();
+  const due = $('#fDue');
+  due.addEventListener('change', () => {
+    F.due = due.value;
+    main.querySelectorAll('[data-act="due"]').forEach(b => b.setAttribute('aria-pressed', String(F.due === addDays(+b.dataset.d))));
+  });
+  const sync = () => {
+    const g = id => { const e = $('#' + id); return e ? e.value : undefined; };
+    [['fQty', 'qty'], ['fWho', 'who'], ['fDue', 'due'], ['fCt', 'ct'], ['fNote', 'note']].forEach(([id, k]) => { const v = g(id); if (v !== undefined) F[k] = v; });
+  };
+  F._sync = sync;
+  const tu = $('#fTu');
+  if (tu) tu.addEventListener('change', () => { sync(); F.tu = tu.value; render(); });
+
+  $('#f').addEventListener('submit', async ev => {
+    ev.preventDefault(); sync();
+    if (!it) return toast(t('errNoItem'), 'bad');
+    const qty = parseQty(F.qty);
+    if (!(qty > 0)) return toast(t('errQty'), 'bad');
+    if (!F.tu) return toast(t('errNoLoc'), 'bad');
+    if (qty > qtyAt(F.tu)) return toast(t('errNotEnough', { n: fmt(qtyAt(F.tu)) }), 'bad');
+    const name = (F.who || '').trim();
+    if (!name) { toast(t('errBorrower'), 'bad'); $('#fWho').focus(); return; }
+    if (!dayOf(F.due) || F.due < addDays(0)) return toast(t('errDue'), 'bad');
+    const btn = $('#fSubmit'); btn.disabled = true;
+    try {
+      const r = await api('lend', { maVT: it.maVT, tuViTri: F.tu, soLuong: qty, nguoiMuon: name, congTrinh: F.ct || '', hanTra: F.due, ghiChu: F.note || '' });
+      updateStock(it.maVT, r.stock);
+      upsertLoan(r.loan);
+      F.done.push({ maVT: it.maVT, name: nm1(it), qty, who: r.loan.nguoiMuon });
+      toast(t('d_LEND', { w: r.loan.nguoiMuon, q: qtyU(qty, u) }));
+      // Giữ người mượn, hạn trả, công trình để cho mượn tiếp món khác
+      Object.assign(F, { maVT: '', _init: false, tu: '', qty: '1', note: '', pickQ: '', who: r.loan.nguoiMuon });
+      render(); window.scrollTo(0, 0);
+    } catch (e) { toast(errMsg(e), 'bad'); btn.disabled = false; }
+  });
+};
+
+VIEWS.giveBack = function (p) {
+  const L = findLoan(p.id);
+  if (!L) { main.innerHTML = `<p class="empty">${t('errNoLoan')}</p>`; return; }
+  const it = loanItem(L), u = it.donVi;
+  const open = L.trangThai === 'DANG_MUON' && L.conLai > 0;
+  const hist = L.lichSuTra ? L.lichSuTra.split(' | ') : [];
+  const head = `
+  <div class="head">
+    <div class="top"><span class="plate big">${esc(it.maVT)}</span>${duePill(L)}${open ? '' : `<span class="pill ok">${t('returned')}</span>`}</div>
+    <h1>${esc(nm1(it))}</h1>
+    ${nm2(it) ? `<div class="nm2" lang="zh-CN" style="font-size:15px">${esc(nm2(it))}</div>` : ''}
+  </div>
+  <dl class="facts loan">
+    <dt>${t('borrower')}</dt><dd><span class="who">${ic('user')}${esc(L.nguoiMuon)}</span></dd>
+    <dt>${t('qtyLent')}</dt><dd><b class="mono">${fmt(L.soLuong)}</b> ${esc(unitName(u))}</dd>
+    ${L.daTra ? `<dt>${t('returnedSoFar')}</dt><dd><b class="mono">${fmt(L.daTra)}</b>${L.hong ? ` <span class="pill warn">${t('damagedQty')} ${fmt(L.hong)}</span>` : ''}</dd>` : ''}
+    ${L.mat ? `<dt>${t('lostQty')}</dt><dd><b class="mono diff-neg">${fmt(L.mat)}</b></dd>` : ''}
+    ${open && (L.daTra || L.mat) ? `<dt>${t('stillHeld')}</dt><dd><b class="mono">${fmt(L.conLai)}</b></dd>` : ''}
+    <dt>${t('fromLoc')}</dt><dd><span class="plate loc">${esc(L.tu)}</span></dd>
+    <dt>${t('lentAt')}</dt><dd>${esc(fmtTime(L.time))}</dd>
+    <dt>${t('dueDate')}</dt><dd>${esc(fmtDay(L.hanTra))}</dd>
+    ${L.congTrinh ? `<dt>${t('project')}</dt><dd>${esc(L.congTrinh)}</dd>` : ''}
+    <dt>${t('lentBy')}</dt><dd>${esc(L.nguoiChoMuon)}</dd>
+    ${L.ghiChu ? `<dt>${t('note')}</dt><dd>${esc(L.ghiChu)}</dd>` : ''}
+    ${hist.length ? `<dt>${t('returnLog')}</dt><dd class="hist-lines">${hist.map(h => `<span>${esc(h)}</span>`).join('')}</dd>` : ''}
+  </dl>`;
+  if (!open || !can('muontra')) { main.innerHTML = head; return; }
+  if (!p._init) { p._init = true; p.qty = String(L.conLai); p.den = L.tu; p.tt = 'TOT'; p.note = ''; }
+  const qtyAt = m => { const s = (it._locs || []).find(x => x.maViTri === m); return s ? s.soLuong : 0; };
+  const lost = p.tt === 'MAT';
+  main.innerHTML = head + `
+  <form id="f" class="form" novalidate autocomplete="off" style="margin-top:16px">
+    <div class="field"><span class="lab">${t('condition')}</span>
+      <div class="radio-list">${['TOT', 'HONG', 'MAT'].map(k => `<label class="radio"><input type="radio" name="tt" value="${k}" ${p.tt === k ? 'checked' : ''}>
+        <span><b>${t('cond_' + k)}</b><small>${t('cd_' + k)}</small></span></label>`).join('')}</div></div>
+    <div class="field"><label for="fQty">${t(lost ? 'lostQtyInp' : 'returnQty')} (${esc(unitName(u))}) <span class="req">*</span></label>
+      <input class="inp mono" id="fQty" inputmode="decimal" autocomplete="off" value="${esc(p.qty)}">
+      <div class="hintline"><span>${t('stillHeld')}: <b>${fmt(L.conLai)}</b> ${esc(unitName(u))}</span></div></div>
+    ${lost ? '' : `<div class="field"><label for="fDen">${t('returnTo')} <span class="req">*</span></label>
+      <div class="with-btn"><select class="inp" id="fDen">${locOptions(p.den, null, qtyAt, u)}</select>
+      <button type="button" class="sq" data-act="scanLoc" data-f="den" aria-label="${tp('scan')}">${ic('scan')}</button></div></div>`}
+    <div class="field"><label for="fNote">${t('note')} <span class="muted">(${t('optional')})</span></label><input class="inp" id="fNote" value="${esc(p.note)}"></div>
+    <button type="submit" class="btn primary" id="fSubmit">${t(lost ? 'c_MAT' : 'c_TRA')}</button>
+  </form>`;
+  const sync = () => {
+    const r = main.querySelector('input[name=tt]:checked');
+    p.tt = r ? r.value : p.tt; p.qty = $('#fQty').value; p.note = $('#fNote').value;
+    if ($('#fDen')) p.den = $('#fDen').value;
+  };
+  p._sync = sync;
+  main.querySelectorAll('input[name=tt]').forEach(r => r.addEventListener('change', () => { sync(); render(); }));
+  const den = $('#fDen'); if (den) den.addEventListener('change', () => { p.den = den.value; });
+  $('#f').addEventListener('submit', async ev => {
+    ev.preventDefault(); sync();
+    const qty = parseQty(p.qty);
+    if (!(qty > 0)) return toast(t('errQty'), 'bad');
+    if (qty > L.conLai) return toast(t('errReturnTooMany', { n: fmt(L.conLai) }), 'bad');
+    if (!lost && !p.den) return toast(t('errNoLoc'), 'bad');
+    const btn = $('#fSubmit'); btn.disabled = true;
+    try {
+      const r = await api('takeBack', { id: L.id, soLuong: qty, denViTri: lost ? '' : p.den, tinhTrang: p.tt, ghiChu: p.note });
+      updateStock(L.maVT, r.stock);
+      upsertLoan(r.loan);
+      toast(t(lost ? 'd_MAT' : 'd_TRA', { q: qtyU(qty, u), w: L.nguoiMuon }));
+      goBack();
     } catch (e) { toast(errMsg(e), 'bad'); btn.disabled = false; }
   });
 };
@@ -2097,7 +2644,7 @@ async function doPrint(p) {
 /* ---------------- Nhật ký ---------------- */
 VIEWS.log = function (p) {
   const f = p.loai || '';
-  main.innerHTML = `<div class="chips" role="toolbar">${['', 'NHAP', 'XUAT', 'CHUYEN', 'KIEMKE'].map(x =>
+  main.innerHTML = `<div class="chips" role="toolbar">${['', 'NHAP', 'XUAT', 'CHUYEN', 'KIEMKE', 'MUON', 'TRA'].map(x =>
     `<button type="button" class="chip" data-act="logF" data-loai="${x}" aria-pressed="${x === f}">${x ? t('t_' + x) : t('all')}</button>`).join('')}</div>
     <div id="logBox"><p class="empty">${t('loading')}</p></div>`;
   loadHistory({ loai: f, limit: 150 }, '#logBox', false);
@@ -2292,13 +2839,13 @@ const ACT = {
   view: el => { closeSheet(); go(el.dataset.v, {}); },
   grp: el => { cur().p.g = el.dataset.g; render(); },
   txn: el => go('txn', { loai: el.dataset.loai, maVT: el.dataset.id || '', tu: el.dataset.tu || '', den: el.dataset.den || '' }),
-  pick: el => { const F = cur().p; F.maVT = el.dataset.id; F._init = false; F.pickQ = ''; render(); },
+  pick: el => { const F = cur().p; if (F._sync) F._sync(); F.maVT = el.dataset.id; F._init = false; F.pickQ = ''; render(); },
   unpick: () => { const F = cur().p; if (F._sync) F._sync(); F.maVT = ''; F._init = false; F.tu = ''; if (F.loai !== 'NHAP' && F.loai !== 'KIEMKE') F.den = ''; render(); },
-  scanItem: () => openScanner(code => {
+  scanItem: () => { const F0 = cur().p; if (F0._sync) F0._sync(); openScanner(code => {
     const it = findItemByCode(code); const F = cur().p;
     if (!it) return toast(t('unknownCode', { x: code }), 'bad');
     F.maVT = it.maVT; F._init = false; F.pickQ = ''; render();
-  }),
+  }); },
   scanLoc: el => { const f = el.dataset.f; openScanner(code => {
     const F = cur().p; if (F._sync) F._sync();
     const l = S.locMap.get(code.toUpperCase());
@@ -2320,7 +2867,29 @@ const ACT = {
   copies: el => { const p = cur().p; p.copies = Math.min(10, Math.max(1, p.copies + Number(el.dataset.d))); p._drawPrev(); },
   print: () => doPrint(cur().p),
   logF: el => { cur().p.loai = el.dataset.loai; render(); },
-  userForm: el => go('userForm', { id: el.dataset.id || '' })
+  userForm: el => go('userForm', { id: el.dataset.id || '' }),
+  // Mượn – trả
+  lend: el => go('lend', { maVT: el.dataset.id || '' }),
+  lendDone: () => goBack(),
+  loanOpen: el => go('giveBack', { id: el.dataset.id }),
+  loanTab: el => { cur().p.tab = el.dataset.tab; render(); },
+  due: el => {
+    const F = cur().p; F.due = addDays(Number(el.dataset.d));
+    const d = $('#fDue'); if (d) d.value = F.due;
+    document.querySelectorAll('[data-act="due"]').forEach(b => b.setAttribute('aria-pressed', String(b === el)));
+  },
+  whoPick: el => {
+    const F = cur().p; F.who = el.dataset.name;
+    const w = $('#fWho'); if (w) { w.value = F.who; w.dispatchEvent(new Event('input')); }
+  },
+  scanReturn: () => openScanner(code => {
+    const it = findItemByCode(code);
+    if (!it) return toast(t('unknownCode', { x: code }), 'bad');
+    const k = it.maVT.toUpperCase(), ls = S.loans.filter(L => L.maVT === k);
+    if (!ls.length) return toast(t('noOpenLoanFor', { x: it.maVT }), 'bad');
+    if (ls.length === 1) return go('giveBack', { id: ls[0].id });
+    const p = cur().p; p.tab = 'open'; p.f = it.maVT; render();
+  })
 };
 document.addEventListener('click', ev => {
   const el = ev.target.closest('[data-act]');
