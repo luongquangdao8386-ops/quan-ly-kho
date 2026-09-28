@@ -736,7 +736,7 @@ __ss.insertSheet('Trang tính1');
  * ==================================================================
  */
 
-const PHIEN_BAN = '1.3.0';
+const PHIEN_BAN = '1.3.2';
 
 // Các trang (sheet) và cột. Không đổi tên cột.
 const BANG = {
@@ -744,7 +744,8 @@ const BANG = {
   VatTu:     ['MaVT', 'Barcode', 'TenVI', 'TenZH', 'QuyCach', 'DonVi', 'Nhom', 'TonToiThieu', 'GhiChu', 'NgayTao', 'Anh'],
   ViTri:     ['MaViTri', 'Kho', 'Day', 'Ke', 'Tang', 'MoTaVI', 'MoTaZH'],
   TonKho:    ['MaVT', 'MaViTri', 'SoLuong', 'CapNhat'],
-  GiaoDich:  ['ID', 'ThoiGian', 'Loai', 'MaVT', 'TuViTri', 'DenViTri', 'SoLuong', 'CongTrinh', 'GhiChu', 'NguoiDung'],
+  // NguoiNhan (bản 1.3.2): người nhận hàng khi xuất (thợ đến lấy) hoặc người mượn dụng cụ
+  GiaoDich:  ['ID', 'ThoiGian', 'Loai', 'MaVT', 'TuViTri', 'DenViTri', 'SoLuong', 'CongTrinh', 'GhiChu', 'NguoiDung', 'NguoiNhan'],
   // Email (bản 1.3): để nhận báo tin qua email (không bắt buộc)
   NguoiDung: ['ID', 'Ten', 'PinHash', 'VaiTro', 'HoatDong', 'NgayTao', 'Email'],
   NhatKy:    ['ThoiGian', 'NguoiDung', 'HanhDong', 'ChiTiet'],
@@ -766,7 +767,7 @@ const COT_CHU = {
   VatTu:     ['MaVT', 'Barcode', 'TenVI', 'TenZH', 'QuyCach', 'DonVi', 'Nhom', 'GhiChu', 'Anh'],
   ViTri:     ['MaViTri', 'Kho', 'Day', 'Ke', 'Tang', 'MoTaVI', 'MoTaZH'],
   TonKho:    ['MaVT', 'MaViTri'],
-  GiaoDich:  ['ID', 'Loai', 'MaVT', 'TuViTri', 'DenViTri', 'CongTrinh', 'GhiChu', 'NguoiDung'],
+  GiaoDich:  ['ID', 'Loai', 'MaVT', 'TuViTri', 'DenViTri', 'CongTrinh', 'GhiChu', 'NguoiDung', 'NguoiNhan'],
   NguoiDung: ['ID', 'Ten', 'PinHash', 'VaiTro', 'Email'],
   NhatKy:    ['NguoiDung', 'HanhDong', 'ChiTiet'],
   MuonTra:   ['ID', 'MaVT', 'TuViTri', 'NguoiMuon', 'CongTrinh', 'HanTra', 'GhiChu', 'NguoiChoMuon', 'TrangThai', 'LichSuTra'],
@@ -834,6 +835,7 @@ function traVe(obj) {
 
 function xuLy(req) {
   TIN_CHO.length = 0;
+  DA_KIEM_GD = false;
   let lock = null;
   if (HANH_DONG_GHI.indexOf(req.action) >= 0) {
     lock = LockService.getScriptLock();
@@ -1000,6 +1002,14 @@ function capNhatTieuDe(ten) {
   return sh;
 }
 
+// Trang GiaoDich cũ chưa có cột NguoiNhan: thêm tiêu đề một lần trong mỗi lần xử lý.
+let DA_KIEM_GD = false;
+function kiemCotGD() {
+  if (!DA_KIEM_GD) { capNhatTieuDe('GiaoDich'); DA_KIEM_GD = true; }
+}
+// Tên người nhận: bỏ dấu [ ] (dùng để đánh dấu người mượn trong ghi chú), giới hạn độ dài
+function tenNguoi(v) { return sach(v, 60).replace(/[\[\]]/g, '').replace(/\s+/g, ' ').trim(); }
+
 function dinhDangChu(sh, ten, tuDong, soDong) {
   const cols = BANG[ten];
   (COT_CHU[ten] || []).forEach(function (c) {
@@ -1103,9 +1113,11 @@ function viTriRa(r) {
 function taiDuLieu(u) {
   const muon = taiPhieuMuon();
   const dx = taiDeXuat(u);
+  const gd = ganDayGD();
   return {
     requests: dx,
-    projects: duAnGanDay(dx),
+    projects: duAnGanDay(dx, gd),
+    receivers: QUYEN.nhapxuat.indexOf(str(u.VaiTro)) >= 0 ? dsNguoiNhan(gd, muon.borrowers) : [],
     me: congKhai(u),
     items: docBang('VatTu').map(vatTuRa),
     locations: docBang('ViTri').map(viTriRa),
@@ -1118,17 +1130,41 @@ function taiDuLieu(u) {
   };
 }
 
+// Đọc 500 giao dịch cuối một lần: tên công trình và người nhận dùng gần đây (mới nhất trước).
+function ganDayGD() {
+  const kq = { ct: [], nn: [] };
+  const sh = sheet('GiaoDich'), n = sh.getLastRow(), cols = BANG.GiaoDich;
+  if (n < 2) return kq;
+  const c1 = cols.indexOf('CongTrinh') + 1, c2 = cols.indexOf('NguoiNhan') + 1;
+  const rong = Math.max(1, Math.min(c2, sh.getMaxColumns()) - c1 + 1);   // trang rất cũ có thể ít cột
+  const bat = Math.max(2, n - 499);
+  const vals = sh.getRange(bat, c1, n - bat + 1, rong).getValues();
+  for (let i = vals.length - 1; i >= 0; i--) {
+    kq.ct.push(str(vals[i][0]));
+    if (rong > c2 - c1) kq.nn.push(str(vals[i][c2 - c1]));
+  }
+  return kq;
+}
+
 // Tên công trình dùng gần đây (gợi ý khi gõ, giúp viết thống nhất để sau này báo cáo theo công trình).
-function duAnGanDay(dx) {
+function duAnGanDay(dx, gd) {
   const out = [];
   function them(x) { x = str(x); if (x && out.indexOf(x) < 0 && out.length < 40) out.push(x); }
   dx.slice().sort(function (a, b) { return a.time < b.time ? 1 : -1; }).forEach(function (r) { them(r.congTrinh); });
-  const sh = sheet('GiaoDich'), n = sh.getLastRow();
-  if (n >= 2) {
-    const bat = Math.max(2, n - 499);
-    const vals = sh.getRange(bat, BANG.GiaoDich.indexOf('CongTrinh') + 1, n - bat + 1, 1).getValues();
-    for (let i = vals.length - 1; i >= 0; i--) them(vals[i][0]);
+  (gd || ganDayGD()).ct.forEach(them);
+  return out;
+}
+
+// Gợi ý người nhận khi xuất: người nhận gần đây, rồi người dùng đang hoạt động (trừ tài khoản Quản trị), rồi người mượn gần đây.
+function dsNguoiNhan(gd, nguoiMuon) {
+  const out = [], da = {};
+  function them(x) {
+    x = str(x); const k = x.toLowerCase();
+    if (x && !da[k] && out.length < 60) { da[k] = true; out.push(x); }
   }
+  gd.nn.forEach(them);
+  docBang('NguoiDung').forEach(function (u) { if (laDung(u.HoatDong) && str(u.VaiTro) !== 'admin') them(u.Ten); });
+  (nguoiMuon || []).forEach(them);
   return out;
 }
 
@@ -1144,7 +1180,7 @@ function lichSu(p) {
     const r = vals[i];
     const o = {
       id: str(r[0]), time: iso(r[1]), loai: str(r[2]), maVT: hoa(r[3]), tu: hoa(r[4]), den: hoa(r[5]),
-      soLuong: so(r[6]), congTrinh: str(r[7]), ghiChu: str(r[8]), nguoi: str(r[9])
+      soLuong: so(r[6]), congTrinh: str(r[7]), ghiChu: str(r[8]), nguoi: str(r[9]), nhan: str(r[10])
     };
     if (!o.id) continue;
     if (loc && o.maVT !== loc) continue;
@@ -1238,9 +1274,11 @@ function thucHienGD(u, p, ctx) {
     datTon(den, sl);
   }
 
+  kiemCotGD();
   themDong('GiaoDich', {
     ID: maGiaoDich(), ThoiGian: new Date(), Loai: loai, MaVT: maVT, TuViTri: tu, DenViTri: den,
-    SoLuong: slGhi, CongTrinh: sach(p.congTrinh, 120), GhiChu: ghiChu, NguoiDung: str(u.Ten)
+    SoLuong: slGhi, CongTrinh: sach(p.congTrinh, 120), GhiChu: ghiChu, NguoiDung: str(u.Ten),
+    NguoiNhan: loai === 'XUAT' || loai === 'MUON' ? tenNguoi(p.nguoiNhan) : ''
   });
 
   return {
@@ -1310,7 +1348,7 @@ function choMuon(u, p) {
   if (!laNgay(han)) throw loi('HAN_TRA');
   const ct = sach(p.congTrinh, 120), ghiChu = sach(p.ghiChu, 200);
   const kq = thucHienGD(u, {
-    loai: 'MUON', maVT: p.maVT, tuViTri: p.tuViTri, soLuong: p.soLuong, congTrinh: ct,
+    loai: 'MUON', maVT: p.maVT, tuViTri: p.tuViTri, soLuong: p.soLuong, congTrinh: ct, nguoiNhan: nguoi,
     ghiChu: ('[' + nguoi + '] ' + ghiChu).trim()
   });
   const m = {
@@ -1575,16 +1613,19 @@ function xuatDeXuat(u, p) {
     return { d: d, m: m, l: l, sl: sl };
   });
   const ghi = sach(p.ghiChu, 200);
+  // Người nhận: mặc định là người tạo phiếu; thủ kho sửa được nếu người khác đến lấy thay
+  const nhan = tenNguoi(p.nguoiNhan) || tenNguoi(r.NguoiTao);
   viec.forEach(function (v) {
     thucHienGD(u, {
-      loai: 'XUAT', maVT: v.m, tuViTri: v.l, soLuong: v.sl, congTrinh: str(r.CongTrinh),
+      loai: 'XUAT', maVT: v.m, tuViTri: v.l, soLuong: v.sl, congTrinh: str(r.CongTrinh), nguoiNhan: nhan,
       ghiChu: [str(r.ID), str(r.NguoiTao), ghi].filter(function (x) { return x; }).join(' · ')
     }, ctx);
     v.d.daXuat = lamTron(v.d.daXuat + v.sl);
   });
   const du = lines.every(function (z) { return z.daXuat >= z.duyet; });
   r.ChiTiet = JSON.stringify(lines);
-  ghiLichSuDX(r, 'Xuất 出库 ' + viec.map(function (v) { return v.m + ' × ' + v.sl + ' ← ' + v.l; }).join('; ') + (ghi ? ' · ' + ghi : ''), u);
+  ghiLichSuDX(r, 'Xuất 出库 ' + viec.map(function (v) { return v.m + ' × ' + v.sl + ' ← ' + v.l; }).join('; ') +
+    (nhan && nhan !== tenNguoi(r.NguoiTao) ? ' · Người nhận 领料人: ' + nhan : '') + (ghi ? ' · ' + ghi : ''), u);
   if (du) r.TrangThai = 'HOAN_TAT';
   else if (p.dong === true) { r.TrangThai = 'HOAN_TAT'; ghiLichSuDX(r, 'Đóng phiếu 关闭 · không xuất phần còn lại 余量不出库', u); }
   r.CapNhat = new Date();
@@ -2016,6 +2057,7 @@ function nhapVatTu(u, p) {
       });
     });
     themNhieu('TonKho', themTon);
+    kiemCotGD();
     themNhieu('GiaoDich', gd);
     const cacMa = tonDau.map(function (t) { return t.maVT; });
     ton.forEach(function (z) {
@@ -2039,6 +2081,13 @@ function nhapVatTu(u, p) {
 const BAO_CAO_CHI_TIET = 3000;   // số dòng chi tiết tối đa trả về
 function khoaCT(x) { return str(x).toLowerCase().replace(/\s+/g, ' '); }
 function ngayTuChu(s) { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s); return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])); }
+
+// Người nhận của một dòng xuất. Dòng ghi trước bản 1.3.2 chưa có cột này: xuất theo phiếu thì lấy người đề xuất trong ghi chú.
+function nhanCuaGD(nn, ghiChu) {
+  if (nn) return nn;
+  const m = /^DX-\d+ · ([^·]+?)(?: · |$)/.exec(ghiChu);
+  return m ? m[1].trim() : '';
+}
 
 function baoCao(p) {
   const tu = str(p.tu), den = str(p.den);
@@ -2083,7 +2132,8 @@ function baoCao(p) {
     v.sl = lamTron(v.sl + sl); v.lan++;
     v.ct[k] = { ten: ten, sl: lamTron(((v.ct[k] || {}).sl || 0) + sl) };
     if (kq.chiTiet.length < BAO_CAO_CHI_TIET) {
-      kq.chiTiet.push({ time: iso(t), ct: ten, maVT: maVT, sl: sl, tu: hoa(r[C.TuViTri]), phieu: phieu, nguoi: str(r[C.NguoiDung]), ghiChu: str(r[C.GhiChu]) });
+      kq.chiTiet.push({ time: iso(t), ct: ten, maVT: maVT, sl: sl, tu: hoa(r[C.TuViTri]), phieu: phieu, nguoi: str(r[C.NguoiDung]),
+        nhan: nhanCuaGD(str(r[C.NguoiNhan]), str(r[C.GhiChu])), ghiChu: str(r[C.GhiChu]) });
     } else kq.catBot = true;
   });
   const theoTenCT = function (x, y) { return !x.k ? 1 : !y.k ? -1 : x.ten.localeCompare(y.ten); };
@@ -2452,12 +2502,12 @@ function caiDat() {
       gd.push({ t: now - 216 * gio, ID: 'GD-MAU-' + (gd.length + 1), Loai: 'NHAP', MaVT: p[0], TuViTri: '', DenViTri: p[1], SoLuong: dau[k], CongTrinh: '', GhiChu: 'Tồn đầu kỳ (dữ liệu mẫu)', NguoiDung: 'Thủ kho Lan' });
     });
     MAU.giaoDich.forEach(function (g, i) {
-      gd.push({ t: now - g[6] * gio, ID: 'GD-MAU-X' + (i + 1), Loai: g[0], MaVT: g[1], TuViTri: g[2], DenViTri: g[3], SoLuong: g[4], CongTrinh: g[5], GhiChu: '', NguoiDung: g[7] });
+      gd.push({ t: now - g[6] * gio, ID: 'GD-MAU-X' + (i + 1), Loai: g[0], MaVT: g[1], TuViTri: g[2], DenViTri: g[3], SoLuong: g[4], CongTrinh: g[5], GhiChu: '', NguoiDung: g[7], NguoiNhan: g[8] || '' });
     });
     if (coMuon) {
       const phieu = MAU.muonTra.map(function (r, i) {
         const t = now - r[5] * gio;
-        gd.push({ t: t, ID: 'GD-MAU-M' + (i + 1), Loai: 'MUON', MaVT: r[0], TuViTri: r[1], DenViTri: '', SoLuong: r[2], CongTrinh: r[4], GhiChu: '[' + r[3] + ']', NguoiDung: r[7] });
+        gd.push({ t: t, ID: 'GD-MAU-M' + (i + 1), Loai: 'MUON', MaVT: r[0], TuViTri: r[1], DenViTri: '', SoLuong: r[2], CongTrinh: r[4], GhiChu: '[' + r[3] + ']', NguoiDung: r[7], NguoiNhan: r[3] });
         return {
           ID: 'MT-MAU-' + (i + 1), ThoiGian: new Date(t), MaVT: r[0], TuViTri: r[1], SoLuong: r[2], NguoiMuon: r[3], CongTrinh: r[4],
           HanTra: ngayChu(new Date(t + r[6] * 24 * gio)), GhiChu: '', NguoiChoMuon: r[7], DaTra: 0, Hong: 0, Mat: 0,
@@ -2572,14 +2622,14 @@ const MAU = {
     ['PK-0003', 'K1-C-02-1', 64], ['DC-0001', 'K1-D-01-1', 4],
     ['DC-0002', 'K1-D-01-1', 2], ['DC-0003', 'K1-D-01-1', 3]
   ],
-  // Giao dịch mẫu: Loại, MaVT, Từ, Đến, SL, Công trình, Số giờ trước, Người làm
+  // Giao dịch mẫu: Loại, MaVT, Từ, Đến, SL, Công trình, Số giờ trước, Người làm, Người nhận
   giaoDich: [
-    ['CHUYEN', 'NU-0001', 'K1-C-01-1', 'K2-A-01-1', 40, '', 120, 'Thủ kho Lan'],
-    ['XUAT', 'DI-0001', 'K1-A-01-1', '', 150, 'Xưởng A – tủ điện tầng 1', 72, 'Thủ kho Lan'],
-    ['XUAT', 'DI-0003', 'K1-A-02-1', '', 16, 'Xưởng A – tủ điện tầng 1', 71, 'Thủ kho Lan'],
-    ['XUAT', 'NU-0002', 'K1-B-01-1', '', 40, 'Toà nhà B – cấp nước WC', 48, 'Thủ kho Lan'],
-    ['XUAT', 'PC-0001', 'K1-B-02-1', '', 60, 'Toà nhà B – PCCC tầng 3', 26, 'Thủ kho Lan'],
-    ['XUAT', 'DI-0008', 'K1-A-02-2', '', 18, 'Toà nhà B – văn phòng tầng 2', 5, 'Thủ kho Lan']
+    ['CHUYEN', 'NU-0001', 'K1-C-01-1', 'K2-A-01-1', 40, '', 120, 'Thủ kho Lan', ''],
+    ['XUAT', 'DI-0001', 'K1-A-01-1', '', 150, 'Xưởng A – tủ điện tầng 1', 72, 'Thủ kho Lan', 'Tuấn – tổ điện'],
+    ['XUAT', 'DI-0003', 'K1-A-02-1', '', 16, 'Xưởng A – tủ điện tầng 1', 71, 'Thủ kho Lan', 'Tuấn – tổ điện'],
+    ['XUAT', 'NU-0002', 'K1-B-01-1', '', 40, 'Toà nhà B – cấp nước WC', 48, 'Thủ kho Lan', 'Tổ trưởng Vương'],
+    ['XUAT', 'PC-0001', 'K1-B-02-1', '', 60, 'Toà nhà B – PCCC tầng 3', 26, 'Thủ kho Lan', '王师傅 – 空调组'],
+    ['XUAT', 'DI-0008', 'K1-A-02-2', '', 18, 'Toà nhà B – văn phòng tầng 2', 5, 'Thủ kho Lan', 'Tuấn – tổ điện']
   ],
   // Dụng cụ đang cho mượn: MaVT, Từ vị trí, SL, Người mượn, Công trình, Số giờ trước, Hạn trả sau (ngày), Người cho mượn
   muonTra: [
@@ -2624,7 +2674,7 @@ const LIB_SCAN = 'https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.m
 const LIB_QR = 'https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js';
 const LIB_XLSX = 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js';
 const IDLE_MIN = 15;
-const APP_VER = '1.3.1';   // tăng số này mỗi lần giao index.html mới, để kiểm tra điện thoại đã tải bản mới chưa
+const APP_VER = '1.3.2';   // tăng số này mỗi lần giao index.html mới, để kiểm tra điện thoại đã tải bản mới chưa
 const LOGO = '<svg viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="112" fill="#16211F"/><path d="M104 184V124Q104 104 124 104H184M328 104H388Q408 104 408 124V184M408 328V388Q408 408 388 408H328M184 408H124Q104 408 104 388V328" stroke="#F5C400" stroke-width="30" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M256 164L348 210L256 256L164 210Z" fill="#F5C400"/><path d="M256 164L348 210V306L256 352L164 306V210ZM164 210L256 256L348 210M256 256V352" stroke="#F5C400" stroke-width="24" stroke-linejoin="round" fill="none"/><path d="M312 244L284 294H304L292 334L324 280H304L318 244Z" fill="#F5C400"/></svg>';
 // Giống QUYEN trong Code.gs (máy chủ vẫn kiểm tra lại mọi thao tác)
 const QUYEN = { nhapxuat: ['admin', 'thukho'], danhmuc: ['admin', 'thukho'], muontra: ['admin', 'thukho'], nhatky: ['admin', 'kysu', 'thukho'], nguoidung: ['admin'],
@@ -2753,6 +2803,10 @@ const TX = {
   t_MUON: ['Cho mượn', '借出'], t_TRA: ['Trả', '归还'], t_MAT: ['Báo mất', '丢失'],
   tool: ['Dụng cụ', '工具'], toolsAvail: ['Dụng cụ trong kho', '在库工具'],
   borrower: ['Người mượn', '借用人'], borrowerPh: ['VD: Tuấn – tổ điện', '例：王师傅 空调组'],
+  receiver: ['Người nhận', '领料人'], receiverPh: ['Tên thợ đến lấy hàng', '领料工人姓名'],
+  receiverHelp: ['Mặc định là người tạo phiếu. Người khác đến lấy thay thì sửa tên.', '默认为申请人；他人代领请修改姓名。'],
+  errReceiver: ['Chọn hoặc gõ tên người nhận hàng.', '请选择或填写领料人。'],
+  d_XUAT_to: ['Đã xuất {q} từ {l} cho {w}', '已从 {l} 出库 {q}，领料人：{w}'],
   dueDate: ['Hạn trả', '归还期限'],
   due_0: ['Hôm nay', '今天'], due_1: ['Ngày mai', '明天'], due_3: ['3 ngày', '3天'], due_7: ['1 tuần', '1周'],
   lentShort: ['Mượn', '借出'], dueShort: ['Hạn', '期限'],
@@ -3044,7 +3098,7 @@ const S = {
   token: null, me: null, items: [], locs: [], stock: [], loans: [], borrowers: [], closedLoans: null,
   itemMap: new Map(), locMap: new Map(), byItem: new Map(), byLoc: new Map(), q: '', grp: '',
   // Đề xuất vật tư
-  requests: [], closedReqs: null, projects: [], draft: null,
+  requests: [], closedReqs: null, projects: [], receivers: [], draft: null,
   // Mạng yếu: base = dữ liệu máy chủ gửi về (cũng lưu trên máy); Q = hàng chờ gửi; phần hiển thị = base + các việc trong Q
   base: null, Q: [], offline: false, simDown: false, sessionMe: null, dataAt: '', idMap: {}, _pin: null
 };
@@ -3126,6 +3180,7 @@ function fmtDay(s) { const d = dayOf(s); if (!d) return s || ''; const p = n => 
 // d: dữ liệu máy chủ. t0: lúc bắt đầu tải (bỏ các việc đã gửi xong trước lúc đó). fromSnap: lấy từ bản lưu trên máy.
 function setData(d, t0, fromSnap) {
   d.requests = d.requests || []; d.projects = d.projects || []; d.loans = d.loans || []; d.borrowers = d.borrowers || [];
+  d.receivers = d.receivers || [];
   S.base = d; S.dataAt = d.time || '';
   if (!fromSnap) { S.sessionMe = d.me; saveSnap(); }
   if (t0) {
@@ -3141,7 +3196,7 @@ function cloneReq(R) { return Object.assign({}, R, { lines: R.lines.map(l => Obj
 function seeReq(R) { return can('xemdexuat') || (S.me && R.nguoiTaoId === S.me.id); }
 // Phần hiển thị = dữ liệu máy chủ + các việc đang chờ gửi (hoặc vừa gửi, chưa tải lại)
 function rebuild() {
-  const B = S.base || { items: [], locations: [], stock: [], loans: [], borrowers: [], requests: [], projects: [] };
+  const B = S.base || { items: [], locations: [], stock: [], loans: [], borrowers: [], requests: [], projects: [], receivers: [] };
   S.me = S.sessionMe || B.me || null;
   S.items = B.items; S.locs = B.locations;
   S.stock = B.stock.map(s => Object.assign({}, s));
@@ -3149,6 +3204,7 @@ function rebuild() {
   S.borrowers = B.borrowers.slice();
   S.requests = B.requests.filter(seeReq).map(cloneReq);
   S.projects = B.projects.slice();
+  S.receivers = (B.receivers || []).slice();
   for (const op of myOps()) if (op.st === 'cho' || op.st === 'ok') { try { applyLocal(op); } catch (e) { /* bỏ qua */ } }
   reindex();
 }
@@ -3231,6 +3287,14 @@ function isTmp(id) { return String(id || '').startsWith('tmp-'); }
 function needsMe(R) {
   if (isTmp(R.id)) return false;
   return (R.trangThai === 'CHO_DUYET' && can('duyet')) || (R.trangThai === 'DA_DUYET' && can('nhapxuat'));
+}
+// Người nhận khi xuất: tên vừa dùng lên đầu danh sách gợi ý
+function cleanName(n) { return String(n || '').replace(/[[\]]/g, '').replace(/\s+/g, ' ').trim(); }
+function addReceiver(n) {
+  n = cleanName(n); if (!n) return;
+  const f = a => [n].concat((a || []).filter(x => x.toLowerCase() !== n.toLowerCase()));
+  S.receivers = f(S.receivers);
+  if (S.base) S.base.receivers = f(S.base.receivers);
 }
 function addProject(ct) {
   ct = String(ct || '').trim(); if (!ct) return;
@@ -3987,7 +4051,7 @@ function logList(rows, withItem) {
       <div class="log-top"><span class="badge b-${g.loai.toLowerCase()}">${t('t_' + g.loai)}</span>
         <span class="log-q ${sign < 0 ? 'neg' : sign > 0 ? 'pos' : ''}">${q} ${esc(unitName(u))}</span></div>
       ${withItem ? `<div><span class="nm">${esc(it ? nm1(it) : g.maVT)}</span> <span class="plate">${esc(g.maVT)}</span></div>` : ''}
-      <div class="log-sub">${where ? `<span class="mono">${where}</span>` : ''}${m ? `<span class="who">${ic('user')}${esc(m[1])}</span>` : ''}${g.congTrinh ? `<span>${esc(g.congTrinh)}</span>` : ''}${note ? `<span>${esc(note)}</span>` : ''}
+      <div class="log-sub">${where ? `<span class="mono">${where}</span>` : ''}${m ? `<span class="who">${ic('user')}${esc(m[1])}</span>` : ''}${g.loai === 'XUAT' && g.nhan ? `<span class="who">${ic('user')}${t('receiver')}: <b>${esc(g.nhan)}</b></span>` : ''}${g.congTrinh ? `<span>${esc(g.congTrinh)}</span>` : ''}${note ? `<span>${esc(note)}</span>` : ''}
         <span>${esc(g.nguoi)} · ${fmtTime(g.time)}</span></div>
     </div>`;
   }).join('')}</div>`;
@@ -4084,6 +4148,7 @@ VIEWS.txn = function (F) {
     <div class="field"><label for="fQty">${loai === 'KIEMKE' ? t('actualQty') : t('quantity')} (${esc(unitName(u))}) <span class="req">*</span></label>
       <input class="inp mono" id="fQty" inputmode="decimal" autocomplete="off" value="${esc(F.qty || '')}" placeholder="0">
       <div class="hintline" id="qtyHint"></div></div>
+    ${loai === 'XUAT' ? nhanField(F.nhan) : ''}
     ${loai === 'XUAT' ? `<div class="field"><label for="fCt">${t('project')}</label><input class="inp" id="fCt" autocomplete="off" value="${esc(F.ct || '')}" placeholder="${esc(tp('projectPh'))}">
       <div class="opts" id="ctSug"></div></div>` : ''}
     <div class="field"><label for="fNote">${t('note')} <span class="muted">(${t('optional')})</span></label><input class="inp" id="fNote" value="${esc(F.note || '')}"></div>
@@ -4116,6 +4181,7 @@ VIEWS.txn = function (F) {
     const g = id => { const e = $('#' + id); return e ? e.value : undefined; };
     if (g('fQty') !== undefined) F.qty = g('fQty');
     if (g('fCt') !== undefined) F.ct = g('fCt');
+    if (g('fNhan') !== undefined) F.nhan = g('fNhan');
     if (g('fNote') !== undefined) F.note = g('fNote');
   };
   F._sync = sync;
@@ -4126,6 +4192,7 @@ VIEWS.txn = function (F) {
   const qEl = $('#fQty'); if (qEl) qEl.addEventListener('input', hint);
   hint();
   bindCtSug(F);
+  bindNhanSug(F);
 
   $('#f').addEventListener('submit', async ev => {
     ev.preventDefault(); sync();
@@ -4135,17 +4202,40 @@ VIEWS.txn = function (F) {
     const needTu = loai === 'XUAT' || loai === 'CHUYEN', needDen = loai !== 'XUAT';
     if ((needTu && !F.tu) || (needDen && !F.den)) return toast(t('errNoLoc'), 'bad');
     if (needTu && qty > qtyAt(F.tu)) return toast(t('errNotEnough', { n: fmt(qtyAt(F.tu)) }), 'bad');
+    const nhan = loai === 'XUAT' ? cleanName(F.nhan) : '';
+    if (loai === 'XUAT' && !nhan) { toast(t('errReceiver'), 'bad'); $('#fNhan').focus(); return; }
     const btn = $('#fSubmit'); btn.disabled = true;
     try {
-      const r = await send('txn', { loai, maVT: it.maVT, tuViTri: needTu ? F.tu : '', denViTri: needDen ? F.den : '', soLuong: qty, congTrinh: (F.ct || '').trim(), ghiChu: F.note || '' });
+      const pl = { loai, maVT: it.maVT, tuViTri: needTu ? F.tu : '', denViTri: needDen ? F.den : '', soLuong: qty, congTrinh: (F.ct || '').trim(), ghiChu: F.note || '' };
+      if (nhan) pl.nguoiNhan = nhan;
+      const r = await send('txn', pl);
       if (r.data) updateStock(it.maVT, r.data.stock);
       if (F.ct) addProject(F.ct);
+      if (nhan) addReceiver(nhan);
       const qs = qtyU(qty, u);
-      toast(t('d_' + loai, { q: qs, l: loai === 'XUAT' ? F.tu : F.den, a: F.tu, b: F.den }) + qn(r));
+      toast(t(nhan ? 'd_XUAT_to' : 'd_' + loai, { q: qs, l: loai === 'XUAT' ? F.tu : F.den, a: F.tu, b: F.den, w: nhan }) + qn(r));
       finishTo('item', { id: it.maVT });
     } catch (e) { toast(errMsg(e), 'bad'); btn.disabled = false; }
   });
 };
+// Ô người nhận (xuất kho, xuất theo phiếu): bắt buộc, có nút chọn nhanh tên đã dùng / người dùng / người mượn
+function nhanField(v, help) {
+  return `<div class="field"><label for="fNhan">${t('receiver')} <span class="req">*</span></label>
+    <input class="inp" id="fNhan" autocomplete="off" autocorrect="off" spellcheck="false" value="${esc(v || '')}" placeholder="${esc(tp('receiverPh'))}">
+    ${help ? `<p class="help muted" style="margin:0;font-size:12.5px">${t(help)}</p>` : ''}
+    <div class="opts" id="nhanSug"></div></div>`;
+}
+function bindNhanSug(F) {
+  const inp = $('#fNhan'), box = $('#nhanSug');
+  if (!inp || !box) return;
+  const draw = () => {
+    const v = inp.value.trim(), q = norm(v).trim();
+    const list = [...new Set(S.receivers.concat(S.borrowers))].filter(n => n && n !== v && (!q || norm(n).includes(q))).slice(0, 8);
+    box.innerHTML = list.map(n => `<button type="button" class="chip" data-act="nhanPick" data-name="${esc(n)}">${esc(n)}</button>`).join('');
+  };
+  inp.addEventListener('input', () => { F.nhan = inp.value; draw(); });
+  draw();
+}
 // Gợi ý tên công trình đã dùng (viết thống nhất để sau này báo cáo theo công trình)
 function bindCtSug(F) {
   const inp = $('#fCt'), box = $('#ctSug');
@@ -4711,6 +4801,7 @@ VIEWS.req = function (p) {
     });
   }
   const I = p.I;
+  if (I.nhan === undefined) I.nhan = R.nguoiTao || '';
   main.innerHTML = head + `
   <form id="f" class="form" novalidate autocomplete="off" style="margin-top:16px">
     <h2 class="sec" style="margin:0">${t('issueTitle')}</h2>
@@ -4727,14 +4818,17 @@ VIEWS.req = function (p) {
         </div></div>`;
     }).join('')}
     <p class="help muted" style="margin:0;font-size:12.5px">${t('issueHelp')}</p>
+    ${nhanField(I.nhan, 'receiverHelp')}
     <div class="field"><label for="fNote">${t('note')} <span class="muted">(${t('optional')})</span></label><input class="inp" id="fNote" value="${esc(I.note)}"></div>
     <button type="submit" class="btn primary" id="fSubmit">${ic('XUAT')}${t('issueConfirm')}</button>
   </form>${tail}`;
   const sync = () => {
     R.lines.forEach((l, i) => { const a = $('#fL' + i), b = $('#fQ' + i); if (a) I.loc[i] = a.value; if (b) I.q[i] = b.value; });
     I.note = $('#fNote').value;
+    I.nhan = $('#fNhan').value;
   };
   p._sync = sync;
+  bindNhanSug(I);
   R.lines.forEach((l, i) => {
     const a = $('#fL' + i);
     if (a) a.addEventListener('change', () => { sync(); I.q[i] = a.value ? String(Math.min(rem(l), qAt(itemOf(l), a.value))) : ''; render(); });
@@ -4754,10 +4848,13 @@ VIEWS.req = function (p) {
       lines.push({ maVT: l.maVT, tuViTri: I.loc[i], soLuong: q });
     }
     if (!lines.length) return toast(t('errReqEmpty'), 'bad');
+    const nhan = cleanName(I.nhan);
+    if (!nhan) { toast(t('errReceiver'), 'bad'); $('#fNhan').focus(); return; }
     const btn = $('#fSubmit'); btn.disabled = true;
     try {
-      const r = await send('issue', { id: R.id, lines, ghiChu: I.note.trim() }, { ct: R.congTrinh });
+      const r = await send('issue', { id: R.id, lines, ghiChu: I.note.trim(), nguoiNhan: nhan }, { ct: R.congTrinh });
       if (r.data) { updateStockMany(lines.map(x => x.maVT), r.data.stock); upsertReq(r.data.request); }
+      addReceiver(nhan);
       toast(t('d_ISSUE', { x: R.id }) + qn(r));
       p.I = null; render(); window.scrollTo(0, 0);
     } catch (e) { toast(errMsg(e), 'bad'); btn.disabled = false; }
@@ -4774,7 +4871,7 @@ function opDesc(op) {
   const where = (a, b) => (a || b ? `<span class="mono">${esc([a, b].filter(Boolean).join(' → '))}</span>` : '');
   const reqName = id => `<span class="okline">${isTmp(realId(id)) ? '' : `<span class="plate">${esc(realId(id))}</span>`}<span>${esc(info.ct || '')}</span></span>`;
   switch (op.a) {
-    case 'txn': return `<b>${t('a_' + p.loai)}</b>${itm(p.maVT, p.soLuong)}${where(p.tuViTri, p.denViTri)}`;
+    case 'txn': return `<b>${t('a_' + p.loai)}</b>${itm(p.maVT, p.soLuong)}${where(p.tuViTri, p.denViTri)}${p.nguoiNhan ? `<span class="okline">${ic('user')}${t('receiver')}: ${esc(p.nguoiNhan)}</span>` : ''}`;
     case 'lend': return `<b>${t('lend')}</b>${itm(p.maVT, p.soLuong)}<span class="who">${ic('user')}${esc(p.nguoiMuon)}</span>`;
     case 'takeBack': return `<b>${t(p.tinhTrang === 'MAT' ? 't_MAT' : 't_TRA')}</b>${itm(info.maVT, p.soLuong)}<span class="who">${ic('user')}${esc(info.who || '')}</span>`;
     case 'request': return `<b>${t('reqNew')}</b><span>${esc(p.congTrinh)}</span>${(p.lines || []).map(x => itm(x.maVT, x.soLuong)).join('')}`;
@@ -5641,13 +5738,13 @@ async function rpExcel(p) {
   R.theoCT.forEach(c => c.dong.forEach(d => { const it = rpItem(d.maVT); s1.push([rpCtName(c.k, c.ten), d.maVT, it.tenVI, it.tenZH, it.quyCach, U(it.donVi), d.sl, d.lan, d.phieu.join(', ')]); }));
   const s2 = top.concat([[h('xc_maVT'), h('xc_tenVI'), h('xc_tenZH'), h('xc_quyCach'), h('xc_donVi'), h('xr_qty'), h('xr_times'), h('xr_nct')]]);
   R.theoVT.forEach(v => { const it = rpItem(v.maVT); s2.push([v.maVT, it.tenVI, it.tenZH, it.quyCach, U(it.donVi), v.sl, v.lan, v.ct.length]); });
-  const s3 = top.concat([[h('xr_time'), h('project'), h('xc_maVT'), h('xc_tenVI'), h('xc_tenZH'), h('xr_sl'), h('xc_donVi'), h('xr_from'), h('xr_ticket'), h('xr_who'), h('xc_ghiChu')]]);
-  R.chiTiet.forEach(x => { const it = rpItem(x.maVT); s3.push([new Date(x.time), rpCtName(x.ct ? 'x' : '', x.ct), x.maVT, it.tenVI, it.tenZH, x.sl, U(it.donVi), x.tu, x.phieu, x.nguoi, x.ghiChu]); });
+  const s3 = top.concat([[h('xr_time'), h('project'), h('xc_maVT'), h('xc_tenVI'), h('xc_tenZH'), h('xr_sl'), h('xc_donVi'), h('xr_from'), h('xr_ticket'), h('xr_who'), h('receiver'), h('xc_ghiChu')]]);
+  R.chiTiet.forEach(x => { const it = rpItem(x.maVT); s3.push([new Date(x.time), rpCtName(x.ct ? 'x' : '', x.ct), x.maVT, it.tenVI, it.tenZH, x.sl, U(it.donVi), x.tu, x.phieu, x.nguoi, x.nhan || '', x.ghiChu]); });
   const mk = (aoa, w) => { const ws = XLSX.utils.aoa_to_sheet(aoa, { cellDates: true, dateNF: 'dd/mm/yyyy hh:mm' }); ws['!cols'] = w.map(x => ({ wch: x })); return ws; };
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, mk(s1, [30, 11, 30, 26, 20, 10, 11, 8, 18]), 'Tổng hợp 汇总');
   XLSX.utils.book_append_sheet(wb, mk(s2, [11, 30, 26, 20, 10, 11, 8, 12]), 'Theo vật tư 按物料');
-  XLSX.utils.book_append_sheet(wb, mk(s3, [17, 30, 11, 30, 26, 10, 10, 12, 12, 16, 30]), 'Chi tiết 明细');
+  XLSX.utils.book_append_sheet(wb, mk(s3, [17, 30, 11, 30, 26, 10, 10, 12, 12, 16, 18, 30]), 'Chi tiết 明细');
   saveXlsx(wb, 'Bao-cao-xuat-kho_' + R.tu + '_' + R.den + '.xlsx');
 }
 // In / lưu PDF: bảng tổng hợp theo công trình, lề 12mm (tem QR in lề 0)
@@ -5903,6 +6000,12 @@ const ACT = {
     const F = cur().p; F.due = addDays(Number(el.dataset.d));
     const d = $('#fDue'); if (d) d.value = F.due;
     document.querySelectorAll('[data-act="due"]').forEach(b => b.setAttribute('aria-pressed', String(b === el)));
+  },
+  nhanPick: el => {
+    const c = cur(), F = c.v === 'req' ? c.p.I : c.p;
+    if (!F) return;
+    F.nhan = el.dataset.name;
+    const w = $('#fNhan'); if (w) { w.value = F.nhan; w.dispatchEvent(new Event('input')); }
   },
   whoPick: el => {
     const F = cur().p; F.who = el.dataset.name;
