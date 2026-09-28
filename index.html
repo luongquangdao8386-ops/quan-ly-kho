@@ -131,7 +131,8 @@ h2.sec{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--
 .brand span{font-family:var(--zh);font-size:17px;color:var(--muted);letter-spacing:.2em}
 .brand-mark{margin:0 auto 10px;width:88px;height:88px}
 .brand-mark svg,.bar-logo svg{display:block;width:100%;height:100%}
-.bar-logo{width:36px;height:36px;flex:none;margin-left:4px}
+.bar-logo{width:40px;height:40px;flex:none;margin-left:2px;padding:2px;border:0;background:none;border-radius:10px;cursor:pointer}
+.bar-logo:active{opacity:.6}
 .pin-label{font-weight:600;margin-top:8px}
 .dots{display:flex;gap:14px}
 .dots i{width:14px;height:14px;border-radius:50%;border:2px solid var(--ink);display:block}
@@ -433,7 +434,7 @@ h2.sec.ct{text-transform:none;letter-spacing:0;font-size:14.5px;color:var(--ink)
   <header class="bar">
     <div class="bar-in">
       <button class="icon-btn" id="btnBack" type="button" data-act="back" hidden></button>
-      <span class="bar-logo" id="barLogo" hidden></span>
+      <button class="bar-logo" id="barLogo" type="button" data-act="home" hidden></button>
       <div class="bar-title"><b id="barTitle">Kho Cơ Điện</b><small id="barSub">机电仓库</small></div>
       <button class="icon-btn" id="btnUser" type="button" data-act="userMenu" hidden></button>
     </div>
@@ -2623,7 +2624,7 @@ const LIB_SCAN = 'https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.m
 const LIB_QR = 'https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js';
 const LIB_XLSX = 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js';
 const IDLE_MIN = 15;
-const APP_VER = '1.3.0';   // tăng số này mỗi lần giao index.html mới, để kiểm tra điện thoại đã tải bản mới chưa
+const APP_VER = '1.3.1';   // tăng số này mỗi lần giao index.html mới, để kiểm tra điện thoại đã tải bản mới chưa
 const LOGO = '<svg viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="112" fill="#16211F"/><path d="M104 184V124Q104 104 124 104H184M328 104H388Q408 104 408 124V184M408 328V388Q408 408 388 408H328M184 408H124Q104 408 104 388V328" stroke="#F5C400" stroke-width="30" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M256 164L348 210L256 256L164 210Z" fill="#F5C400"/><path d="M256 164L348 210V306L256 352L164 306V210ZM164 210L256 256L348 210M256 256V352" stroke="#F5C400" stroke-width="24" stroke-linejoin="round" fill="none"/><path d="M312 244L284 294H304L292 334L324 280H304L318 244Z" fill="#F5C400"/></svg>';
 // Giống QUYEN trong Code.gs (máy chủ vẫn kiểm tra lại mọi thao tác)
 const QUYEN = { nhapxuat: ['admin', 'thukho'], danhmuc: ['admin', 'thukho'], muontra: ['admin', 'thukho'], nhatky: ['admin', 'kysu', 'thukho'], nguoidung: ['admin'],
@@ -2636,6 +2637,7 @@ const TIEN_TO = { dien: 'DI', nuoc: 'NU', pccc: 'PC', hvac: 'HV', phukien: 'PK',
 /* ---------------- Song ngữ ---------------- */
 const TX = {
   appName: ['Kho Cơ Điện', '机电仓库'],
+  goHome: ['Về trang chủ', '返回首页'],
   tagline: ['Quản lý vật tư kho cơ điện', '机电物料仓储管理'],
   enterPin: ['Nhập mã PIN', '请输入PIN码'],
   pinWrong: ['Sai PIN. Còn {n} lần thử.', 'PIN错误，还可尝试{n}次。'],
@@ -3673,6 +3675,20 @@ function finishTo(v, p) {
   if (prev && prev.v === v && (!p || !p.id || prev.p.id === p.id)) goBack();
   else go(v, p, true);
 }
+// Bấm logo trên cùng: về trang chủ và xoá chữ tìm kiếm (không cần xoá tay)
+function goHome() {
+  if (!S.me || !NAV.length || NAV[0].v !== 'home') return;
+  closeSheet();
+  S.q = '';
+  const n = NAV.length - 1;
+  if (n > 0) {
+    NAV.length = 1;
+    if (USE_HIST) { try { history.go(-n); } catch (e) { /* bỏ qua */ } }
+  }
+  const a = document.activeElement;
+  if (a && a.blur) a.blur();
+  render(); window.scrollTo(0, 0);
+}
 function cur() { return NAV[NAV.length - 1] || { v: 'login', p: {} }; }
 
 const K = k => [tv(k), tz(k)];
@@ -3698,8 +3714,9 @@ function render() {
   $('#barSub').lang = mono ? '' : 'zh-CN';
   $('#barTitle').className = mono ? 'mono' : '';
   $('#btnBack').hidden = NAV.length <= 1 || c.v === 'login';
-  $('#barLogo').hidden = c.v !== 'home';
+  $('#barLogo').hidden = !S.me || c.v === 'login';
   if (!$('#barLogo').firstChild) $('#barLogo').innerHTML = LOGO;
+  $('#barLogo').setAttribute('aria-label', tp('goHome'));
   $('#btnBack').innerHTML = ic('back');
   $('#btnBack').setAttribute('aria-label', tp('back'));
   $('#btnUser').hidden = !S.me || c.v === 'login';
@@ -5820,6 +5837,7 @@ function openCode(code) {
 /* ---------------- Bấm nút (uỷ quyền sự kiện) ---------------- */
 const ACT = {
   back: () => goBack(),
+  home: () => goHome(),
   userMenu: () => userMenu(),
   sheetBg: (el, ev) => { if (ev.target === el) closeSheet(); },
   sheetClose: () => closeSheet(),
