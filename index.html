@@ -362,6 +362,67 @@ textarea.inp{height:auto;min-height:70px;padding:10px 12px;resize:vertical}
 .sr-only{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:70;max-width:min(92vw,520px);padding:12px 16px;border-radius:12px;background:var(--action);color:var(--action-ink);font-weight:500;font-size:14.5px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
 .toast.bad{background:var(--bad);color:#fff}
+/* Bản 1.3: quản trị, báo tin, nhập Excel, báo cáo, ảnh */
+p.help{font-size:12.5px;color:var(--muted);margin:0;line-height:1.45}
+.card{display:flex;flex-direction:column;gap:10px;padding:14px;border:1px solid var(--line);border-radius:12px;background:var(--card);margin:0 0 12px}
+.form .card{margin:0}
+.card-h{display:flex;align-items:center;flex-wrap:wrap;gap:4px 8px;margin:0;font-size:15.5px;font-weight:700;line-height:1.3}
+.card-h .ic{color:var(--muted)}
+.card-h .zi{font-weight:500;margin-left:0}
+.card p{margin:0}
+.card .btn.primary{height:50px}
+.okcard{border-color:var(--ok)}
+.okcard .card-h .ic{color:var(--ok)}
+.kv{font-size:14px;display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px}
+.steps,.who-list{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:7px;font-size:13.5px;line-height:1.4}
+.steps .zi,.who-list .zi{display:block;margin-left:0;font-size:12.5px}
+.check span .zi{display:block;margin-left:0;font-weight:500;font-size:12.5px}
+.check{align-items:flex-start}
+.check input{flex:none;margin-top:1px}
+.picked-chat{padding:10px 12px;border:1.5px dashed var(--line);border-radius:10px;font-size:14px;display:flex;flex-wrap:wrap;gap:4px 8px;align-items:baseline}
+.note.bad{background:var(--badbg);color:var(--bad)}
+.note.ok{background:var(--okbg);color:var(--ok)}
+.note.grey{background:var(--sunk);color:var(--muted)}
+.file-btn{position:relative;cursor:pointer}
+.xls-sum{display:flex;flex-wrap:wrap;gap:6px}
+.xls-sum .pill{font-size:13px;padding:3px 10px}
+.xls-sum b{font-family:var(--mono);margin-left:2px}
+.xls-sum .zi{margin-left:.3em}
+.pill.wrap{white-space:normal;flex-wrap:wrap}
+.err-list .nm2{color:var(--bad)}
+.err-list .nm2 .zi{display:block;margin-left:0}
+.row .help .zi{display:block;margin-left:0}
+.tile.t-rp .ic{color:var(--move)}
+.tile.t-admin .ic{color:var(--muted)}
+.rp-lan{white-space:nowrap}
+.chips.wrap{flex-wrap:wrap;overflow:visible;margin-inline:0;padding-inline:0}
+h2.sec.ct{text-transform:none;letter-spacing:0;font-size:14.5px;color:var(--ink)}
+.thumb{flex:none;width:46px;height:46px;border-radius:8px;overflow:hidden;background:var(--sunk);border:1px solid var(--line)}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb.broken{display:none}
+.photo{display:grid;place-items:center;width:100%;padding:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--sunk);margin:0 0 12px;height:min(46vw,200px);position:relative}
+.photo img{width:100%;height:100%;object-fit:contain;display:block}
+.photo.big{height:auto;min-height:200px;background:#000;margin:0}
+.photo-big{max-height:68vh}
+.photo-err{display:none;color:var(--muted);font-size:13px;text-align:center;padding:12px}
+.photo.broken img{display:none}
+.photo.broken .photo-err{display:block}
+.rp-print{display:none}
+@media print{
+  #printArea .rp-print{display:block;font-family:'Be Vietnam Pro','Noto Sans SC',sans-serif;color:#000;font-size:9.5pt;line-height:1.35}
+  .rp-print h1{font-size:14pt;margin:0 0 1.5mm}
+  .rp-print p{margin:0 0 3mm}
+  .rp-print .z{font-family:'Noto Sans SC',sans-serif;color:#444;font-weight:400}
+  .rp-print table{width:100%;border-collapse:collapse}
+  .rp-print th,.rp-print td{border:.2mm solid #999;padding:1.2mm 1.6mm;text-align:left;vertical-align:top}
+  .rp-print th{background:#eee;font-size:8pt;font-weight:700}
+  .rp-print .n{text-align:right;font-family:'JetBrains Mono',monospace;white-space:nowrap}
+  .rp-print .m{font-family:'JetBrains Mono',monospace;font-size:8.5pt;white-space:nowrap}
+  .rp-print tr.grp td{background:#f5c400;font-weight:700}
+  .rp-print thead{display:table-header-group}
+  .rp-print tr{break-inside:avoid;page-break-inside:avoid}
+  .rp-print .foot{margin-top:3mm;color:#555;font-size:8pt}
+}
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
 @media (max-width:360px){.acts{grid-template-columns:repeat(2,1fr)}.scan-btn span{display:none}}
 </style>
@@ -456,6 +517,8 @@ function __makeSheet(name) {
       return 0;
     },
     getMaxRows: () => Math.max(maxRows, rows.length),
+    getMaxColumns: () => 26,
+    insertColumnsAfter() {},
     insertRowsAfter(after, n) { maxRows = Math.max(maxRows, rows.length) + n; },
     setFrozenRows() {},
     deleteRows(start, n) { rows.splice(start - 1, n); },
@@ -500,6 +563,8 @@ function __makeSheet(name) {
 
 const __sheets = [];
 const __ss = {
+  getId: () => 'ss-main',
+  getName: () => 'Kho Cơ Điện',
   getSheetByName: n => __sheets.find(s => s.getName() === n) || null,
   insertSheet(n) { const s = __makeSheet(n); __sheets.push(s); return s; },
   getSheets: () => __sheets.slice(),
@@ -518,7 +583,8 @@ const CacheService = {
 const LockService = { getScriptLock: () => ({ waitLock() {}, tryLock: () => true, releaseLock() {} }) };
 const __props = new Map();
 const PropertiesService = {
-  getScriptProperties: () => ({ getProperty: k => (__props.has(k) ? __props.get(k) : null), setProperty: (k, v) => __props.set(k, String(v)) })
+  getScriptProperties: () => ({ getProperty: k => (__props.has(k) ? __props.get(k) : null), setProperty: (k, v) => __props.set(k, String(v)),
+    deleteProperty: k => __props.delete(k) })
 };
 const Utilities = {
   DigestAlgorithm: { SHA_256: 'SHA_256' },
@@ -530,23 +596,116 @@ const Utilities = {
       const r = Math.random() * 16 | 0; return (ch === 'x' ? r : (r & 3 | 8)).toString(16);
     });
   },
-  sleep() {}
+  sleep() {},
+  base64Decode: s => ({ __b64: String(s) }),
+  newBlob: (b, mime, name) => ({ b64: b && b.__b64 !== undefined ? b.__b64 : '', mime, name })
 };
 const ContentService = {
   MimeType: { JSON: 'json' },
   createTextOutput: s => ({ setMimeType() { return this; }, getContent: () => s })
 };
+
+// Google Drive, hẹn giờ, email, gọi Telegram: giả lập (bản xem thử không gửi gì ra ngoài).
+const MimeType = { GOOGLE_SHEETS: 'application/vnd.google-apps.spreadsheet', JPEG: 'image/jpeg' };
+const __drive = { files: new Map(), folders: new Map(), n: 0 };
+function __fileApi(f) {
+  const api = {
+    getId: () => f.id, getName: () => f.name, getMimeType: () => f.mime, getDateCreated: () => new Date(f.created.getTime()),
+    isTrashed: () => f.trashed, setTrashed(v) { f.trashed = !!v; return api; },
+    setSharing(a, p) { if (__drive.shareFails) throw new Error('Sharing is not allowed'); f.sharing = a + ':' + p; return api; },
+    getUrl: () => 'https://drive.google.com/file/d/' + f.id,
+    makeCopy(name, folder) { return __newFile(name, f.mime, f.data, folder); }
+  };
+  return api;
+}
+function __newFile(name, mime, data, folder) {
+  __drive.n++;
+  const f = { id: 'f' + __drive.n + 'x' + Math.random().toString(36).slice(2, 8), name, mime, data: data || '', folder: folder ? folder.getId() : '',
+    trashed: false, created: new Date(Date.now() + __drive.n), sharing: '' };
+  __drive.files.set(f.id, f);
+  return __fileApi(f);
+}
+function __folderApi(d) {
+  const api = {
+    getId: () => d.id, getName: () => d.name, isTrashed: () => d.trashed, setTrashed(v) { d.trashed = !!v; return api; },
+    createFile: blob => __newFile(blob.name, blob.mime, blob.b64, api),
+    getFiles() {
+      const ls = [...__drive.files.values()].filter(f => f.folder === d.id && !f.trashed);
+      let i = 0;
+      return { hasNext: () => i < ls.length, next: () => __fileApi(ls[i++]) };
+    }
+  };
+  return api;
+}
+const DriveApp = {
+  Access: { ANYONE_WITH_LINK: 'ANYONE_WITH_LINK' }, Permission: { VIEW: 'VIEW' },
+  getRootFolder: () => ({ getName: () => 'My Drive' }),
+  createFolder(name) { __drive.n++; const d = { id: 'd' + __drive.n, name, trashed: false }; __drive.folders.set(d.id, d); return __folderApi(d); },
+  getFolderById(id) { const d = __drive.folders.get(id); if (!d) throw new Error('No item with the given ID'); return __folderApi(d); },
+  getFoldersByName(name) {
+    const ls = [...__drive.folders.values()].filter(d => d.name === name && !d.trashed);
+    let i = 0;
+    return { hasNext: () => i < ls.length, next: () => __folderApi(ls[i++]) };
+  },
+  getFileById(id) {
+    if (id === 'ss-main' && !__drive.files.has(id)) __drive.files.set(id, { id, name: 'Kho Cơ Điện', mime: MimeType.GOOGLE_SHEETS, data: '', folder: '', trashed: false, created: new Date(0), sharing: '' });
+    const f = __drive.files.get(id);
+    if (!f) throw new Error('No item with the given ID');
+    return __fileApi(f);
+  }
+};
+const __triggers = [];
+const ScriptApp = {
+  WeekDay: { MONDAY: 'MONDAY', SUNDAY: 'SUNDAY' },
+  getProjectTriggers: () => __triggers.slice(),
+  deleteTrigger(t) { const i = __triggers.indexOf(t); if (i >= 0) __triggers.splice(i, 1); },
+  newTrigger(fn) {
+    const spec = { fn };
+    const b = {
+      timeBased: () => b, onWeekDay(d) { spec.day = d; return b; }, atHour(h) { spec.hour = h; return b; },
+      everyDays(n) { spec.days = n; return b; }, everyWeeks(n) { spec.weeks = n; return b; },
+      create() { const t = { getHandlerFunction: () => fn, spec }; __triggers.push(t); return t; }
+    };
+    return b;
+  }
+};
+const __mail = [];
+const MailApp = {
+  sendEmail(o) { if (__net.mailFails) throw new Error('Service invoked too many times: email'); __mail.push(o); },
+  getRemainingDailyQuota: () => 100 - __mail.length
+};
+// Trả lời giả của Telegram. __net.reply(url, body) (nếu có) trả lời thay.
+const __net = { log: [], reply: null, mailFails: false };
+const UrlFetchApp = {
+  fetch(url, opt) {
+    const body = opt && opt.payload ? JSON.parse(opt.payload) : {};
+    __net.log.push({ url, body });
+    let r = __net.reply ? __net.reply(url, body) : null;
+    if (!r) {
+      const m = /\/bot([^/]+)\/(\w+)$/.exec(url);
+      if (!m) r = { ok: false, description: 'Not Found' };
+      else if (!/^\d+:[\w-]{20,}$/.test(m[1]) || /BAD/.test(m[1])) r = { ok: false, error_code: 401, description: 'Unauthorized' };
+      else if (m[2] === 'getUpdates') r = { ok: true, result: [
+        { update_id: 1, my_chat_member: { chat: { id: -1001234567890, title: 'Kho Cơ Điện – nhóm kho', type: 'supergroup' } } },
+        { update_id: 2, message: { chat: { id: 555111, first_name: 'Lan', type: 'private' }, text: '/start' } }] };
+      else r = { ok: true, result: { message_id: __net.log.length } };
+    }
+    return { getContentText: () => JSON.stringify(r), getResponseCode: () => (r.ok ? 200 : r.error_code || 400) };
+  }
+};
+const Session = { getScriptTimeZone: () => (typeof Intl !== 'undefined' && Intl.DateTimeFormat().resolvedOptions().timeZone) || 'Asia/Ho_Chi_Minh' };
 __ss.insertSheet('Trang tính1');
 
 /**
  * ==================================================================
- *  KHO CƠ ĐIỆN · 机电仓库  —  Máy chủ (Google Apps Script)   v1.2.1
+ *  KHO CƠ ĐIỆN · 机电仓库  —  Máy chủ (Google Apps Script)   v1.3.0
  * ==================================================================
  *  CÁCH CÀI (tóm tắt, xem hướng dẫn đầy đủ trong tin nhắn):
  *   1. Tạo Google Sheet mới → Tiện ích mở rộng → Apps Script.
  *   2. Xoá hết code có sẵn, dán TOÀN BỘ file này vào, bấm Lưu.
  *   3. Chọn hàm "caiDat" ở thanh trên → bấm Chạy → cấp quyền.
  *      Sheet sẽ tự tạo 9 trang và dữ liệu mẫu.
+ *      Sau đó chọn hàm "capQuyen" → Chạy → Cho phép (sao lưu, ảnh, báo tin).
  *   4. Triển khai → Tuỳ chọn triển khai mới → loại "Ứng dụng web".
  *      Thực thi với: Tôi · Người có quyền truy cập: Bất kỳ ai → Triển khai.
  *   5. Sao chép URL (kết thúc bằng /exec) dán vào API_URL trong index.html.
@@ -566,18 +725,27 @@ __ss.insertSheet('Trang tính1');
  *    DeXuat   (phiếu đề xuất vật tư: công nhân đề xuất → kỹ sư duyệt → thủ kho xuất)
  *    DongBo   (mã các thao tác đã nhận, để thao tác làm lúc mất mạng gửi lại
  *              nhiều lần cũng chỉ ghi một lần; không cần xem trang này)
+ *
+ *  NÂNG CẤP LÊN BẢN 1.3 (sao lưu, nhập Excel, báo cáo, báo tin, ảnh vật tư):
+ *   dán code mới → Lưu → chọn hàm "capQuyen" → Chạy → Cho phép
+ *   (Google hỏi quyền Drive, hẹn giờ, gửi email, kết nối Telegram)
+ *   → RỒI MỚI triển khai phiên bản mới. Chưa chạy capQuyen mà đã triển khai
+ *   thì app báo lỗi kết nối. Cột mới (Anh ở trang VatTu, Email ở trang
+ *   NguoiDung) tự thêm vào cuối trang, không cần sửa tay.
  * ==================================================================
  */
 
-const PHIEN_BAN = '1.2.1';
+const PHIEN_BAN = '1.3.0';
 
 // Các trang (sheet) và cột. Không đổi tên cột.
 const BANG = {
-  VatTu:     ['MaVT', 'Barcode', 'TenVI', 'TenZH', 'QuyCach', 'DonVi', 'Nhom', 'TonToiThieu', 'GhiChu', 'NgayTao'],
+  // Anh (bản 1.3): mã file ảnh trong Google Drive
+  VatTu:     ['MaVT', 'Barcode', 'TenVI', 'TenZH', 'QuyCach', 'DonVi', 'Nhom', 'TonToiThieu', 'GhiChu', 'NgayTao', 'Anh'],
   ViTri:     ['MaViTri', 'Kho', 'Day', 'Ke', 'Tang', 'MoTaVI', 'MoTaZH'],
   TonKho:    ['MaVT', 'MaViTri', 'SoLuong', 'CapNhat'],
   GiaoDich:  ['ID', 'ThoiGian', 'Loai', 'MaVT', 'TuViTri', 'DenViTri', 'SoLuong', 'CongTrinh', 'GhiChu', 'NguoiDung'],
-  NguoiDung: ['ID', 'Ten', 'PinHash', 'VaiTro', 'HoatDong', 'NgayTao'],
+  // Email (bản 1.3): để nhận báo tin qua email (không bắt buộc)
+  NguoiDung: ['ID', 'Ten', 'PinHash', 'VaiTro', 'HoatDong', 'NgayTao', 'Email'],
   NhatKy:    ['ThoiGian', 'NguoiDung', 'HanhDong', 'ChiTiet'],
   // Phiếu mượn dụng cụ. DaTra = số đã trả về kho (gồm cả hỏng), Hong ⊂ DaTra, Mat = số báo mất.
   MuonTra:   ['ID', 'ThoiGian', 'MaVT', 'TuViTri', 'SoLuong', 'NguoiMuon', 'CongTrinh', 'HanTra', 'GhiChu',
@@ -594,11 +762,11 @@ const BANG_MOI = ['MuonTra', 'DeXuat', 'DongBo'];
 
 // Cột luôn lưu dạng chữ (giữ số 0 ở đầu mã vạch, không tự đổi thành ngày tháng).
 const COT_CHU = {
-  VatTu:     ['MaVT', 'Barcode', 'TenVI', 'TenZH', 'QuyCach', 'DonVi', 'Nhom', 'GhiChu'],
+  VatTu:     ['MaVT', 'Barcode', 'TenVI', 'TenZH', 'QuyCach', 'DonVi', 'Nhom', 'GhiChu', 'Anh'],
   ViTri:     ['MaViTri', 'Kho', 'Day', 'Ke', 'Tang', 'MoTaVI', 'MoTaZH'],
   TonKho:    ['MaVT', 'MaViTri'],
   GiaoDich:  ['ID', 'Loai', 'MaVT', 'TuViTri', 'DenViTri', 'CongTrinh', 'GhiChu', 'NguoiDung'],
-  NguoiDung: ['ID', 'Ten', 'PinHash', 'VaiTro'],
+  NguoiDung: ['ID', 'Ten', 'PinHash', 'VaiTro', 'Email'],
   NhatKy:    ['NguoiDung', 'HanhDong', 'ChiTiet'],
   MuonTra:   ['ID', 'MaVT', 'TuViTri', 'NguoiMuon', 'CongTrinh', 'HanTra', 'GhiChu', 'NguoiChoMuon', 'TrangThai', 'LichSuTra'],
   DeXuat:    ['ID', 'NguoiTao', 'NguoiTaoID', 'CongTrinh', 'CanNgay', 'GhiChu', 'ChiTiet', 'TrangThai', 'NguoiDuyet', 'YKien', 'LichSu'],
@@ -619,7 +787,8 @@ const QUYEN = {
   nguoidung: ['admin'],
   dexuat:    ['admin', 'kysu', 'thukho', 'congnhan'],
   duyet:     ['admin', 'kysu'],
-  xemdexuat: ['admin', 'kysu', 'thukho']
+  xemdexuat: ['admin', 'kysu', 'thukho'],
+  quantri:   ['admin']            // sao lưu, cài đặt báo tin
 };
 
 // Tiền tố mã tự tạo theo nhóm vật tư.
@@ -629,7 +798,8 @@ const LOAI_GD = ['NHAP', 'XUAT', 'CHUYEN', 'KIEMKE'];   // loại gửi được
 // MUON (cho mượn: trừ tồn), TRA (trả: cộng tồn), MAT (báo mất: không đổi tồn) chỉ tạo qua lend / takeBack.
 const TINH_TRANG = ['TOT', 'HONG', 'MAT'];
 const HANH_DONG_GHI = ['login', 'txn', 'saveItem', 'saveLocation', 'saveUser', 'changePin', 'lend', 'takeBack',
-  'request', 'editRequest', 'approve', 'issue', 'closeRequest'];
+  'request', 'editRequest', 'approve', 'issue', 'closeRequest',
+  'importItems', 'saveItemPhoto', 'backup', 'backupAuto', 'notifySave'];
 // Thao tác điện thoại được làm lúc mất mạng rồi gửi sau: kèm mã thao tác (opId), gửi lại bao nhiêu lần cũng chỉ ghi một lần.
 const THAO_TAC_GUI_LAI = ['txn', 'lend', 'takeBack', 'request', 'editRequest', 'approve', 'issue', 'closeRequest'];
 const DX_MO = ['CHO_DUYET', 'DA_DUYET'];   // phiếu đề xuất còn đang xử lý
@@ -662,16 +832,21 @@ function traVe(obj) {
 }
 
 function xuLy(req) {
+  TIN_CHO.length = 0;
   let lock = null;
   if (HANH_DONG_GHI.indexOf(req.action) >= 0) {
     lock = LockService.getScriptLock();
     lock.waitLock(25000);
   }
+  let kq;
   try {
-    return dieuHuong(req);
+    kq = dieuHuong(req);
   } finally {
     if (lock) lock.releaseLock();
   }
+  // Báo tin gửi sau khi nhả khoá (người khác không phải chờ); gửi lỗi cũng không làm hỏng thao tác vừa làm.
+  guiTinCho();
+  return kq;
 }
 
 function dieuHuong(req) {
@@ -709,6 +884,16 @@ function thucHien(a, u, p) {
     case 'approve':      canQuyen(u, 'duyet'); return duyetDeXuat(u, p);
     case 'issue':        canQuyen(u, 'nhapxuat'); return xuatDeXuat(u, p);
     case 'closeRequest': return dongDeXuat(u, p);
+    // Bản 1.3
+    case 'importItems':  canQuyen(u, 'danhmuc'); return nhapVatTu(u, p);
+    case 'saveItemPhoto': canQuyen(u, 'danhmuc'); return luuAnhVatTu(u, p);
+    case 'report':       canQuyen(u, 'nhatky'); return baoCao(p);
+    case 'adminInfo':    canQuyen(u, 'quantri'); return thongTinQuanTri();
+    case 'backup':       canQuyen(u, 'quantri'); saoLuu(); ghiNhatKy(str(u.Ten), 'SAO_LUU', ''); return thongTinQuanTri();
+    case 'backupAuto':   canQuyen(u, 'quantri'); if (p.bat === false) tatSaoLuuTuDong(); else batSaoLuuTuDong(); return thongTinQuanTri();
+    case 'notifySave':   canQuyen(u, 'quantri'); return luuBaoTin(u, p);
+    case 'notifyChats':  canQuyen(u, 'quantri'); return timNhomTelegram(p);
+    case 'notifyTest':   canQuyen(u, 'quantri'); return thuBaoTin(u);
   }
   throw loi('KHONG_HIEU', a);
 }
@@ -801,6 +986,19 @@ function docBang(ten, tuDong) {
   return out;
 }
 
+// Trang tạo từ bản cũ chưa có cột mới ở cuối (Anh, Email): thêm tiêu đề và định dạng chữ cho cột đó.
+function capNhatTieuDe(ten) {
+  const sh = sheet(ten), cols = BANG[ten];
+  if (sh.getMaxColumns() < cols.length) sh.insertColumnsAfter(sh.getMaxColumns(), cols.length - sh.getMaxColumns());
+  const dau = sh.getRange(1, 1, 1, cols.length).getValues()[0];
+  const thieu = cols.some(function (c, i) { return str(dau[i]) !== c; });
+  if (thieu) {
+    sh.getRange(1, 1, 1, cols.length).setValues([cols]).setFontWeight('bold').setBackground('#f5c400');
+    dinhDangChu(sh, ten, 1, sh.getMaxRows());
+  }
+  return sh;
+}
+
 function dinhDangChu(sh, ten, tuDong, soDong) {
   const cols = BANG[ten];
   (COT_CHU[ten] || []).forEach(function (c) {
@@ -891,7 +1089,7 @@ function vatTuRa(r) {
   return {
     maVT: str(r.MaVT), barcode: str(r.Barcode), tenVI: str(r.TenVI), tenZH: str(r.TenZH),
     quyCach: str(r.QuyCach), donVi: str(r.DonVi), nhom: str(r.Nhom),
-    tonToiThieu: so(r.TonToiThieu), ghiChu: str(r.GhiChu)
+    tonToiThieu: so(r.TonToiThieu), ghiChu: str(r.GhiChu), anh: str(r.Anh)
   };
 }
 function viTriRa(r) {
@@ -1269,6 +1467,7 @@ function taoDeXuat(u, p) {
   };
   ghiLichSuDX(r, 'Tạo 创建 · ' + nd.lines.length + ' mục 项', u);
   themDong('DeXuat', r);
+  baoTinDX('moi', r, u);
   return { request: deXuatRa(r) };
 }
 
@@ -1306,6 +1505,7 @@ function suaDeXuat(u, p) {
   ghiLichSuDX(r, (guiLai ? 'Sửa, gửi duyệt lại 修改并重新提交' : 'Sửa 修改') + (doi.length ? ' · ' + doi.join(', ').slice(0, 300) : ''), u);
   r.CapNhat = new Date();
   suaDong('DeXuat', r._row, r);
+  if (guiLai) baoTinDX('guiLai', r, u);
   return { request: deXuatRa(r) };
 }
 
@@ -1337,6 +1537,7 @@ function duyetDeXuat(u, p) {
   r.ChiTiet = JSON.stringify(lines);
   r.NguoiDuyet = str(u.Ten); r.ThoiGianDuyet = new Date(); r.YKien = yKien; r.CapNhat = new Date();
   suaDong('DeXuat', r._row, r);
+  baoTinDX(r.TrangThai === 'TU_CHOI' ? 'tuChoi' : 'duyet', r, u);
   return { request: deXuatRa(r) };
 }
 
@@ -1387,6 +1588,7 @@ function xuatDeXuat(u, p) {
   else if (p.dong === true) { r.TrangThai = 'HOAN_TAT'; ghiLichSuDX(r, 'Đóng phiếu 关闭 · không xuất phần còn lại 余量不出库', u); }
   r.CapNhat = new Date();
   suaDong('DeXuat', r._row, r);
+  if (r.TrangThai === 'HOAN_TAT') baoTinDX(du ? 'xuatXong' : 'dong', r, u, ghi);
   const cacMa = Object.keys(them);
   return {
     request: deXuatRa(r),
@@ -1414,6 +1616,7 @@ function dongDeXuat(u, p) {
   ghiLichSuDX(r, (daXuat ? 'Đóng phiếu 关闭' : 'Huỷ 撤销') + (lyDo ? ': ' + lyDo : ''), u);
   r.CapNhat = new Date();
   suaDong('DeXuat', r._row, r);
+  baoTinDX(daXuat ? 'dong' : 'huy', r, u, lyDo, tt);
   return { request: deXuatRa(r) };
 }
 
@@ -1430,6 +1633,7 @@ function maMoi(ds, nhom) {
 }
 
 function luuVatTu(u, p) {
+  capNhatTieuDe('VatTu');
   const ds = docBang('VatTu');
   const dsViTri = docBang('ViTri').map(function (v) { return hoa(v.MaViTri); });
   const nhom = sach(p.nhom, 20), donVi = sach(p.donVi, 20);
@@ -1458,7 +1662,7 @@ function luuVatTu(u, p) {
   const obj = {
     MaVT: maVT, Barcode: barcode, TenVI: tenVI, TenZH: tenZH, QuyCach: sach(p.quyCach, 150),
     DonVi: donVi, Nhom: nhom, TonToiThieu: Math.max(0, lamTron(so(p.tonToiThieu))),
-    GhiChu: sach(p.ghiChu, 300), NgayTao: cu ? cu.NgayTao : new Date()
+    GhiChu: sach(p.ghiChu, 300), NgayTao: cu ? cu.NgayTao : new Date(), Anh: cu ? str(cu.Anh) : ''
   };
   if (cu) suaDong('VatTu', cu._row, obj); else themDong('VatTu', obj);
   ghiNhatKy(str(u.Ten), cu ? 'SUA_VAT_TU' : 'THEM_VAT_TU', maVT);
@@ -1501,20 +1705,25 @@ function luuViTri(u, p) {
 
 function dsNguoiDung() {
   return docBang('NguoiDung').map(function (u) {
-    return { id: str(u.ID), ten: str(u.Ten), vaiTro: str(u.VaiTro), hoatDong: laDung(u.HoatDong) };
+    return { id: str(u.ID), ten: str(u.Ten), vaiTro: str(u.VaiTro), hoatDong: laDung(u.HoatDong), email: str(u.Email) };
   });
 }
+function laEmail(s) { return /^[^\s@,;<>"]+@[^\s@,;<>"]+\.[^\s@,;<>"]+$/.test(s); }
 
 function pinDaDung(h, ds, boQuaId) {
   return ds.some(function (x) { return str(x.ID) !== boQuaId && str(x.PinHash) === h; });
 }
 
 function luuNguoiDung(u, p) {
+  capNhatTieuDe('NguoiDung');
   const ds = docBang('NguoiDung');
   const ten = sach(p.ten, 60), vaiTro = str(p.vaiTro), pin = str(p.pin);
   const hoatDong = p.hoatDong !== false;
   if (!ten || VAI_TRO.indexOf(vaiTro) < 0) throw loi('THIEU_DU_LIEU');
   const cu = p.id ? ds.filter(function (x) { return str(x.ID) === str(p.id); })[0] : null;
+  // Email: không gửi lên (app cũ) thì giữ nguyên
+  const email = p.email === undefined ? (cu ? str(cu.Email) : '') : sach(p.email, 120).toLowerCase();
+  if (email && !laEmail(email)) throw loi('EMAIL');
   if (p.id && !cu) throw loi('THIEU_DU_LIEU', 'id');
   if (!cu && !pin) throw loi('PIN_DINH_DANG');
   if (pin && !/^\d{6}$/.test(pin)) throw loi('PIN_DINH_DANG');
@@ -1534,7 +1743,7 @@ function luuNguoiDung(u, p) {
   }) || (vaiTro === 'admin' && hoatDong);
   if (!conAdmin) throw loi('ADMIN_CUOI');
 
-  const obj = { ID: id, Ten: ten, PinHash: h, VaiTro: vaiTro, HoatDong: hoatDong, NgayTao: cu ? cu.NgayTao : new Date() };
+  const obj = { ID: id, Ten: ten, PinHash: h, VaiTro: vaiTro, HoatDong: hoatDong, NgayTao: cu ? cu.NgayTao : new Date(), Email: email };
   if (cu) suaDong('NguoiDung', cu._row, obj); else themDong('NguoiDung', obj);
   ghiNhatKy(str(u.Ten), cu ? 'SUA_NGUOI_DUNG' : 'THEM_NGUOI_DUNG', id + ' ' + ten + ' (' + vaiTro + ')');
   return dsNguoiDung();
@@ -1552,6 +1761,642 @@ function doiPin(u, p) {
   suaDong('NguoiDung', cu._row, cu);
   ghiNhatKy(str(u.Ten), 'DOI_PIN', '');
   return true;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Bản 1.3 · Cấp quyền và hẹn giờ                                    */
+/* ------------------------------------------------------------------ */
+
+/**
+ * CHẠY 1 LẦN sau khi dán code bản 1.3, TRƯỚC khi triển khai phiên bản mới:
+ * chọn hàm "capQuyen" ở thanh trên → Chạy → Xem xét quyền → chọn tài khoản
+ * → (Nâng cao → Đi tới dự án) → Cho phép.
+ * Google hỏi quyền Drive (sao lưu, ảnh vật tư), hẹn giờ, gửi email, kết nối Telegram.
+ * Hàm này cũng bật sao lưu tự động mỗi tuần và nhắc việc buổi sáng.
+ */
+function capQuyen() {
+  DriveApp.getRootFolder().getName();
+  MailApp.getRemainingDailyQuota();
+  try { UrlFetchApp.fetch('https://api.telegram.org/', { muteHttpExceptions: true }); } catch (e) { /* chỉ để xin quyền */ }
+  batSaoLuuTuDong();
+  datLichBaoSang(caiDatBaoTin().gioSang);
+  return 'Đã cấp quyền. Sao lưu tự động: Chủ nhật 21–22 giờ. Tiếp theo: Triển khai → Quản lý triển khai → Phiên bản mới.';
+}
+
+function xoaLich(ham) {
+  ScriptApp.getProjectTriggers().forEach(function (t) { if (t.getHandlerFunction() === ham) ScriptApp.deleteTrigger(t); });
+}
+function coLich(ham) {
+  return ScriptApp.getProjectTriggers().some(function (t) { return t.getHandlerFunction() === ham; });
+}
+
+/* ------------------------------------------------------------------ */
+/*  Bản 1.3 · Sao lưu Google Sheet                                    */
+/* ------------------------------------------------------------------ */
+
+const THU_MUC_SAO_LUU = 'Kho Cơ Điện – Sao lưu';
+const THU_MUC_ANH = 'Kho Cơ Điện – Ảnh vật tư';
+const SO_BAN_SAO_LUU = 12;       // giữ 12 bản mới nhất (khoảng 3 tháng), bản cũ hơn vào thùng rác
+
+// Thư mục trong Google Drive: nhớ mã thư mục; bị xoá thì tạo lại.
+function thuMuc(ten, khoa) {
+  const props = PropertiesService.getScriptProperties();
+  const id = props.getProperty(khoa);
+  if (id) {
+    try { const f = DriveApp.getFolderById(id); if (!f.isTrashed()) return f; } catch (e) { /* thư mục đã bị xoá */ }
+  }
+  const it = DriveApp.getFoldersByName(ten);
+  const f = it.hasNext() ? it.next() : DriveApp.createFolder(ten);
+  props.setProperty(khoa, f.getId());
+  return f;
+}
+
+/** Chép cả file Sheet vào thư mục "Kho Cơ Điện – Sao lưu" trong Google Drive. Chạy tay được. */
+function saoLuu() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const folder = thuMuc(THU_MUC_SAO_LUU, 'THU_MUC_SAO_LUU');
+  const now = new Date();
+  const p = function (n) { return ('0' + n).slice(-2); };
+  const ten = ss.getName() + ' – sao lưu ' + ngayChu(now) + ' ' + p(now.getHours()) + 'h' + p(now.getMinutes());
+  DriveApp.getFileById(ss.getId()).makeCopy(ten, folder);
+  const ds = [];
+  const it = folder.getFiles();
+  while (it.hasNext()) { const f = it.next(); if (f.getMimeType() === MimeType.GOOGLE_SHEETS) ds.push(f); }
+  ds.sort(function (a, b) { return b.getDateCreated().getTime() - a.getDateCreated().getTime(); });
+  ds.slice(SO_BAN_SAO_LUU).forEach(function (f) { f.setTrashed(true); });
+  PropertiesService.getScriptProperties().setProperty('SAO_LUU_CUOI', now.toISOString());
+  return 'Đã sao lưu: ' + ten;
+}
+
+// Chạy theo lịch mỗi tuần. Chờ thao tác ghi đang chạy xong để bản sao không bị dở dang.
+function saoLuuTuDong() {
+  const lock = LockService.getScriptLock();
+  const coKhoa = lock.tryLock(60000);
+  try { return saoLuu(); } finally { if (coKhoa) lock.releaseLock(); }
+}
+
+/** Bật sao lưu tự động mỗi Chủ nhật, 21–22 giờ (chạy lại không bị trùng). */
+function batSaoLuuTuDong() {
+  xoaLich('saoLuuTuDong');
+  ScriptApp.newTrigger('saoLuuTuDong').timeBased().onWeekDay(ScriptApp.WeekDay.SUNDAY).atHour(21).create();
+  return 'Đã bật sao lưu tự động mỗi Chủ nhật 21–22 giờ.';
+}
+function tatSaoLuuTuDong() { xoaLich('saoLuuTuDong'); return 'Đã tắt sao lưu tự động.'; }
+
+// Màn Quản trị hệ thống trong app
+function thongTinQuanTri() {
+  const props = PropertiesService.getScriptProperties();
+  const bt = caiDatBaoTin();
+  let lich = [], coQuyen = true, mailConLai = -1;
+  try { lich = ScriptApp.getProjectTriggers().map(function (t) { return t.getHandlerFunction(); }); } catch (e) { coQuyen = false; }
+  try { mailConLai = MailApp.getRemainingDailyQuota(); } catch (e) { mailConLai = -1; }
+  let loi = null;
+  try { loi = JSON.parse(props.getProperty('BAO_TIN_LOI') || 'null'); } catch (e) { loi = null; }
+  const nd = docBang('NguoiDung');
+  return {
+    phienBan: PHIEN_BAN, muiGio: Session.getScriptTimeZone(), coQuyen: coQuyen,
+    saoLuu: { cuoi: str(props.getProperty('SAO_LUU_CUOI')), tuDong: lich.indexOf('saoLuuTuDong') >= 0, soBan: SO_BAN_SAO_LUU, thuMuc: THU_MUC_SAO_LUU },
+    baoTin: {
+      tgBat: !!bt.tgBat, tgCoMa: !!bt.tgToken, tgMaCuoi: bt.tgToken ? String(bt.tgToken).slice(-4) : '',
+      tgChat: str(bt.tgChat), tgTen: str(bt.tgTen), mailBat: !!bt.mailBat,
+      sang: !!bt.sang, gioSang: so(bt.gioSang), lichSang: lich.indexOf('baoTinBuoiSang') >= 0,
+      linkApp: str(bt.linkApp), mailConLai: mailConLai, loi: loi,
+      coEmail: nd.filter(function (x) { return laDung(x.HoatDong) && laEmail(str(x.Email)); }).length
+    }
+  };
+}
+
+/* ------------------------------------------------------------------ */
+/*  Bản 1.3 · Nhập danh mục vật tư từ Excel                           */
+/*  Điện thoại đọc file Excel, gửi từng gói tối đa 200 dòng.          */
+/*  Mã đã có → cập nhật (ô trống = giữ nguyên). Không ghi mã mà trùng  */
+/*  tên + quy cách với vật tư đã có → cập nhật vật tư đó.              */
+/*  Số lượng đầu chỉ áp dụng cho vật tư mới.                           */
+/* ------------------------------------------------------------------ */
+
+const NHAP_TOI_DA = 200;
+function khoaTen(vi, zh, qc) {
+  const s = function (x) { return str(x).toLowerCase().replace(/\s+/g, ' '); };
+  return (s(vi) || s(zh)) + '|' + s(qc);
+}
+function coGiaTri(v) { return v !== null && v !== undefined && str(v) !== ''; }
+function nhomTheoMa(maVT) {
+  const m = /^([A-Z]+)-\d+$/.exec(hoa(maVT));
+  if (!m) return '';
+  return Object.keys(TIEN_TO).filter(function (k) { return TIEN_TO[k] === m[1]; })[0] || '';
+}
+
+function nhapVatTu(u, p) {
+  const rows = Array.isArray(p.rows) ? p.rows : [];
+  if (!rows.length) throw loi('THIEU_DU_LIEU');
+  if (rows.length > NHAP_TOI_DA) throw loi('NHAP_NHIEU');
+  const sh = capNhatTieuDe('VatTu'), cols = BANG.VatTu, n = sh.getLastRow();
+  const C = {};
+  cols.forEach(function (c, i) { C[c] = i; });
+  const all = n >= 2 ? sh.getRange(2, 1, n - 1, cols.length).getValues() : [];
+  const soCu = all.length;
+  const dsViTri = docBang('ViTri').map(function (v) { return hoa(v.MaViTri); });
+  const theoMa = {}, theoTen = {}, theoMaVach = {}, lonNhat = {};
+  function ghiNho(r, i) {
+    const m = hoa(r[C.MaVT]);
+    if (!m) return;
+    theoMa[m] = i;
+    const k = khoaTen(r[C.TenVI], r[C.TenZH], r[C.QuyCach]);
+    if (!(k in theoTen)) theoTen[k] = i;
+    const b = hoa(r[C.Barcode]);
+    if (b) theoMaVach[b] = m;
+    const mm = /^([A-Z]+)-(\d+)$/.exec(m);
+    if (mm) lonNhat[mm[1]] = Math.max(lonNhat[mm[1]] || 0, Number(mm[2]));
+  }
+  all.forEach(ghiNho);
+  function kiemMaVach(b, maVT) {
+    if (!b) return;
+    const B = b.toUpperCase();
+    if ((theoMaVach[B] && theoMaVach[B] !== maVT) || (B in theoMa && B !== maVT) || dsViTri.indexOf(B) >= 0) throw loi('TRUNG_BARCODE', b);
+  }
+  function soKhongAm(v) {
+    const x = lamTron(Number(str(v).replace(',', '.')));
+    if (!isFinite(x) || x < 0) throw loi('SO_LUONG');
+    return x;
+  }
+
+  const daGap = {}, doi = {}, tonDau = [], loiDs = [];
+  let soMoi = 0, soSua = 0, soGiu = 0;
+  rows.forEach(function (x, k) {
+    x = x || {};
+    const dong = so(x.dong) || k + 1;
+    try {
+      const tenVI = sach(x.tenVI, 150), tenZH = sach(x.tenZH, 150), quyCach = sach(x.quyCach, 150);
+      const nhom = sach(x.nhom, 20), donVi = sach(x.donVi, 20), barcode = sach(x.barcode, 60), ghiChu = sach(x.ghiChu, 300);
+      let maVT = ma(x.maVT), idx = -1;
+      if (maVT) { if (maVT in theoMa) idx = theoMa[maVT]; }
+      else if (tenVI || tenZH) { const kt = khoaTen(tenVI, tenZH, quyCach); if (kt in theoTen) idx = theoTen[kt]; }
+      if (idx >= 0) maVT = hoa(all[idx][C.MaVT]);
+      if (maVT && daGap[maVT]) throw loi('TRUNG_FILE', String(daGap[maVT]));
+      if (idx >= soCu) throw loi('TRUNG_FILE', '');
+
+      if (idx < 0) {
+        // Vật tư mới
+        if (!tenVI && !tenZH) throw loi('THIEU_TEN');
+        const nh = nhom || nhomTheoMa(maVT);
+        if (!nh) throw loi('THIEU_NHOM');
+        if (!donVi) throw loi('THIEU_DON_VI');
+        if (maVT && dsViTri.indexOf(maVT) >= 0) throw loi('TRUNG_MA', maVT);
+        const tmin = coGiaTri(x.tonToiThieu) ? soKhongAm(x.tonToiThieu) : 0;
+        const sl = coGiaTri(x.soLuongDau) ? soKhongAm(x.soLuongDau) : 0;
+        const vtri = hoa(x.viTri);
+        if (sl > 0) {
+          if (!vtri) throw loi('THIEU_VITRI');
+          if (dsViTri.indexOf(vtri) < 0) throw loi('KHONG_CO_VITRI', vtri);
+          canQuyen(u, 'nhapxuat');
+        }
+        let maMoi = maVT;
+        if (!maMoi) {
+          const tt = TIEN_TO[nh] || 'VT';
+          maMoi = tt + '-' + ('000' + ((lonNhat[tt] || 0) + 1)).slice(-4);
+        }
+        kiemMaVach(barcode, maMoi);
+        const r = cols.map(function () { return ''; });
+        r[C.MaVT] = maMoi; r[C.Barcode] = barcode; r[C.TenVI] = tenVI; r[C.TenZH] = tenZH; r[C.QuyCach] = quyCach;
+        r[C.DonVi] = donVi; r[C.Nhom] = nh; r[C.TonToiThieu] = tmin; r[C.GhiChu] = ghiChu; r[C.NgayTao] = new Date();
+        all.push(r);
+        ghiNho(r, all.length - 1);
+        daGap[maMoi] = dong;
+        if (sl > 0) tonDau.push({ maVT: maMoi, viTri: vtri, sl: sl });
+        soMoi++;
+        return;
+      }
+      // Cập nhật: kiểm tra hết rồi mới ghi, ô trống giữ nguyên
+      const r = all[idx];
+      const moi = {};
+      if (tenVI) moi.TenVI = tenVI;
+      if (tenZH) moi.TenZH = tenZH;
+      if (quyCach) moi.QuyCach = quyCach;
+      if (nhom) moi.Nhom = nhom;
+      if (donVi) moi.DonVi = donVi;
+      if (ghiChu) moi.GhiChu = ghiChu;
+      if (coGiaTri(x.tonToiThieu)) moi.TonToiThieu = soKhongAm(x.tonToiThieu);
+      if (barcode) { kiemMaVach(barcode, maVT); moi.Barcode = barcode; }
+      daGap[maVT] = dong;
+      const khac = Object.keys(moi).some(function (c) { return str(r[C[c]]) !== str(moi[c]); });
+      if (!khac) { soGiu++; return; }
+      const bCu = hoa(r[C.Barcode]);
+      Object.keys(moi).forEach(function (c) { r[C[c]] = moi[c]; });
+      if (bCu && theoMaVach[bCu] === maVT && bCu !== hoa(r[C.Barcode])) delete theoMaVach[bCu];
+      ghiNho(r, idx);
+      doi[idx] = true;
+      soSua++;
+    } catch (e) {
+      loiDs.push({ dong: dong, code: e.code || 'LOI', msg: str(e.message) });
+    }
+  });
+
+  // Ghi hàng loạt: vật tư sửa (ít thì từng dòng, nhiều thì cả khối), vật tư mới một lần
+  const sua = Object.keys(doi).map(Number);
+  if (sua.length > 20) sh.getRange(2, 1, soCu, cols.length).setValues(all.slice(0, soCu));
+  else sua.forEach(function (i) { sh.getRange(i + 2, 1, 1, cols.length).setValues([all[i]]); });
+  const hang = function (r) { const o = {}; cols.forEach(function (c, i) { o[c] = r[i]; }); return o; };
+  const moiRows = all.slice(soCu).map(hang);
+  themNhieu('VatTu', moiRows);
+
+  // Tồn đầu: cộng vào tồn kho + ghi giao dịch NHAP
+  const stock = [];
+  if (tonDau.length) {
+    const ton = docBang('TonKho'), shTon = sheet('TonKho');
+    const cSL = BANG.TonKho.indexOf('SoLuong') + 1;
+    const themTon = [], gd = [], goc = maGiaoDich();
+    tonDau.forEach(function (t, i) {
+      const r = ton.filter(function (z) { return hoa(z.MaVT) === t.maVT && hoa(z.MaViTri) === t.viTri; })[0];
+      if (r) { r.SoLuong = lamTron(so(r.SoLuong) + t.sl); shTon.getRange(r._row, cSL, 1, 2).setValues([[r.SoLuong, new Date()]]); }
+      else { const z = { MaVT: t.maVT, MaViTri: t.viTri, SoLuong: t.sl, CapNhat: new Date() }; themTon.push(z); ton.push(z); }
+      gd.push({
+        ID: goc + '-' + (i + 1), ThoiGian: new Date(), Loai: 'NHAP', MaVT: t.maVT, TuViTri: '', DenViTri: t.viTri,
+        SoLuong: t.sl, CongTrinh: '', GhiChu: 'Tồn đầu (nhập Excel) 期初（Excel导入）', NguoiDung: str(u.Ten)
+      });
+    });
+    themNhieu('TonKho', themTon);
+    themNhieu('GiaoDich', gd);
+    const cacMa = tonDau.map(function (t) { return t.maVT; });
+    ton.forEach(function (z) {
+      if (cacMa.indexOf(hoa(z.MaVT)) >= 0 && so(z.SoLuong) !== 0) stock.push({ maVT: hoa(z.MaVT), maViTri: hoa(z.MaViTri), soLuong: so(z.SoLuong) });
+    });
+  }
+  if (soMoi || soSua) ghiNhatKy(str(u.Ten), 'NHAP_EXCEL', 'Mới ' + soMoi + ' · Sửa ' + soSua + ' · Giữ nguyên ' + soGiu + ' · Lỗi ' + loiDs.length);
+  return {
+    moi: soMoi, sua: soSua, giu: soGiu, loi: loiDs,
+    items: sua.map(function (i) { return vatTuRa(hang(all[i])); }).concat(moiRows.map(vatTuRa)),
+    stock: stock
+  };
+}
+
+/* ------------------------------------------------------------------ */
+/*  Bản 1.3 · Báo cáo xuất kho theo công trình                        */
+/*  Chỉ tính giao dịch XUAT (gồm xuất theo phiếu đề xuất).            */
+/*  Mượn dụng cụ không tính. Không ghi công trình: gom một nhóm.      */
+/* ------------------------------------------------------------------ */
+
+const BAO_CAO_CHI_TIET = 3000;   // số dòng chi tiết tối đa trả về
+function khoaCT(x) { return str(x).toLowerCase().replace(/\s+/g, ' '); }
+function ngayTuChu(s) { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s); return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])); }
+
+function baoCao(p) {
+  const tu = str(p.tu), den = str(p.den);
+  if (!laNgay(tu) || !laNgay(den) || tu > den) throw loi('KHOANG_NGAY');
+  const a = ngayTuChu(tu), b = ngayTuChu(den);
+  b.setDate(b.getDate() + 1);
+  // p.ct: không gửi = mọi công trình; '' = chỉ giao dịch không ghi công trình; chữ = một công trình
+  const loc = p.ct === undefined || p.ct === null ? null : khoaCT(p.ct);
+  const kq = { tu: tu, den: den, congTrinhs: [], theoCT: [], theoVT: [], chiTiet: [], soLan: 0, catBot: false };
+  const sh = sheet('GiaoDich'), n = sh.getLastRow(), cols = BANG.GiaoDich;
+  if (n < 2) return kq;
+  // Đọc cột thời gian trước để biết khoảng dòng cần đọc (giao dịch ghi nối tiếp theo thời gian)
+  const tg = sh.getRange(2, cols.indexOf('ThoiGian') + 1, n - 1, 1).getValues();
+  let dau = -1, cuoi = -1;
+  for (let i = 0; i < tg.length; i++) {
+    const t = tg[i][0];
+    if (t instanceof Date && t >= a && t < b) { if (dau < 0) dau = i; cuoi = i; }
+  }
+  if (dau < 0) return kq;
+  const vals = sh.getRange(dau + 2, 1, cuoi - dau + 1, cols.length).getValues();
+  const C = {};
+  cols.forEach(function (c, i) { C[c] = i; });
+  const dsCT = {}, theoCT = {}, theoVT = {};
+  vals.forEach(function (r) {
+    const t = r[C.ThoiGian];
+    if (!(t instanceof Date) || t < a || t >= b || str(r[C.Loai]) !== 'XUAT') return;
+    const ten = str(r[C.CongTrinh]), k = khoaCT(ten), maVT = hoa(r[C.MaVT]), sl = so(r[C.SoLuong]);
+    if (!dsCT[k]) dsCT[k] = { k: k, ten: ten, soLan: 0 };
+    dsCT[k].soLan++;
+    if (loc !== null && k !== loc) return;
+    const phieu = (/\bDX-\d+/.exec(str(r[C.GhiChu])) || [''])[0];
+    kq.soLan++;
+    if (!theoCT[k]) theoCT[k] = { k: k, ten: ten, soLan: 0, vt: {} };
+    const c = theoCT[k];
+    c.soLan++;
+    if (!c.vt[maVT]) c.vt[maVT] = { maVT: maVT, sl: 0, lan: 0, phieu: [] };
+    const d = c.vt[maVT];
+    d.sl = lamTron(d.sl + sl); d.lan++;
+    if (phieu && d.phieu.indexOf(phieu) < 0) d.phieu.push(phieu);
+    if (!theoVT[maVT]) theoVT[maVT] = { maVT: maVT, sl: 0, lan: 0, ct: {} };
+    const v = theoVT[maVT];
+    v.sl = lamTron(v.sl + sl); v.lan++;
+    v.ct[k] = { ten: ten, sl: lamTron(((v.ct[k] || {}).sl || 0) + sl) };
+    if (kq.chiTiet.length < BAO_CAO_CHI_TIET) {
+      kq.chiTiet.push({ time: iso(t), ct: ten, maVT: maVT, sl: sl, tu: hoa(r[C.TuViTri]), phieu: phieu, nguoi: str(r[C.NguoiDung]), ghiChu: str(r[C.GhiChu]) });
+    } else kq.catBot = true;
+  });
+  const theoTenCT = function (x, y) { return !x.k ? 1 : !y.k ? -1 : x.ten.localeCompare(y.ten); };
+  kq.congTrinhs = Object.keys(dsCT).map(function (k) { return dsCT[k]; }).sort(theoTenCT);
+  kq.theoCT = Object.keys(theoCT).map(function (k) {
+    const c = theoCT[k];
+    return { k: c.k, ten: c.ten, soLan: c.soLan, dong: Object.keys(c.vt).sort().map(function (m) { return c.vt[m]; }) };
+  }).sort(theoTenCT);
+  kq.theoVT = Object.keys(theoVT).sort().map(function (m) {
+    const v = theoVT[m];
+    return { maVT: m, sl: v.sl, lan: v.lan, ct: Object.keys(v.ct).map(function (k) { return v.ct[k]; }).sort(function (x, y) { return y.sl - x.sl; }) };
+  });
+  return kq;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Bản 1.3 · Báo tin qua nhóm Telegram và email                      */
+/*  Quản trị nhập mã bot, nhóm, bật/tắt từng kênh trong app            */
+/*  (lưu trong Script Properties, không để trong code).                */
+/* ------------------------------------------------------------------ */
+
+const BAO_TIN_MAC_DINH = { tgBat: false, tgToken: '', tgChat: '', tgTen: '', mailBat: false, sang: true, gioSang: 7, linkApp: '' };
+const DON_VI = { cai: 'cái 个', chiec: 'chiếc 台', bo: 'bộ 套', met: 'm 米', cuon: 'cuộn 卷', cay: 'cây 根',
+  hop: 'hộp 盒', kg: 'kg 公斤', lit: 'lít 升', binh: 'bình 瓶', tui: 'túi 袋', tam: 'tấm 张' };
+const TIN_CHO = [];   // tin chờ gửi trong lần xử lý này (gửi sau khi nhả khoá)
+
+function caiDatBaoTin() {
+  let o = {};
+  try { o = JSON.parse(PropertiesService.getScriptProperties().getProperty('BAO_TIN') || '{}') || {}; } catch (e) { o = {}; }
+  return Object.assign({}, BAO_TIN_MAC_DINH, o);
+}
+function luuCaiDatBaoTin(o) { PropertiesService.getScriptProperties().setProperty('BAO_TIN', JSON.stringify(o)); }
+
+function datLichBaoSang(gio) {
+  xoaLich('baoTinBuoiSang');
+  ScriptApp.newTrigger('baoTinBuoiSang').timeBased().everyDays(1).atHour(Math.min(23, Math.max(0, Math.round(so(gio))))).create();
+}
+
+function luuBaoTin(u, p) {
+  const bt = caiDatBaoTin();
+  const token = str(p.tgToken).replace(/\s+/g, '');
+  if (token) {
+    if (!/^\d{5,}:[\w-]{20,}$/.test(token)) throw loi('TG_MA');
+    bt.tgToken = token;
+  }
+  if (p.xoaMa === true) bt.tgToken = '';
+  const chat = str(p.tgChat).replace(/\s+/g, '');
+  if (chat && !/^(-?\d{3,20}|@\w{4,})$/.test(chat)) throw loi('TG_NHOM');
+  bt.tgChat = chat;
+  bt.tgTen = sach(p.tgTen, 100);
+  bt.tgBat = p.tgBat === true;
+  if (bt.tgBat && (!bt.tgToken || !bt.tgChat)) throw loi('TG_THIEU');
+  bt.mailBat = p.mailBat === true;
+  bt.sang = p.sang !== false;
+  const gioCu = so(bt.gioSang), gio = Math.round(Number(p.gioSang));
+  if (isFinite(gio) && gio >= 0 && gio <= 23) bt.gioSang = gio;
+  const link = str(p.linkApp);
+  if (/^https:\/\/[^\s"'<>]+$/.test(link)) bt.linkApp = link.slice(0, 200);
+  luuCaiDatBaoTin(bt);
+  try { if (bt.gioSang !== gioCu || !coLich('baoTinBuoiSang')) datLichBaoSang(bt.gioSang); } catch (e) { /* chưa chạy capQuyen */ }
+  ghiNhatKy(str(u.Ten), 'CAI_DAT_BAO_TIN', 'Telegram ' + (bt.tgBat ? 'bật' : 'tắt') + ' · Email ' + (bt.mailBat ? 'bật' : 'tắt'));
+  return thongTinQuanTri();
+}
+
+function goiTelegram(token, method, body) {
+  const res = UrlFetchApp.fetch('https://api.telegram.org/bot' + token + '/' + method, {
+    method: 'post', contentType: 'application/json', payload: JSON.stringify(body || {}), muteHttpExceptions: true
+  });
+  try { return JSON.parse(res.getContentText()); } catch (e) { return { ok: false, description: 'HTTP ' + res.getResponseCode() }; }
+}
+
+// Tìm các nhóm đã nhắn tin cho bot (thêm bot vào nhóm rồi gửi một tin bất kỳ trong nhóm).
+function timNhomTelegram(p) {
+  const token = str(p.tgToken).replace(/\s+/g, '') || caiDatBaoTin().tgToken;
+  if (!token) throw loi('TG_THIEU');
+  if (!/^\d{5,}:[\w-]{20,}$/.test(token)) throw loi('TG_MA');
+  const r = goiTelegram(token, 'getUpdates', {});
+  if (!r.ok) throw loi(/unauthorized|not found/i.test(str(r.description)) ? 'TG_MA' : 'TG_LOI', str(r.description));
+  const thay = {}, out = [];
+  (r.result || []).slice().reverse().forEach(function (x) {
+    const m = x.message || x.edited_message || x.channel_post || x.my_chat_member || x.chat_member;
+    const c = m && m.chat;
+    if (!c || thay[c.id]) return;
+    thay[c.id] = true;
+    out.push({ id: String(c.id), ten: str(c.title) || [str(c.first_name), str(c.last_name)].join(' ').trim() || str(c.username), loai: str(c.type) });
+  });
+  return out.sort(function (x, y) { return (x.loai === 'private') - (y.loai === 'private'); });
+}
+
+function escHtml(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+function guiTelegram(bt, dong) {
+  const text = '<b>' + escHtml(dong[0]) + '</b>\n' + dong.slice(1).map(escHtml).join('\n');
+  const body = { chat_id: bt.tgChat, text: text.slice(0, 4000), parse_mode: 'HTML', disable_web_page_preview: true };
+  let r = goiTelegram(bt.tgToken, 'sendMessage', body);
+  // Nhóm được nâng cấp thành siêu nhóm: Telegram đổi mã nhóm → lưu mã mới rồi gửi lại
+  const moi = r && !r.ok && r.parameters && r.parameters.migrate_to_chat_id;
+  if (moi) {
+    const bt2 = caiDatBaoTin(); bt2.tgChat = String(moi); luuCaiDatBaoTin(bt2);
+    bt.tgChat = String(moi); body.chat_id = bt.tgChat;
+    r = goiTelegram(bt.tgToken, 'sendMessage', body);
+  }
+  if (!r || !r.ok) throw loi('TG_LOI', str(r && r.description));
+}
+
+function guiMail(ds, tieuDe, dong) {
+  if (!ds.length) return;
+  MailApp.sendEmail({ to: ds.join(','), subject: '[Kho Cơ Điện 机电仓库] ' + tieuDe, body: dong.join('\n'), name: 'Kho Cơ Điện 机电仓库' });
+}
+
+// Người nhận email: theo vai trò (không ai có email thì gửi Quản trị) + người cụ thể; bỏ người vừa làm.
+function nguoiNhanMail(nd, tin) {
+  const co = nd.filter(function (x) { return laDung(x.HoatDong) && laEmail(str(x.Email)); });
+  let ds = [];
+  (tin.vaiTro || []).forEach(function (vt) {
+    let c = co.filter(function (x) { return str(x.VaiTro) === vt; });
+    if (!c.length) c = co.filter(function (x) { return str(x.VaiTro) === 'admin'; });
+    ds = ds.concat(c);
+  });
+  (tin.ids || []).forEach(function (id) { ds = ds.concat(co.filter(function (x) { return str(x.ID) === id; })); });
+  const out = [];
+  ds.forEach(function (x) {
+    const e = str(x.Email).toLowerCase();
+    if (str(x.ID) !== str(tin.tru) && out.indexOf(e) < 0) out.push(e);
+  });
+  return out;
+}
+
+function ghiLoiBaoTin(kenh, e) {
+  try {
+    PropertiesService.getScriptProperties().setProperty('BAO_TIN_LOI',
+      JSON.stringify({ time: new Date().toISOString(), kenh: kenh, msg: str(e && (e.message || e)).slice(0, 300) }));
+  } catch (x) { /* bỏ qua */ }
+}
+
+// tin: { tieuDe (tiêu đề email), dong: [dòng đầu là tiêu đề, ...], vaiTro: [...], ids: [...], tru: id người làm }
+function baoTin(tin) { TIN_CHO.push(tin); }
+
+function guiTinCho() {
+  if (!TIN_CHO.length) return;
+  const ds = TIN_CHO.splice(0);
+  try {
+    const bt = caiDatBaoTin();
+    if (!bt.tgBat && !bt.mailBat) return;
+    let nd = null;
+    ds.forEach(function (tin) {
+      const dong = tin.dong.concat(bt.linkApp ? ['', bt.linkApp] : []);
+      if (bt.tgBat && bt.tgToken && bt.tgChat) {
+        try { guiTelegram(bt, dong); } catch (e) { ghiLoiBaoTin('Telegram', e); }
+      }
+      if (bt.mailBat) {
+        try {
+          if (!nd) nd = docBang('NguoiDung');
+          guiMail(nguoiNhanMail(nd, tin), tin.tieuDe, dong);
+        } catch (e) { ghiLoiBaoTin('Email', e); }
+      }
+    });
+  } catch (e) { ghiLoiBaoTin('?', e); }
+}
+
+function tenDV(d) { return DON_VI[d] || d || ''; }
+function ngayNgan(s) { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(str(s)); return m ? m[3] + '/' + m[2] : str(s); }
+
+// Nội dung báo tin phiếu đề xuất (song ngữ, có số phiếu)
+function baoTinDX(kieu, r, u, lyDo, ttCu) {
+  const bt = caiDatBaoTin();
+  if (!bt.tgBat && !bt.mailBat) return;
+  const vt = {};
+  docBang('VatTu').forEach(function (v) { vt[hoa(v.MaVT)] = v; });
+  const lines = dongDX(r);
+  function dsVT(key) {
+    const ds = lines.filter(function (l) { return l[key] > 0; });
+    const out = ds.slice(0, 12).map(function (l) {
+      const v = vt[l.maVT] || {};
+      return '• ' + (str(v.TenVI) || str(v.TenZH) || l.maVT) + ' (' + l.maVT + ') × ' + lamTron(l[key]) + ' ' + tenDV(str(v.DonVi));
+    });
+    if (ds.length > 12) out.push('… +' + (ds.length - 12));
+    return out;
+  }
+  const id = str(r.ID), nguoi = str(u.Ten), taoId = str(r.NguoiTaoID);
+  const dau = [id + ' · ' + str(r.CongTrinh), 'Người đề xuất 申请人: ' + str(r.NguoiTao)];
+  const can = ngayChu(r.CanNgay) ? ['Cần ngày 需用日期: ' + ngayNgan(ngayChu(r.CanNgay))] : [];
+  const ghi = str(r.GhiChu) ? ['Ghi chú 备注: ' + str(r.GhiChu)] : [];
+  const yk = str(r.YKien);
+  const ly = str(lyDo) ? ['Lý do 原因: ' + str(lyDo)] : [];
+  let tin;
+  if (kieu === 'moi' || kieu === 'guiLai') {
+    const tieu = kieu === 'moi' ? '📋 Phiếu đề xuất mới · 新物料申请' : '✏️ Phiếu đã sửa, gửi duyệt lại · 申请已修改，重新提交';
+    tin = { tieuDe: id + ' cần duyệt · 待审批', vaiTro: ['kysu'],
+      dong: [tieu].concat(dau, can, dsVT('sl'), ghi, ['👉 Chờ kỹ sư duyệt · 等待工程师审批']) };
+  } else if (kieu === 'duyet') {
+    tin = { tieuDe: id + ' đã duyệt · 已批准', vaiTro: ['thukho'], ids: [taoId],
+      dong: ['✅ Đã duyệt · 已批准'].concat(dau, ['Người duyệt 审批人: ' + nguoi], yk ? ['Ý kiến 意见: ' + yk] : [], can, dsVT('duyet'),
+        ['👉 Chờ thủ kho xuất · 等待仓管员出库']) };
+  } else if (kieu === 'tuChoi') {
+    tin = { tieuDe: id + ' bị từ chối · 已驳回', ids: [taoId],
+      dong: ['❌ Bị từ chối · 已驳回'].concat(dau, ['Người duyệt 审批人: ' + nguoi, 'Lý do 原因: ' + yk],
+        ['👉 Sửa phiếu rồi gửi lại · 可修改后重新提交']) };
+  } else if (kieu === 'xuatXong') {
+    tin = { tieuDe: id + ' đã xuất đủ · 已全部出库', ids: [taoId],
+      dong: ['📦 Đã xuất đủ · 已全部出库'].concat(dau, ['Thủ kho 仓管员: ' + nguoi], dsVT('daXuat')) };
+  } else if (kieu === 'dong') {
+    tin = { tieuDe: id + ' đã đóng · 已关闭', ids: [taoId],
+      dong: ['📦 Đã đóng phiếu, xuất một phần · 申请已关闭（部分出库）'].concat(dau, ['Người đóng 关闭人: ' + nguoi], ly, dsVT('daXuat')) };
+  } else if (kieu === 'huy') {
+    // Người tạo tự huỷ: báo người đang phải xử lý; người khác huỷ: báo người tạo
+    const tuHuy = str(u.ID) === taoId;
+    if (tuHuy && ttCu !== 'CHO_DUYET' && ttCu !== 'DA_DUYET') return;
+    tin = { tieuDe: id + ' đã huỷ · 已撤销',
+      vaiTro: tuHuy ? [ttCu === 'DA_DUYET' ? 'thukho' : 'kysu'] : [], ids: tuHuy ? [] : [taoId],
+      dong: ['🚫 Phiếu đã huỷ · 申请已撤销'].concat(dau, ['Người huỷ 撤销人: ' + nguoi], ly) };
+  } else return;
+  tin.tru = str(u.ID);
+  baoTin(tin);
+}
+
+/** Chạy mỗi sáng (hẹn giờ): dụng cụ quá hạn trả, vật tư dưới mức tối thiểu, phiếu đang chờ → thủ kho. */
+function baoTinBuoiSang() {
+  const bt = caiDatBaoTin();
+  if (!bt.sang || (!bt.tgBat && !bt.mailBat)) return 'Chưa bật báo tin buổi sáng.';
+  const tin = tinBuoiSang();
+  if (!tin) return 'Không có việc cần nhắc.';
+  TIN_CHO.length = 0;
+  baoTin(tin);
+  guiTinCho();
+  return 'Đã gửi nhắc việc buổi sáng.';
+}
+
+function tinBuoiSang() {
+  const now = new Date(), homNay = ngayChu(now);
+  const vt = {}, dsVT = docBang('VatTu');
+  dsVT.forEach(function (v) { vt[hoa(v.MaVT)] = v; });
+  const ten = function (m) { const v = vt[m] || {}; return (str(v.TenVI) || str(v.TenZH) || m) + ' (' + m + ')'; };
+  const quaHan = taiPhieuMuon().loans.filter(function (L) { return L.hanTra && L.hanTra < homNay; })
+    .sort(function (x, y) { return x.hanTra < y.hanTra ? -1 : 1; });
+  const ton = {};
+  docBang('TonKho').forEach(function (r) { const m = hoa(r.MaVT); ton[m] = lamTron((ton[m] || 0) + so(r.SoLuong)); });
+  const thieu = dsVT.filter(function (v) { return so(v.TonToiThieu) > 0 && (ton[hoa(v.MaVT)] || 0) < so(v.TonToiThieu); });
+  const mo = taiDeXuat({ VaiTro: 'admin', ID: '' });
+  const choDuyet = mo.filter(function (r) { return r.trangThai === 'CHO_DUYET'; }).length;
+  const choXuat = mo.filter(function (r) { return r.trangThai === 'DA_DUYET'; }).length;
+  if (!quaHan.length && !thieu.length && !choDuyet && !choXuat) return null;
+  const dong = ['☀️ Nhắc việc buổi sáng ' + ngayNgan(homNay) + ' · 早间提醒'];
+  const toiDa = 15;
+  if (quaHan.length) {
+    dong.push('', '⏰ Dụng cụ quá hạn trả · 工具逾期未还: ' + quaHan.length);
+    quaHan.slice(0, toiDa).forEach(function (L) {
+      const tre = Math.round((ngayTuChu(homNay) - ngayTuChu(L.hanTra)) / 864e5);
+      dong.push('• ' + ten(L.maVT) + ' × ' + L.conLai + ' — ' + L.nguoiMuon + ' — hạn 期限 ' + ngayNgan(L.hanTra) +
+        ' (quá ' + tre + ' ngày · 逾期' + tre + '天)');
+    });
+    if (quaHan.length > toiDa) dong.push('… +' + (quaHan.length - toiDa));
+  }
+  if (thieu.length) {
+    dong.push('', '📉 Dưới mức tối thiểu · 低于最低库存: ' + thieu.length);
+    thieu.slice(0, toiDa).forEach(function (v) {
+      const m = hoa(v.MaVT);
+      dong.push('• ' + ten(m) + ': còn 剩 ' + (ton[m] || 0) + ' / tối thiểu 最低 ' + so(v.TonToiThieu) + ' ' + tenDV(str(v.DonVi)));
+    });
+    if (thieu.length > toiDa) dong.push('… +' + (thieu.length - toiDa));
+  }
+  if (choDuyet || choXuat) dong.push('', '📋 Phiếu chờ duyệt · 待审批: ' + choDuyet + ' · Chờ xuất · 待出库: ' + choXuat);
+  return { tieuDe: 'Nhắc việc buổi sáng ' + ngayNgan(homNay) + ' · 早间提醒', vaiTro: ['thukho'], dong: dong, tru: '' };
+}
+
+// Nút "Gửi thử" trong app: gửi ngay, báo kết quả từng kênh
+function thuBaoTin(u) {
+  const bt = caiDatBaoTin();
+  const dong = ['🔔 Tin thử từ Kho Cơ Điện · 机电仓库测试消息', 'Người gửi 发送人: ' + str(u.Ten),
+    'Nhận được tin này là báo tin đã chạy. · 收到此消息说明通知已生效。'].concat(bt.linkApp ? ['', bt.linkApp] : []);
+  const kq = { telegram: 'TAT', email: 'TAT', emailTo: '' };
+  if (bt.tgBat) {
+    try { guiTelegram(bt, dong); kq.telegram = 'OK'; } catch (e) { kq.telegram = str(e.message) || 'LOI'; ghiLoiBaoTin('Telegram', e); }
+  }
+  if (bt.mailBat) {
+    const me = str(u.Email);
+    if (!laEmail(me)) kq.email = 'CHUA_CO_EMAIL';
+    else {
+      try { guiMail([me], 'Tin thử · 测试消息', dong); kq.email = 'OK'; kq.emailTo = me; } catch (e) { kq.email = str(e.message) || 'LOI'; ghiLoiBaoTin('Email', e); }
+    }
+  }
+  if (kq.telegram === 'OK' || kq.email === 'OK') PropertiesService.getScriptProperties().deleteProperty('BAO_TIN_LOI');
+  return kq;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Bản 1.3 · Ảnh vật tư (lưu trong Google Drive)                     */
+/*  Điện thoại thu nhỏ ảnh (cạnh dài 1024px) rồi gửi lên.              */
+/*  Mỗi vật tư một ảnh; thay ảnh thì ảnh cũ vào thùng rác.             */
+/* ------------------------------------------------------------------ */
+
+const ANH_TOI_DA = 3000000;   // số ký tự base64 tối đa (~2.2MB ảnh)
+function luuAnhVatTu(u, p) {
+  const maVT = hoa(p.maVT);
+  const sh = capNhatTieuDe('VatTu');
+  const v = maVT ? docBang('VatTu').filter(function (x) { return hoa(x.MaVT) === maVT; })[0] : null;
+  if (!v) throw loi('KHONG_CO_VT', maVT);
+  const cu = str(v.Anh);
+  let moi = '';
+  if (p.xoa !== true) {
+    const b64 = String(p.base64 || '').replace(/^data:image\/[\w+.-]+;base64,/, '').replace(/\s+/g, '');
+    if (!b64 || b64.length > ANH_TOI_DA || !/^[A-Za-z0-9+/]+=*$/.test(b64)) throw loi('ANH_LOI');
+    const ten = (maVT + ' ' + (str(v.TenVI) || str(v.TenZH))).replace(/[\\/:*?"<>|]+/g, ' ').slice(0, 80).trim() + '.jpg';
+    const f = thuMuc(THU_MUC_ANH, 'THU_MUC_ANH').createFile(Utilities.newBlob(Utilities.base64Decode(b64), 'image/jpeg', ten));
+    // Ai có đường link đều xem được: điện thoại hiện ảnh không cần đăng nhập Google
+    try { f.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW); }
+    catch (e) { f.setTrashed(true); throw loi('ANH_CHIA_SE', str(e.message)); }
+    moi = f.getId();
+  }
+  sh.getRange(v._row, BANG.VatTu.indexOf('Anh') + 1).setValue(moi);
+  if (cu && cu !== moi) { try { DriveApp.getFileById(cu).setTrashed(true); } catch (e) { /* ảnh cũ đã bị xoá tay */ } }
+  v.Anh = moi;
+  ghiNhatKy(str(u.Ten), moi ? 'ANH_VAT_TU' : 'XOA_ANH_VAT_TU', maVT);
+  return { item: vatTuRa(v) };
 }
 
 /* ------------------------------------------------------------------ */
@@ -1764,7 +2609,10 @@ let ready = false;
 return { call(req) {
   if (!ready) { caiDat(); ready = true; }
   return new Promise(res => setTimeout(() => res(JSON.parse(doPost({ postData: { contents: JSON.stringify(req) } }).getContent())), 160));
-} };
+},
+  // Ảnh vật tư trong bản xem thử: lấy từ Drive giả lập
+  photo(id) { const f = __drive.files.get(id); return f && f.data ? 'data:image/jpeg;base64,' + f.data : ''; }
+};
 })();
 </script>
 <script>
@@ -1773,12 +2621,13 @@ const IS_PREVIEW = false;
 const DEMO = !API_URL;
 const LIB_SCAN = 'https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js';
 const LIB_QR = 'https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js';
+const LIB_XLSX = 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js';
 const IDLE_MIN = 15;
-const APP_VER = '1.2.1';   // tăng số này mỗi lần giao index.html mới, để kiểm tra điện thoại đã tải bản mới chưa
+const APP_VER = '1.3.0';   // tăng số này mỗi lần giao index.html mới, để kiểm tra điện thoại đã tải bản mới chưa
 const LOGO = '<svg viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="112" fill="#16211F"/><path d="M104 184V124Q104 104 124 104H184M328 104H388Q408 104 408 124V184M408 328V388Q408 408 388 408H328M184 408H124Q104 408 104 388V328" stroke="#F5C400" stroke-width="30" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M256 164L348 210L256 256L164 210Z" fill="#F5C400"/><path d="M256 164L348 210V306L256 352L164 306V210ZM164 210L256 256L348 210M256 256V352" stroke="#F5C400" stroke-width="24" stroke-linejoin="round" fill="none"/><path d="M312 244L284 294H304L292 334L324 280H304L318 244Z" fill="#F5C400"/></svg>';
 // Giống QUYEN trong Code.gs (máy chủ vẫn kiểm tra lại mọi thao tác)
 const QUYEN = { nhapxuat: ['admin', 'thukho'], danhmuc: ['admin', 'thukho'], muontra: ['admin', 'thukho'], nhatky: ['admin', 'kysu', 'thukho'], nguoidung: ['admin'],
-  dexuat: ['admin', 'kysu', 'thukho', 'congnhan'], duyet: ['admin', 'kysu'], xemdexuat: ['admin', 'kysu', 'thukho'] };
+  dexuat: ['admin', 'kysu', 'thukho', 'congnhan'], duyet: ['admin', 'kysu'], xemdexuat: ['admin', 'kysu', 'thukho'], quantri: ['admin'] };
 // Thao tác làm được lúc mất mạng (lưu trên máy, có mạng tự gửi). Các việc khác cần có mạng.
 const QUEUE_OK = ['txn', 'lend', 'takeBack', 'request', 'editRequest', 'approve', 'issue', 'closeRequest'];
 const SYNC_SEC = 30;
@@ -2035,7 +2884,148 @@ const TX = {
   dataAt: ['Dữ liệu cập nhật lúc {x}', '数据更新于{x}'],
   pendingPill: ['Chờ gửi', '待发送'],
   loanPendingSync: ['Phiếu mượn chưa gửi lên máy chủ. Có mạng sẽ tự gửi, sau đó mới nhận trả được.', '借用单尚未上传，联网后自动发送，之后才能归还。'],
-  delete: ['Xoá', '删除']
+  delete: ['Xoá', '删除'],
+  // ----- Bản 1.3 -----
+  errOldServer: ['Máy chủ chưa cập nhật bản 1.3. Nhờ người quản lý dán Code.gs mới và triển khai phiên bản mới.', '服务器尚未更新到1.3版。请管理员粘贴新的Code.gs并部署新版本。'],
+  errEmail: ['Email không hợp lệ.', '邮箱格式无效。'],
+  errRange: ['Khoảng ngày không hợp lệ.', '日期范围无效。'],
+  errPhoto: ['Ảnh không hợp lệ hoặc quá lớn.', '图片无效或过大。'],
+  errPhotoShare: ['Google Drive không cho chia sẻ ảnh bằng đường link (tài khoản công ty?). Ảnh chưa được lưu.', 'Google云端硬盘不允许通过链接共享图片（公司账号？），图片未保存。'],
+  errTgToken: ['Mã bot không đúng. Chép lại mã từ @BotFather (dạng 123456789:AA…).', '机器人令牌不正确，请从@BotFather重新复制（如123456789:AA…）。'],
+  errTgMissing: ['Cần có mã bot và chọn nhóm nhận tin trước khi bật Telegram.', '开启Telegram前需填写机器人令牌并选择接收群组。'],
+  errTgChat: ['Mã nhóm Telegram không đúng.', 'Telegram群组编号不正确。'],
+  errTg: ['Telegram báo lỗi: {x}', 'Telegram报错：{x}'],
+  errNoCapQuyen: ['Máy chủ chưa được cấp quyền mới. Trong Apps Script, chạy hàm capQuyen một lần rồi triển khai lại.', '服务器尚未获得新权限。请在Apps Script中运行一次capQuyen函数后重新部署。'],
+  // Quản trị hệ thống
+  admin: ['Quản trị', '系统管理'], adminTitle: ['Quản trị hệ thống', '系统管理'],
+  serverVer: ['Máy chủ', '服务器'],
+  backupTitle: ['Sao lưu dữ liệu', '数据备份'],
+  backupLast: ['Sao lưu gần nhất: {x}', '最近备份：{x}'],
+  backupNever: ['Chưa sao lưu lần nào', '尚未备份'],
+  backupWeekly: ['Tự sao lưu mỗi Chủ nhật, 21–22 giờ', '每周日21–22点自动备份'],
+  autoOn: ['Đang bật', '已开启'], autoOff: ['Đang tắt', '已关闭'],
+  backupTurnOn: ['Bật tự sao lưu', '开启自动备份'], backupTurnOff: ['Tắt tự sao lưu', '关闭自动备份'],
+  backupNow: ['Sao lưu ngay', '立即备份'],
+  backupHelp: ['Bản sao cả file Google Sheet nằm trong Google Drive, thư mục "{x}". Giữ {n} bản mới nhất, bản cũ hơn tự vào thùng rác.', '整个Google表格的副本保存在Google云端硬盘“{x}”文件夹中，保留最新{n}份，更早的自动移入回收站。'],
+  backupRunning: ['Đang sao lưu… có thể mất nửa phút.', '正在备份…可能需要半分钟。'],
+  backupDone: ['Đã sao lưu xong.', '备份完成。'],
+  autoSaved: ['Đã lưu cài đặt tự sao lưu.', '自动备份设置已保存。'],
+  notifyTitle: ['Báo tin', '消息通知'], notifySettings: ['Cài đặt báo tin', '通知设置'],
+  tgState: ['Nhóm Telegram', 'Telegram群'], mailState: ['Email', '邮件'],
+  catalogTitle: ['Danh mục vật tư', '物料目录'],
+  // Nhập vật tư từ Excel
+  importTitle: ['Nhập vật tư từ Excel', 'Excel导入物料'],
+  xlsStep1: ['1. Tải file mẫu, điền danh sách vật tư', '1. 下载模板，填写物料清单'],
+  xlsTemplate: ['Tải file mẫu (trống)', '下载空白模板'],
+  xlsExport: ['Tải danh mục hiện có (để sửa)', '下载现有目录（用于修改）'],
+  xlsHelp: ['Mã để trống thì app tự tạo theo nhóm. Mã đã có thì cập nhật vật tư đó, ô để trống giữ nguyên. Số lượng đầu chỉ dùng cho vật tư mới. Đơn vị, nhóm ghi tiếng Việt hay tiếng Trung đều được (cái / 个, Điện / 电气).', '编码留空则按类别自动生成。已有编码则更新该物料，空白单元格保持不变。期初数量仅用于新物料。单位、类别可填越南语或中文（cái / 个、Điện / 电气）。'],
+  xlsStep2: ['2. Chọn file đã điền (.xlsx hoặc .csv)', '2. 选择已填写的文件（.xlsx或.csv）'],
+  xlsPick: ['Chọn file Excel', '选择Excel文件'],
+  xlsPickHelp: ['iPhone: chọn từ Tệp, iCloud Drive hoặc file đã lưu từ Zalo.', 'iPhone：可从“文件”、iCloud云盘或从Zalo保存的文件中选择。'],
+  xlsReading: ['Đang đọc file…', '正在读取文件…'],
+  xlsFile: ['File {x} · trang "{y}" · {n} dòng', '文件{x} · 工作表“{y}” · {n}行'],
+  xlsNew: ['Mới', '新增'], xlsUpd: ['Cập nhật', '更新'], xlsSame: ['Không đổi', '无变化'], xlsErr: ['Lỗi', '错误'],
+  xlsRow: ['Dòng {n}', '第{n}行'],
+  xlsErrList: ['Dòng lỗi', '错误行'],
+  xlsErrHelp: ['Sửa trong file rồi chọn lại file. Các dòng khác vẫn nhập được.', '请在文件中修改后重新选择文件，其他行仍可导入。'],
+  xlsPreview: ['Xem trước', '预览'],
+  xlsAutoCode: ['mã tự tạo', '自动编码'],
+  xlsInit: ['Tồn đầu {n} tại {x}', '期初{n}，库位{x}'],
+  xlsInitSkip: ['Vật tư đã có: bỏ qua số lượng đầu (dùng Nhập kho)', '已有物料：忽略期初数量（请用入库）'],
+  xlsMore: ['… và {n} dòng khác', '…还有{n}行'],
+  xlsGo: ['Nhập {n} vật tư', '导入{n}种物料'],
+  xlsNothing: ['Không có dòng nào cần nhập.', '没有需要导入的行。'],
+  xlsProgress: ['Đang nhập {a}/{b}…', '正在导入{a}/{b}…'],
+  xlsDone: ['Đã nhập: {a} mới, {b} cập nhật.', '已导入：新增{a}，更新{b}。'],
+  xlsPartial: ['Mất mạng giữa chừng: đã nhập {a}/{b} dòng. Chọn lại file và nhập tiếp, dòng đã nhập không bị trùng.', '中途断网：已导入{a}/{b}行。请重新选择文件继续导入，已导入的行不会重复。'],
+  xlsResult: ['Kết quả nhập', '导入结果'],
+  xlsNoHeader: ['Không thấy dòng tiêu đề (Mã, Tên tiếng Việt, Đơn vị…). Hãy dùng file mẫu.', '未找到标题行（编码、越南语名称、单位…），请使用模板。'],
+  xlsBadFile: ['Không đọc được file này. Chọn file .xlsx hoặc .csv.', '无法读取此文件，请选择.xlsx或.csv文件。'],
+  xlsTooMany: ['File quá lớn: tối đa 5 000 dòng mỗi lần.', '文件过大：每次最多5000行。'],
+  xlsGuide: ['Hướng dẫn', '说明'],
+  xe_THIEU_TEN: ['Thiếu tên (tiếng Việt hoặc tiếng Trung)', '缺少名称（越南语或中文）'],
+  xe_THIEU_NHOM: ['Thiếu nhóm', '缺少类别'],
+  xe_NHOM_LA: ['Nhóm không rõ: "{x}"', '无法识别的类别：“{x}”'],
+  xe_THIEU_DON_VI: ['Thiếu đơn vị', '缺少单位'],
+  xe_KHONG_CO_VITRI: ['Không có vị trí {x}', '库位{x}不存在'],
+  xe_THIEU_VITRI: ['Có số lượng đầu nhưng thiếu vị trí', '有期初数量但缺少库位'],
+  xe_TRUNG_BARCODE: ['Mã vạch {x} trùng vật tư khác', '条码{x}与其他物料重复'],
+  xe_TRUNG_FILE: ['Trùng với dòng {x} trong file', '与文件第{x}行重复'],
+  xe_SO_LUONG: ['Số lượng / tồn tối thiểu không hợp lệ', '数量/最低库存无效'],
+  xe_TRUNG_MA: ['Mã {x} trùng mã vị trí', '编码{x}与库位编码重复'],
+  xc_maVT: ['Mã', '编码'], xc_tenVI: ['Tên tiếng Việt', '越南语名称'], xc_tenZH: ['Tên tiếng Trung', '中文名称'], xc_quyCach: ['Quy cách', '规格'],
+  xc_donVi: ['Đơn vị', '单位'], xc_nhom: ['Nhóm', '类别'], xc_tonToiThieu: ['Tồn tối thiểu', '最低库存'], xc_barcode: ['Mã vạch', '条码'],
+  xc_viTri: ['Vị trí', '库位'], xc_soLuongDau: ['Số lượng đầu', '期初数量'], xc_ghiChu: ['Ghi chú', '备注'],
+  downloadPreviewNote: ['Bản xem thử không tải file xuống được. Khi cài lên GitHub Pages, nút này tải file Excel về điện thoại.', '演示版无法下载文件。部署到GitHub Pages后，此按钮可将Excel文件下载到手机。'],
+  fileSaved: ['Đã tạo file {x}', '已生成文件{x}'],
+  fileWhere: ['iPhone: bấm Tải về nếu được hỏi; file nằm trong app Tệp → Tải về.', 'iPhone：如有提示请点“下载”；文件位于“文件”App →“下载”。'],
+  shareFile: ['Gửi file (Zalo, Mail…)', '发送文件（Zalo、邮件…）'],
+  // Báo cáo
+  report: ['Báo cáo', '报表'],
+  reportBar: ['Báo cáo xuất kho', '按工程出库报表'],
+  rp_month: ['Tháng này', '本月'], rp_last: ['Tháng trước', '上月'], rp_d30: ['30 ngày', '近30天'], rp_custom: ['Tuỳ chọn', '自定义'],
+  rpFrom: ['Từ ngày', '开始日期'], rpTo: ['Đến ngày', '结束日期'],
+  rpAllProjects: ['Tất cả công trình', '全部工程'],
+  rpNoProject: ['(Không ghi công trình)', '（未填工程）'],
+  rpByProject: ['Theo công trình', '按工程'], rpByItem: ['Theo vật tư', '按物料'],
+  rpStatOut: ['lần xuất', '次出库'], rpStatCT: ['công trình', '个工程'], rpStatVT: ['vật tư', '种物料'],
+  rpTimes: ['{n} lần', '{n}次'],
+  rpNone: ['Không có lần xuất nào trong khoảng ngày này.', '该期间没有出库记录。'],
+  rpOnlyOut: ['Chỉ tính xuất kho (gồm xuất theo phiếu đề xuất). Mượn dụng cụ không tính.', '仅统计出库（含按申请单出库），不含工具借用。'],
+  rpExcel: ['Tải Excel', '下载Excel'], rpPrint: ['In / Lưu PDF', '打印/存PDF'],
+  rpPrintHelp: ['iPhone: bấm In / Lưu PDF → trong màn In, dùng hai ngón kéo giãn trang xem trước → Chia sẻ → Lưu vào Tệp.', 'iPhone：点“打印/存PDF”→在打印界面用两指放大预览页→分享→存储到“文件”。'],
+  rpCut: ['Chi tiết chỉ lấy {n} dòng đầu. Chọn khoảng ngày ngắn hơn để có đủ.', '明细仅含前{n}条，请缩短日期范围以获取全部。'],
+  rpHead: ['Báo cáo xuất kho theo công trình', '按工程出库报表'],
+  rpRange: ['Từ {a} đến {b}', '{a}至{b}'],
+  rpMade: ['Lập lúc {x} · {y}', '制表：{x} · {y}'],
+  rpSum: ['Tổng hợp', '汇总'], rpDetail: ['Chi tiết', '明细'],
+  xr_time: ['Thời gian', '时间'], xr_qty: ['Tổng xuất', '出库合计'], xr_times: ['Số lần', '次数'], xr_from: ['Từ vị trí', '出库库位'],
+  xr_ticket: ['Phiếu đề xuất', '申请单号'], xr_who: ['Người xuất', '出库人'], xr_nct: ['Số công trình', '工程数'], xr_sl: ['Số lượng', '数量'],
+  // Báo tin
+  ntDemo: ['Bản xem thử: bấm Gửi thử sẽ không gửi tin thật.', '演示版：点“发送测试”不会真正发送消息。'],
+  ntLastErr: ['Lần gửi lỗi gần nhất ({x}, {k}): {m}', '最近一次发送失败（{x}，{k}）：{m}'],
+  ntTg: ['Nhóm Telegram của kho', '仓库Telegram群'],
+  ntS1: ['Trong Telegram, mở @BotFather → gõ /newbot → đặt tên → chép mã bot (dạng 123456789:AA…) dán vào ô dưới.', '在Telegram中打开@BotFather→输入/newbot→设置名称→复制机器人令牌（如123456789:AA…）粘贴到下方。'],
+  ntS2: ['Thêm bot vào nhóm Telegram của kho, rồi gửi một tin bất kỳ trong nhóm (ví dụ /start).', '将机器人加入仓库Telegram群，然后在群里发任意一条消息（如/start）。'],
+  ntS3: ['Bấm Tìm nhóm, chọn nhóm của kho, đánh dấu Gửi tin vào nhóm, bấm Lưu rồi Gửi thử.', '点“查找群组”，选择仓库群，勾选“发送到群”，点“保存”后再点“发送测试”。'],
+  ntToken: ['Mã bot (token)', '机器人令牌（token）'],
+  ntTokenKeep: ['Đã lưu mã bot …{x}. Để trống ô này là giữ mã cũ.', '已保存令牌…{x}，此栏留空则保持不变。'],
+  ntGroup: ['Nhóm nhận tin', '接收群组'], ntGroupNone: ['Chưa chọn nhóm', '未选择群组'],
+  ntFind: ['Tìm nhóm', '查找群组'],
+  ntNoChats: ['Chưa thấy nhóm nào. Thêm bot vào nhóm, gửi một tin trong nhóm (ví dụ /start) rồi bấm Tìm nhóm lại.', '未找到群组。请将机器人加入群，在群里发一条消息（如/start）后再点“查找群组”。'],
+  ntPickChat: ['Chạm vào nhóm để chọn', '点击群组进行选择'],
+  ntPrivate: ['Chat riêng', '私聊'], ntGroupT: ['Nhóm', '群组'],
+  ntTgOn: ['Gửi tin vào nhóm Telegram', '发送到Telegram群'],
+  ntMailHelp: ['Nhập email cho từng người ở màn Người dùng ({n} người đã có). Gmail miễn phí gửi khoảng 100 thư mỗi ngày, hôm nay còn {m}.', '请在“用户”页面为每人填写邮箱（已有{n}人）。免费Gmail每天约可发100封，今天还剩{m}封。'],
+  ntMailOn: ['Gửi email cho người liên quan', '发送邮件给相关人员'],
+  ntMorning: ['Nhắc việc buổi sáng', '早间提醒'],
+  ntMorningOn: ['Mỗi sáng báo dụng cụ quá hạn trả, vật tư dưới mức tối thiểu, phiếu đang chờ', '每天早上提醒逾期未还工具、低于最低库存物料、待处理申请'],
+  ntHour: ['Giờ gửi', '发送时间'], ntHourOpt: ['{n} giờ sáng', '早上{n}点'],
+  ntTz: ['Theo múi giờ máy chủ: {x}', '按服务器时区：{x}'],
+  ntWho: ['Ai nhận tin gì', '谁收到什么通知'],
+  ntW1: ['Phiếu mới / sửa gửi lại → kỹ sư', '新申请/修改后重新提交 → 工程师'],
+  ntW2: ['Đã duyệt → thủ kho và người đề xuất', '已批准 → 仓管员和申请人'],
+  ntW3: ['Bị từ chối (kèm lý do) → người đề xuất', '被驳回（附原因）→ 申请人'],
+  ntW4: ['Đã xuất đủ / đóng / huỷ phiếu → người đề xuất', '已全部出库/关闭/撤销 → 申请人'],
+  ntW5: ['Nhắc việc buổi sáng → thủ kho', '早间提醒 → 仓管员'],
+  ntW6: ['Nhóm Telegram nhận tất cả các tin trên. Email chỉ gửi người có email.', 'Telegram群接收以上全部通知；邮件仅发给已填写邮箱的人。'],
+  ntTest: ['Gửi thử', '发送测试'],
+  ntTestTitle: ['Kết quả gửi thử', '测试结果'],
+  ntTgSent: ['Telegram: đã gửi vào nhóm', 'Telegram：已发送到群'], ntTgOff: ['Telegram: đang tắt', 'Telegram：已关闭'],
+  ntTgErr: ['Telegram lỗi: {x}', 'Telegram出错：{x}'],
+  ntMailSent: ['Email: đã gửi tới {x}', '邮件：已发送至{x}'], ntMailOff: ['Email: đang tắt', '邮件：已关闭'],
+  ntMailNoAddr: ['Email: bạn chưa có email (thêm ở màn Người dùng)', '邮件：您尚未填写邮箱（在“用户”页面添加）'],
+  ntMailErr: ['Email lỗi: {x}', '邮件出错：{x}'],
+  email: ['Email', '邮箱'],
+  emailHelp: ['Để nhận báo tin qua email (không bắt buộc).', '用于接收邮件通知（可选）。'],
+  // Ảnh vật tư
+  photo: ['Ảnh vật tư', '物料照片'],
+  photoAdd: ['Thêm ảnh', '添加照片'], photoChange: ['Đổi ảnh', '更换照片'], photoDel: ['Xoá ảnh', '删除照片'],
+  photoDelQ: ['Xoá ảnh của vật tư này?', '删除该物料的照片？'],
+  photoUploading: ['Đang tải ảnh lên…', '正在上传照片…'],
+  photoSaved: ['Đã lưu ảnh.', '照片已保存。'], photoDeleted: ['Đã xoá ảnh.', '照片已删除。'],
+  photoBad: ['Không đọc được ảnh này.', '无法读取此图片。'],
+  photoErr: ['Không tải được ảnh', '图片加载失败']
 };
 const UNITS = {
   cai: ['cái', '个'], chiec: ['chiếc', '台'], bo: ['bộ', '套'], met: ['m', '米'], cuon: ['cuộn', '卷'], cay: ['cây', '根'],
@@ -2283,7 +3273,7 @@ function nextCode(nhom) {
 /* ---------------- Gọi máy chủ ---------------- */
 let pending = 0;
 function busy(d) { pending = Math.max(0, pending + d); $('#busy').hidden = pending === 0; }
-// opts.opId: mã thao tác (máy chủ chỉ ghi một lần dù nhận nhiều lần)
+// opts.opId: mã thao tác (máy chủ chỉ ghi một lần dù nhận nhiều lần). opts.timeout: số giây chờ tối đa.
 async function api(action, payload, opts) {
   opts = opts || {};
   // Đăng nhập lúc mất mạng thì chưa có phiên: có mạng lại thì tự đăng nhập bằng PIN đang giữ trong bộ nhớ
@@ -2301,7 +3291,7 @@ async function api(action, payload, opts) {
     } else {
       // Sóng yếu: không chờ quá lâu. Việc ghi có mã thao tác nên gửi lại sau cũng không bị trùng.
       const ctl = typeof AbortController === 'function' ? new AbortController() : null;
-      const tm = setTimeout(() => { if (ctl) ctl.abort(); }, (action === 'data' ? 45 : 30) * 1000);
+      const tm = setTimeout(() => { if (ctl) ctl.abort(); }, (opts.timeout || (action === 'data' ? 45 : 30)) * 1000);
       try {
         const r = await fetch(API_URL, { method: 'POST', body: JSON.stringify(req), signal: ctl ? ctl.signal : undefined });
         res = await r.json();
@@ -2597,7 +3587,9 @@ function errMsg(e) {
     PIN_CU_SAI: 'errPinOld', ADMIN_CUOI: 'errLastAdmin', CHUA_CAI_DAT: 'errSetup', MANG: 'network', HET_PHIEN: 'sessionExpired', KHOA: 'pinLocked',
     THIEU_NGUOI_MUON: 'errBorrower', HAN_TRA: 'errDue', KHONG_CO_PHIEU: 'errNoLoan', DA_TRA_XONG: 'errLoanClosed',
     THIEU_CONG_TRINH: 'errProject', CAN_NGAY: 'errNeedBy', DX_TRONG: 'errReqEmpty', DX_NHIEU: 'errTooManyLines', THIEU_LY_DO: 'errReason',
-    DX_TRANG_THAI: 'errReqState', KHONG_CO_DX: 'errNoReq', DX_DA_XUAT: 'errReqIssued' };
+    DX_TRANG_THAI: 'errReqState', KHONG_CO_DX: 'errNoReq', DX_DA_XUAT: 'errReqIssued',
+    KHONG_HIEU: 'errOldServer', EMAIL: 'errEmail', KHOANG_NGAY: 'errRange', ANH_LOI: 'errPhoto', ANH_CHIA_SE: 'errPhotoShare',
+    TG_MA: 'errTgToken', TG_THIEU: 'errTgMissing', TG_NHOM: 'errTgChat' };
   if (!e || !e.code) return t('errGeneric', { x: String(e && e.message || e) });
   // Lỗi của một dòng trong phiếu: message dạng "số|mã vật tư"
   const per = /^([\d.]+)\|(.+)$/.exec(String(e.message || ''));
@@ -2607,6 +3599,7 @@ function errMsg(e) {
   if (e.code === 'TRA_QUA_SO') return t('errReturnTooMany', { n: fmt(e.message) });
   if (e.code === 'TRUNG_MA') return t('errDupCode', { x: e.message });
   if (e.code === 'PIN_SAI') return t('pinWrong', { n: e.message });
+  if (e.code === 'TG_LOI') return t('errTg', { x: e.message || '' });
   return m[e.code] ? t(m[e.code]) : t('errGeneric', { x: e.message || e.code });
 }
 
@@ -2640,7 +3633,16 @@ const IC = {
   cloudOff: '<path d="M7.5 18h9.8a3.7 3.7 0 0 0 1-7.3 5.6 5.6 0 0 0-10.4-1.9A4.6 4.6 0 0 0 7.5 18z"/><path d="M4 4l16 16"/>',
   send: '<path d="M12 16V5m0 0-4 4m4-4 4 4"/><path d="M5 19.5h14"/>',
   trash: '<path d="M5 7h14M10 7V5h4v2M7 7l1 13h8l1-13"/>',
-  check: '<path d="m5 12.5 4.5 4.5L19 7.5"/>'
+  check: '<path d="m5 12.5 4.5 4.5L19 7.5"/>',
+  chart: '<path d="M4 20.5h16"/><path d="M7 17v-5M11 17V7M15 17v-7M19 17V4.5"/>',
+  gear: '<circle cx="12" cy="12" r="3.2"/><path d="M12 3.5v2.3M12 18.2v2.3M3.5 12h2.3M18.2 12h2.3M6 6l1.6 1.6M16.4 16.4 18 18M6 18l1.6-1.6M16.4 7.6 18 6"/>',
+  bell: '<path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/>',
+  db: '<ellipse cx="12" cy="6" rx="7" ry="2.8"/><path d="M5 6v12c0 1.5 3.1 2.8 7 2.8s7-1.3 7-2.8V6M5 12c0 1.5 3.1 2.8 7 2.8s7-1.3 7-2.8"/>',
+  sheet: '<rect x="4" y="3.5" width="16" height="17" rx="2"/><path d="M4 9h16M4 14.5h16M10 3.5v17"/>',
+  download: '<path d="M12 4v11m0 0-4-4m4 4 4-4"/><path d="M5 19.5h14"/>',
+  photo: '<rect x="3.5" y="5" width="17" height="14" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="m20.5 16-5-5-8.5 8"/>',
+  share: '<path d="M12 15V4m0 0L8 8m4-4 4 4"/><path d="M7.5 11H5.5A1.5 1.5 0 0 0 4 12.5v6A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5v-6a1.5 1.5 0 0 0-1.5-1.5h-2"/>',
+  mail: '<rect x="3.5" y="5.5" width="17" height="13" rx="2"/><path d="m4 7 8 6 8-6"/>'
 };
 function ic(n) {
   return '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + (IC[n] || '') + '</svg>';
@@ -2681,6 +3683,7 @@ const TITLES = {
   loans: () => K('loans'), lend: () => K('lendTitle'),
   giveBack: p => { const L = findLoan(p.id); return K(L && L.trangThai === 'DANG_MUON' && can('muontra') ? 'returnTitle' : 'loanDetail'); },
   reqs: () => K('reqs'), reqNew: p => K(p.edit ? 'reqEdit' : 'reqNew'), outbox: () => K('outbox'),
+  admin: () => K('adminTitle'), notify: () => K('notifySettings'), importXls: () => K('importTitle'), report: () => K('reportBar'),
   req: p => { const R = findReq(p.id); return R && !isTmp(R.id) ? [R.id, tp('reqDetail')] : K('reqDetail'); }
 };
 const MONO_TITLE = ['item', 'loc', 'req'];
@@ -2800,6 +3803,7 @@ function itemRow(it, extra) {
   const locs = (it._locs || []).slice(0, 3).map(s => '<span class="plate loc">' + esc(s.maViTri) + '</span>').join('') +
     ((it._locs || []).length > 3 ? '<span>+' + (it._locs.length - 3) + '</span>' : '');
   return `<button type="button" class="row" data-act="item" data-id="${esc(it.maVT)}">
+    ${it.anh ? `<span class="thumb"><img src="${esc(photoUrl(it.anh, 120))}" alt="" loading="lazy" referrerpolicy="no-referrer"></span>` : ''}
     <div class="row-main">
       <span class="nm">${esc(nm1(it))}</span>
       ${nm2(it) ? `<span class="nm2" lang="zh-CN">${esc(nm2(it))}</span>` : ''}
@@ -2868,7 +3872,9 @@ function homeBody() {
   tiles.push(`<button type="button" class="tile" data-act="view" data-v="locs">${ic('locs')}${t('locations')}</button>`);
   if (can('danhmuc')) tiles.push(`<button type="button" class="tile" data-act="labels">${ic('labels')}${t('labels')}</button>`);
   if (can('nhatky')) tiles.push(`<button type="button" class="tile" data-act="view" data-v="log">${ic('log')}${t('log')}</button>`);
+  if (can('nhatky')) tiles.push(`<button type="button" class="tile t-rp" data-act="view" data-v="report">${ic('chart')}${t('report')}</button>`);
   if (can('nguoidung')) tiles.push(`<button type="button" class="tile" data-act="view" data-v="users">${ic('users')}${t('users')}</button>`);
+  if (can('quantri')) tiles.push(`<button type="button" class="tile t-admin" data-act="view" data-v="admin">${ic('gear')}${t('admin')}</button>`);
   el.innerHTML = `
     <div class="stats"><span><b>${S.items.length}</b> ${t('statItems')}</span><span><b>${S.locs.length}</b> ${t('statLocs')}</span>
       <span class="${low.length ? 'w' : ''}"><b>${low.length}</b> ${t('statLow')}</span>
@@ -2893,7 +3899,8 @@ VIEWS.items = function (p) {
   const list = S.items.filter(i => !g || i.nhom === g);
   main.innerHTML = `
     <div class="chips" role="toolbar">${['', ...groups].map(x => `<button type="button" class="chip" data-act="grp" data-g="${esc(x)}" aria-pressed="${x === g}">${x ? esc(grpName(x)) : t('all')}</button>`).join('')}</div>
-    ${can('danhmuc') ? `<div class="links" style="margin:0 0 12px"><button type="button" class="btn small" data-act="itemForm">${ic('add')}${t('addItem')}</button></div>` : ''}
+    ${can('danhmuc') ? `<div class="links" style="margin:0 0 12px"><button type="button" class="btn small" data-act="itemForm">${ic('add')}${t('addItem')}</button>
+      <button type="button" class="btn small" data-act="view" data-v="importXls">${ic('sheet')}${t('importTitle')}</button></div>` : ''}
     ${list.length ? `<div class="list">${list.map(i => itemRow(i)).join('')}</div>` : `<p class="empty">${t('noResults')}</p>`}`;
 };
 
@@ -2910,6 +3917,8 @@ VIEWS.item = function (p) {
     <h1>${esc(nm1(it))}</h1>
     ${nm2(it) ? `<div class="nm2" lang="zh-CN" style="font-size:15px">${esc(nm2(it))}</div>` : ''}
   </div>
+  ${it.anh ? `<button type="button" class="photo" data-act="photoView" data-id="${esc(it.maVT)}" aria-label="${esc(tp('photo'))}">
+    <img src="${esc(photoUrl(it.anh, 600))}" alt="${esc(tp('photo'))}" referrerpolicy="no-referrer"><span class="photo-err">${t('photoErr')}</span></button>` : ''}
   <dl class="facts">
     ${it.quyCach ? `<dt>${t('spec')}</dt><dd>${esc(it.quyCach)}</dd>` : ''}
     <dt>${t('unit')}</dt><dd>${esc(unitName(u))}</dd>
@@ -2936,8 +3945,12 @@ VIEWS.item = function (p) {
   ${lentSection(it)}
   ${can('danhmuc') ? `<div class="links">
     <button type="button" class="btn small" data-act="itemForm" data-id="${esc(it.maVT)}">${ic('edit')}${t('edit')}</button>
-    <button type="button" class="btn small" data-act="labels" data-kind="item" data-id="${esc(it.maVT)}">${ic('labels')}${t('labels')}</button></div>` : ''}
+    <button type="button" class="btn small" data-act="labels" data-kind="item" data-id="${esc(it.maVT)}">${ic('labels')}${t('labels')}</button>
+    <label class="btn small file-btn">${ic('camera')}${t(it.anh ? 'photoChange' : 'photoAdd')}<input type="file" accept="image/*" class="sr-only" id="photoIn"></label>
+    ${it.anh ? `<button type="button" class="btn small danger" data-act="photoDel" data-id="${esc(it.maVT)}">${ic('trash')}${t('photoDel')}</button>` : ''}</div>` : ''}
   ${can('nhatky') ? `<h2 class="sec">${t('history')}</h2><div id="hist"><p class="empty">${t('loading')}</p></div>` : ''}`;
+  const pin = $('#photoIn');
+  if (pin) pin.addEventListener('change', () => { const f = pin.files && pin.files[0]; pin.value = ''; if (f) photoPick(it.maVT, f); });
   if (can('nhatky')) loadHistory({ maVT: it.maVT, limit: 15 }, '#hist', true);
 };
 function logList(rows, withItem) {
@@ -3966,6 +4979,7 @@ async function doPrint(p) {
   const codes = src.map(o => o[key].toUpperCase()).filter(c => p.sel[p.kind].has(c));
   if (!codes.length) return toast(t('selNone'), 'bad');
   try { await ensureQR(); } catch (e) { return toast(t('network'), 'bad'); }
+  const rpPage = $('#rpPage'); if (rpPage) rpPage.remove();   // tem in lề 0 (báo cáo in lề 12mm)
   const all = [];
   codes.forEach(c => { for (let i = 0; i < p.copies; i++) all.push(labelHtml(p.kind, c)); });
   let html = '';
@@ -3992,13 +5006,13 @@ VIEWS.users = function () {
     if (cur() !== at) return;
     S.users = list;
     $('#uBox').innerHTML = `<div class="list">${list.map(u => `<button type="button" class="row" data-act="userForm" data-id="${esc(u.id)}">
-      <div class="row-main"><span class="nm">${esc(u.ten)}</span><span class="meta"><span class="plate">${esc(u.id)}</span><span>${roleName(u.vaiTro)}</span></span></div>
+      <div class="row-main"><span class="nm">${esc(u.ten)}</span><span class="meta"><span class="plate">${esc(u.id)}</span><span>${roleName(u.vaiTro)}</span>${u.email ? `<span class="mono">${esc(u.email)}</span>` : ''}</span></div>
       <div class="qty"><span class="pill ${u.hoatDong ? 'ok' : 'grey'}">${u.hoatDong ? t('active') : t('locked')}</span></div></button>`).join('')}</div>`;
   }).catch(e => { if (cur() === at) $('#uBox').innerHTML = `<p class="empty">${errMsg(e)}</p>`; });
 };
 VIEWS.userForm = function (p) {
   const u = p.id ? (S.users || []).find(x => x.id === p.id) : null;
-  if (!p.F) p.F = u ? { ten: u.ten, vaiTro: u.vaiTro, hoatDong: u.hoatDong, pin: '' } : { ten: '', vaiTro: 'congnhan', hoatDong: true, pin: '' };
+  if (!p.F) p.F = u ? { ten: u.ten, vaiTro: u.vaiTro, hoatDong: u.hoatDong, pin: '', email: u.email || '' } : { ten: '', vaiTro: 'congnhan', hoatDong: true, pin: '', email: '' };
   const F = p.F;
   main.innerHTML = `
   <form id="f" class="form" novalidate autocomplete="off">
@@ -4010,21 +5024,25 @@ VIEWS.userForm = function (p) {
     <div class="field"><label for="fPin">${t('pin6')} ${u ? '' : '<span class="req">*</span>'}</label>
       <input class="inp mono" id="fPin" inputmode="numeric" maxlength="6" autocomplete="new-password" value="${esc(F.pin)}" placeholder="${u ? esc(tp('pinKeep')) : '••••••'}">
       <p class="help">${t('pinTip')}</p></div>
+    <div class="field"><label for="fEmail">${t('email')} <span class="muted">(${t('optional')})</span></label>
+      <input class="inp" id="fEmail" type="email" inputmode="email" autocapitalize="off" autocomplete="off" spellcheck="false" value="${esc(F.email)}" placeholder="ten@gmail.com">
+      <p class="help">${t('emailHelp')}</p></div>
     ${u ? `<label class="check"><input type="checkbox" id="fAct" ${F.hoatDong ? 'checked' : ''}>${t('active')}</label>` : ''}
     <button type="submit" class="btn primary" id="fSubmit">${t('save')}</button>
   </form>`;
   const sync = () => {
     const r = main.querySelector('input[name=role]:checked');
-    Object.assign(F, { ten: $('#fTen').value, vaiTro: r ? r.value : F.vaiTro, pin: $('#fPin').value, hoatDong: $('#fAct') ? $('#fAct').checked : true });
+    Object.assign(F, { ten: $('#fTen').value, vaiTro: r ? r.value : F.vaiTro, pin: $('#fPin').value, hoatDong: $('#fAct') ? $('#fAct').checked : true, email: $('#fEmail').value.trim() });
   };
   F._sync = sync;
   $('#f').addEventListener('submit', async ev => {
     ev.preventDefault(); sync();
     if (!F.ten.trim()) return toast(t('errMissing'), 'bad');
     if ((F.pin || !u) && !/^\d{6}$/.test(F.pin)) return toast(t('errPinFormat'), 'bad');
+    if (F.email && !/^[^\s@,;<>"]+@[^\s@,;<>"]+\.[^\s@,;<>"]+$/.test(F.email)) return toast(t('errEmail'), 'bad');
     const btn = $('#fSubmit'); btn.disabled = true;
     try {
-      S.users = await api('saveUser', { id: u ? u.id : '', ten: F.ten, vaiTro: F.vaiTro, pin: F.pin, hoatDong: F.hoatDong });
+      S.users = await api('saveUser', { id: u ? u.id : '', ten: F.ten, vaiTro: F.vaiTro, pin: F.pin, hoatDong: F.hoatDong, email: F.email });
       toast(t('saved'));
       if (u && S.me && u.id === S.me.id) { S.me.ten = F.ten; S.me.vaiTro = F.vaiTro; }
       goBack();
@@ -4050,6 +5068,643 @@ VIEWS.pin = function () {
     catch (e) { toast(errMsg(e), 'bad'); btn.disabled = false; }
   });
 };
+
+/* ================================ Bản 1.3 ================================ */
+function fmtDayY(s) { const d = dayOf(s); if (!d) return s || ''; const p = n => String(n).padStart(2, '0'); return p(d.getDate()) + '/' + p(d.getMonth() + 1) + '/' + d.getFullYear(); }
+function fmtStamp(d) { return fmtDayY(ymd(d)) + ' ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+function needNet() { if (S.offline) { toast(t('needOnline'), 'bad'); return true; } return false; }
+// Việc cần có mạng (không vào hàng chờ): mất mạng thì báo rõ "cần có mạng"
+function netErr(e) { return e && e.code === 'MANG' ? t('needOnline') : errMsg(e); }
+
+/* ---------------- Tải file xuống (Excel) ---------------- */
+let xlsxReady = null;
+function ensureXLSX() {
+  if (!xlsxReady) xlsxReady = loadScript(LIB_XLSX).then(() => { if (!window.XLSX) throw new Error('XLSX'); }).catch(e => { xlsxReady = null; throw e; });
+  return xlsxReady;
+}
+// iPhone (Safari 13 trở lên): tải bằng liên kết download → app Tệp → Tải về. Máy cho phép thì có thêm nút gửi file (Zalo, Mail…).
+function saveBlob(blob, name) {
+  let file = null;
+  try { file = new File([blob], name, { type: blob.type }); } catch (e) { file = null; }
+  let canShare = false;
+  try { canShare = !!(file && navigator.share && navigator.canShare && navigator.canShare({ files: [file] })); } catch (e) { canShare = false; }
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = name; a.rel = 'noopener'; a.style.display = 'none';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+  S._file = file;
+  openSheet(`<h3>${t('fileSaved', { x: name })}</h3><p class="help">${t('fileWhere')}</p><div class="btns">
+    ${canShare ? `<button type="button" class="btn" data-act="shareFile">${ic('share')}${t('shareFile')}</button>` : ''}
+    <button type="button" class="btn" data-act="sheetClose">${t('close')}</button></div>`);
+}
+function saveXlsx(wb, name) {
+  const data = XLSX.write(wb, { bookType: 'xlsx', type: 'array', compression: true });
+  saveBlob(new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), name);
+}
+
+/* ---------------- Quản trị hệ thống: sao lưu, báo tin ---------------- */
+async function loadAdmin(p) {
+  const at = cur();
+  if (p._busy) return;
+  p._busy = true;
+  try { p.I = await api('adminInfo'); p._err = null; }
+  catch (e) { p._err = netErr(e); }
+  p._busy = false;
+  if (cur() === at) render();
+}
+function adminWait(p) {
+  if (!p._err && !S.offline) loadAdmin(p);
+  return `<p class="empty">${p._err || t(S.offline ? 'needOnline' : 'loading')}</p>`;
+}
+VIEWS.admin = function (p) {
+  const I = p.I;
+  const bt = I && I.baoTin;
+  const onOff = v => `<span class="pill ${v ? 'ok' : 'grey'}">${t(v ? 'autoOn' : 'autoOff')}</span>`;
+  main.innerHTML = `
+  <section class="card" id="bkCard">
+    <h2 class="card-h">${ic('db')}${t('backupTitle')}</h2>
+    ${I ? `<p class="kv"><b>${I.saoLuu.cuoi ? t('backupLast', { x: fmtTime(I.saoLuu.cuoi) }) : t('backupNever')}</b></p>
+      <p class="kv">${onOff(I.saoLuu.tuDong)} ${t('backupWeekly')}</p>
+      <p class="help">${t('backupHelp', { x: I.saoLuu.thuMuc, n: I.saoLuu.soBan })}</p>
+      ${I.coQuyen ? '' : `<p class="note">${t('errNoCapQuyen')}</p>`}
+      <button type="button" class="btn primary" data-act="backupNow">${ic('db')}${t('backupNow')}</button>
+      <button type="button" class="btn full" data-act="backupAuto" data-on="${I.saoLuu.tuDong ? '0' : '1'}">${t(I.saoLuu.tuDong ? 'backupTurnOff' : 'backupTurnOn')}</button>`
+      : adminWait(p)}
+  </section>
+  <section class="card">
+    <h2 class="card-h">${ic('bell')}${t('notifyTitle')}</h2>
+    ${bt ? `<p class="kv">${onOff(bt.tgBat)} ${t('tgState')}${bt.tgBat && bt.tgTen ? ` · <span>${esc(bt.tgTen)}</span>` : ''}</p>
+      <p class="kv">${onOff(bt.mailBat)} ${t('mailState')}</p>
+      ${bt.loi ? `<p class="note bad">${t('ntLastErr', { x: fmtTime(bt.loi.time), k: bt.loi.kenh, m: bt.loi.msg })}</p>` : ''}` : ''}
+    <button type="button" class="btn tall full" data-act="view" data-v="notify">${ic('bell')}<span class="bl">${t('notifySettings')}</span></button>
+  </section>
+  <section class="card">
+    <h2 class="card-h">${ic('items')}${t('catalogTitle')}</h2>
+    <button type="button" class="btn tall full" data-act="view" data-v="importXls">${ic('sheet')}<span class="bl">${t('importTitle')}</span></button>
+    <button type="button" class="btn tall full" data-act="view" data-v="users">${ic('users')}<span class="bl">${t('users')}</span></button>
+  </section>
+  <p class="help">${esc(tp('version'))} ${esc(APP_VER)}${I ? ' · ' + esc(tp('serverVer')) + ' ' + esc(I.phienBan) : ''}</p>`;
+};
+
+VIEWS.notify = function (p) {
+  if (!p.I) { main.innerHTML = adminWait(p); return; }
+  const B = p.I.baoTin;
+  if (!p.F) p.F = { tgBat: B.tgBat, tgToken: '', tgChat: B.tgChat, tgTen: B.tgTen, mailBat: B.mailBat, sang: B.sang, gioSang: B.gioSang || 7 };
+  const F = p.F;
+  const chats = p.chats ? (p.chats.length ? `<p class="help">${t('ntPickChat')}</p><div class="list" id="ntChats">${p.chats.map(c => `<button type="button" class="row" data-act="ntChat" data-id="${esc(c.id)}" data-name="${esc(c.ten)}">
+      <div class="row-main"><span class="nm">${esc(c.ten || c.id)}</span><span class="meta"><span>${t(c.loai === 'private' ? 'ntPrivate' : 'ntGroupT')}</span><span class="mono">${esc(c.id)}</span></span></div>
+      ${c.id === F.tgChat ? `<div class="qty">${ic('check')}</div>` : ''}</button>`).join('')}</div>`
+    : `<p class="note">${t('ntNoChats')}</p>`) : '';
+  main.innerHTML = `
+  <form id="f" class="form" novalidate autocomplete="off">
+    ${DEMO ? `<p class="note">${t('ntDemo')}</p>` : ''}
+    ${B.loi ? `<p class="note bad">${t('ntLastErr', { x: fmtTime(B.loi.time), k: B.loi.kenh, m: B.loi.msg })}</p>` : ''}
+    <section class="card">
+      <h2 class="card-h">${ic('send')}${t('ntTg')}</h2>
+      <ol class="steps"><li>${t('ntS1')}</li><li>${t('ntS2')}</li><li>${t('ntS3')}</li></ol>
+      <div class="field"><label for="fTok">${t('ntToken')}</label>
+        <input class="inp mono" id="fTok" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" value="${esc(F.tgToken)}" placeholder="${esc(B.tgCoMa ? '…' + B.tgMaCuoi : '123456789:AA…')}">
+        ${B.tgCoMa ? `<p class="help">${t('ntTokenKeep', { x: B.tgMaCuoi })}</p>` : ''}</div>
+      <div class="field"><span class="lab">${t('ntGroup')}</span>
+        <div class="picked-chat" id="ntPicked">${F.tgChat ? `<b>${esc(F.tgTen || F.tgChat)}</b> <span class="mono muted">${esc(F.tgChat)}</span>` : `<span class="muted">${t('ntGroupNone')}</span>`}</div>
+        <button type="button" class="btn full" data-act="ntFind">${ic('search')}${t('ntFind')}</button>
+        ${chats}</div>
+      <label class="check"><input type="checkbox" id="fTgOn" ${F.tgBat ? 'checked' : ''}><span>${t('ntTgOn')}</span></label>
+    </section>
+    <section class="card">
+      <h2 class="card-h">${ic('mail')}${t('mailState')}</h2>
+      <p class="help">${t('ntMailHelp', { n: B.coEmail, m: B.mailConLai >= 0 ? B.mailConLai : '?' })}</p>
+      <label class="check"><input type="checkbox" id="fMailOn" ${F.mailBat ? 'checked' : ''}><span>${t('ntMailOn')}</span></label>
+    </section>
+    <section class="card">
+      <h2 class="card-h">${ic('bell')}${t('ntMorning')}</h2>
+      <label class="check"><input type="checkbox" id="fSang" ${F.sang ? 'checked' : ''}><span>${t('ntMorningOn')}</span></label>
+      <div class="field"><label for="fGio">${t('ntHour')}</label>
+        <select class="inp" id="fGio">${[5, 6, 7, 8, 9, 10].map(h => `<option value="${h}" ${Number(F.gioSang) === h ? 'selected' : ''}>${esc(tp('ntHourOpt', { n: h }))}</option>`).join('')}</select>
+        <p class="help">${t('ntTz', { x: p.I.muiGio || '' })}</p></div>
+    </section>
+    <section class="card">
+      <h2 class="card-h">${t('ntWho')}</h2>
+      <ul class="who-list">${['ntW1', 'ntW2', 'ntW3', 'ntW4', 'ntW5', 'ntW6'].map(k => `<li>${t(k)}</li>`).join('')}</ul>
+    </section>
+    <div class="btn-row">
+      <button type="button" class="btn" data-act="ntTest" id="fTest">${ic('send')}${t('ntTest')}</button>
+      <button type="submit" class="btn primary" id="fSubmit">${t('save')}</button>
+    </div>
+  </form>`;
+  F._sync = () => {
+    const g = id => $('#' + id);
+    if (!g('fTok')) return;
+    Object.assign(F, { tgToken: g('fTok').value.trim(), tgBat: g('fTgOn').checked, mailBat: g('fMailOn').checked, sang: g('fSang').checked, gioSang: Number(g('fGio').value) });
+  };
+  $('#f').addEventListener('submit', ev => { ev.preventDefault(); ntSave(p); });
+};
+function appLink() { return DEMO || IS_PREVIEW ? '' : location.origin + location.pathname.replace(/index\.html$/, ''); }
+async function ntSave(p, quiet) {
+  const F = p.F; F._sync();
+  if (needNet()) return false;
+  if (F.tgBat && !F.tgChat) { toast(t('errTgMissing'), 'bad'); return false; }
+  const btns = [$('#fSubmit'), $('#fTest')].filter(Boolean);
+  btns.forEach(b => { b.disabled = true; });
+  try {
+    p.I = await api('notifySave', { tgBat: F.tgBat, tgToken: F.tgToken, tgChat: F.tgChat, tgTen: F.tgTen, mailBat: F.mailBat, sang: F.sang, gioSang: F.gioSang, linkApp: appLink() });
+    F.tgToken = '';
+    const prev = NAV[NAV.length - 2];
+    if (prev && prev.v === 'admin') prev.p.I = p.I;
+    if (!quiet) toast(t('saved'));
+    if (cur().p === p) render();
+    return true;
+  } catch (e) {
+    toast(netErr(e), 'bad'); btns.forEach(b => { b.disabled = false; });
+    return false;
+  }
+}
+
+/* ---------------- Nhập vật tư từ Excel ---------------- */
+const XCOLS = ['maVT', 'tenVI', 'tenZH', 'quyCach', 'donVi', 'nhom', 'tonToiThieu', 'barcode', 'viTri', 'soLuongDau', 'ghiChu'];
+// Tên cột được nhận (đã bỏ dấu, chữ thường). Tiêu đề file mẫu dạng "Tên tiếng Việt · 越南语名称".
+const XALIAS = {
+  maVT: ['ma', 'ma vt', 'ma vat tu', 'mavt', 'code', '编码', '物料编码', '代码'],
+  tenVI: ['ten tieng viet', 'ten viet', 'ten vi', 'ten', 'ten vat tu', 'ten hang', '越南语名称', '越文名称'],
+  tenZH: ['ten tieng trung', 'ten trung', 'ten zh', 'ten tq', 'ten trung quoc', '中文名称', '中文名', '名称'],
+  quyCach: ['quy cach', 'thong so', 'quy cach ky thuat', '规格', '规格型号', '型号'],
+  donVi: ['don vi', 'dvt', 'don vi tinh', '单位'],
+  nhom: ['nhom', 'nhom vat tu', 'loai', '类别', '分类'],
+  tonToiThieu: ['ton toi thieu', 'toi thieu', 'min', '最低库存', '最低'],
+  barcode: ['ma vach', 'barcode', '条码', '条形码'],
+  viTri: ['vi tri', 'ma vi tri', '库位', '位置'],
+  soLuongDau: ['so luong dau', 'ton dau', 'so luong', 'sl', 'so luong ton dau', '期初数量', '数量', '期初'],
+  ghiChu: ['ghi chu', '备注']
+};
+const GROUP_ALIAS = {
+  dien: ['electrical', '电'], nuoc: ['nuoc', 'cap nuoc', 'thoat nuoc', 'cap thoat nuoc', '水'],
+  pccc: ['phong chay', 'chua chay', 'phong chay chua chay'], hvac: ['dieu hoa', 'thong gio', 'dieu hoa thong gio', '暖通', '空调'],
+  phukien: ['phu kien', 'vat tu phu', '配件'], dungcu: ['dung cu', 'may', 'dung cu may', '工具', '设备']
+};
+function xkey(s) { return norm(s).replace(/[*:：()（）\[\]]/g, ' ').replace(/\s+/g, ' ').trim(); }
+function xparts(s) { const w = xkey(s); return [w].concat(String(s || '').split(/[·\/|]| - | – /).map(xkey)).filter(Boolean); }
+function xlsHeader(cell) {
+  const parts = String(cell || '').split(/[·\n\/|]| - /).map(xkey).filter(Boolean);
+  return XCOLS.find(k => parts.some(pt => XALIAS[k].includes(pt))) || null;
+}
+function xlsVal(v) {
+  if (v === null || v === undefined) return '';
+  if (typeof v === 'number') return isFinite(v) ? String(Math.round(v * 1e6) / 1e6) : '';
+  if (typeof v === 'boolean') return v ? '1' : '0';
+  if (v instanceof Date) return ymd(v);
+  return String(v).replace(/ /g, ' ').trim();
+}
+// Nhóm, đơn vị: nhận mã, chữ Việt hoặc chữ Trung (cai / cái / 个, dien / Điện / 电气)
+function mapGroup(v) {
+  const ps = xparts(v);
+  if (!ps.length) return '';
+  for (const k of Object.keys(GROUPS)) {
+    const g = GROUPS[k], ok = [k, TIEN_TO[k].toLowerCase(), xkey(g[0]), xkey(g[1]), xkey(g[0] + ' ' + g[1])].concat(GROUP_ALIAS[k]);
+    if (ps.some(x => ok.includes(x))) return k;
+  }
+  return null;
+}
+function mapUnit(v) {
+  const ps = xparts(v);
+  if (!ps.length) return '';
+  for (const k of Object.keys(UNITS)) {
+    const ok = [k, xkey(UNITS[k][0]), xkey(UNITS[k][1]), xkey(UNITS[k][0] + ' ' + UNITS[k][1])];
+    if (ps.some(x => ok.includes(x))) return k;
+  }
+  return String(v).trim().slice(0, 20);   // đơn vị khác: giữ nguyên chữ
+}
+function groupOfCode(code) { const m = /^([A-Z]+)-\d+$/.exec(code || ''); return m ? (Object.keys(TIEN_TO).find(k => TIEN_TO[k] === m[1]) || '') : ''; }
+// Giống máy chủ: vật tư không ghi mã mà trùng tên + quy cách với vật tư đã có thì là cập nhật
+function nameKey(vi, zh, qc) { const s = x => String(x || '').trim().toLowerCase().replace(/\s+/g, ' '); return (s(vi) || s(zh)) + '|' + s(qc); }
+function codeNorm(v) { return String(v || '').trim().replace(/^[=+@]+/, '').toUpperCase().replace(/\s+/g, '-').slice(0, 40); }
+
+function xlsFind(wb) {
+  for (const name of wb.SheetNames) {
+    if (/huong dan|说明/.test(xkey(name))) continue;
+    const ws = wb.Sheets[name];
+    if (!ws || !ws['!ref']) continue;
+    const r0 = XLSX.utils.decode_range(ws['!ref']).s.r;
+    const aoa = XLSX.utils.sheet_to_json(ws, { header: 1, raw: true, defval: '', blankrows: true });
+    for (let i = 0; i < Math.min(aoa.length, 10); i++) {
+      const map = {};
+      (aoa[i] || []).forEach((c, j) => { const k = xlsHeader(c); if (k && !(k in map)) map[k] = j; });
+      if (Object.keys(map).length < 2 || !('tenVI' in map || 'tenZH' in map || 'maVT' in map)) continue;
+      const rows = [];
+      for (let r = i + 1; r < aoa.length; r++) {
+        const line = aoa[r] || [], o = { dong: r0 + r + 1 };
+        let any = false;
+        XCOLS.forEach(k => { o[k] = k in map ? xlsVal(line[map[k]]) : ''; if (o[k]) any = true; });
+        if (any) rows.push(o);
+      }
+      return { sheet: name, rows };
+    }
+  }
+  return null;
+}
+
+// Kiểm tra từng dòng trên máy (giống máy chủ) để xem trước: mới / cập nhật / không đổi / lỗi
+function xlsCheck(rows) {
+  const P = { rows: [], moi: 0, sua: 0, giu: 0, loi: [], total: rows.length };
+  const byCode = new Map(S.items.map(i => [i.maVT.toUpperCase(), i]));
+  const byName = new Map(), byBar = new Map(), seen = new Map(), seenName = new Map(), next = {};
+  S.items.forEach(i => {
+    const k = nameKey(i.tenVI, i.tenZH, i.quyCach);
+    if (!byName.has(k)) byName.set(k, i);
+    if (i.barcode) byBar.set(i.barcode.toUpperCase(), i.maVT.toUpperCase());
+    const m = /^([A-Z]+)-(\d+)$/.exec(i.maVT.toUpperCase());
+    if (m) next[m[1]] = Math.max(next[m[1]] || 0, +m[2]);
+  });
+  const num = v => {
+    if (v === '') return null;
+    const n = parseQty(v);
+    if (!isFinite(n) || n < 0) throw ['xe_SO_LUONG'];
+    return Math.round(n * 1000) / 1000;
+  };
+  for (const r of rows) {
+    try {
+      const x = { dong: r.dong, maVT: codeNorm(r.maVT), tenVI: r.tenVI.slice(0, 150), tenZH: r.tenZH.slice(0, 150), quyCach: r.quyCach.slice(0, 150),
+        donVi: '', nhom: '', tonToiThieu: null, barcode: r.barcode.slice(0, 60), viTri: r.viTri.toUpperCase(), soLuongDau: null, ghiChu: r.ghiChu.slice(0, 300) };
+      if (r.nhom) { x.nhom = mapGroup(r.nhom); if (!x.nhom) throw ['xe_NHOM_LA', r.nhom]; }
+      if (r.donVi) x.donVi = mapUnit(r.donVi);
+      x.tonToiThieu = num(r.tonToiThieu);
+      x.soLuongDau = num(r.soLuongDau);
+      const nk = !x.maVT && (x.tenVI || x.tenZH) ? nameKey(x.tenVI, x.tenZH, x.quyCach) : '';
+      const it = x.maVT ? byCode.get(x.maVT) : (nk ? byName.get(nk) : null);
+      const bar = x.barcode.toUpperCase();
+      const barClash = code => bar && ((byBar.has(bar) && byBar.get(bar) !== code) || (byCode.has(bar) && bar !== code) || S.locMap.has(bar));
+      if (it) {
+        const code = it.maVT.toUpperCase();
+        if (seen.has(code)) throw ['xe_TRUNG_FILE', seen.get(code)];
+        if (barClash(code)) throw ['xe_TRUNG_BARCODE', x.barcode];
+        seen.set(code, x.dong);
+        const doi = ['tenVI', 'tenZH', 'quyCach', 'nhom', 'donVi', 'ghiChu', 'barcode'].some(k => x[k] && x[k] !== (it[k] || '')) ||
+          (x.tonToiThieu !== null && x.tonToiThieu !== (it.tonToiThieu || 0));
+        if (doi) { P.rows.push({ kind: 'sua', x, code, it, skipInit: x.soLuongDau > 0 }); P.sua++; if (bar) byBar.set(bar, code); }
+        else { P.rows.push({ kind: 'giu', x, code, it }); P.giu++; }
+        continue;
+      }
+      if (x.maVT && seen.has(x.maVT)) throw ['xe_TRUNG_FILE', seen.get(x.maVT)];
+      if (nk && seenName.has(nk)) throw ['xe_TRUNG_FILE', seenName.get(nk)];
+      if (!x.tenVI && !x.tenZH) throw ['xe_THIEU_TEN'];
+      const nh = x.nhom || groupOfCode(x.maVT);
+      if (!nh) throw ['xe_THIEU_NHOM'];
+      if (!x.donVi) throw ['xe_THIEU_DON_VI'];
+      if (x.maVT && S.locMap.has(x.maVT)) throw ['xe_TRUNG_MA', x.maVT];
+      if (x.soLuongDau > 0) {
+        if (!x.viTri) throw ['xe_THIEU_VITRI'];
+        if (!S.locMap.has(x.viTri)) throw ['xe_KHONG_CO_VITRI', x.viTri];
+      }
+      const tt = TIEN_TO[nh] || 'VT';
+      const code = x.maVT || tt + '-' + String((next[tt] || 0) + 1).padStart(4, '0');
+      if (barClash(code)) throw ['xe_TRUNG_BARCODE', x.barcode];
+      const m = /^([A-Z]+)-(\d+)$/.exec(code);
+      if (m) next[m[1]] = Math.max(next[m[1]] || 0, +m[2]);
+      seen.set(code, x.dong);
+      if (nk) seenName.set(nk, x.dong);
+      if (bar) byBar.set(bar, code);
+      P.rows.push({ kind: 'moi', x, code, auto: !x.maVT, nhom: nh });
+      P.moi++;
+    } catch (e) {
+      if (!Array.isArray(e)) throw e;
+      P.loi.push({ dong: r.dong, k: e[0], x: e[1] || '' });
+    }
+  }
+  return P;
+}
+
+VIEWS.importXls = function (p) {
+  const P = p.P, R = p.R;
+  main.innerHTML = `
+  <div class="form">
+    ${R ? xlsResultHtml(R) : ''}
+    <section class="card">
+      <h2 class="card-h">${t('xlsStep1')}</h2>
+      ${IS_PREVIEW ? `<p class="note">${t('downloadPreviewNote')}</p>` : `
+      <button type="button" class="btn tall full" data-act="xlsTemplate">${ic('download')}<span class="bl">${t('xlsTemplate')}</span></button>
+      <button type="button" class="btn tall full" data-act="xlsExport">${ic('download')}<span class="bl">${t('xlsExport')}</span></button>`}
+      <p class="help">${t('xlsHelp')}</p>
+    </section>
+    <section class="card">
+      <h2 class="card-h">${t('xlsStep2')}</h2>
+      <label class="btn signal tall full file-btn">${ic('sheet')}<span class="bl">${t('xlsPick')}</span>
+        <input type="file" id="xlsIn" class="sr-only" accept=".xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv"></label>
+      <p class="help">${t('xlsPickHelp')}</p>
+      <div id="xlsBox">${p.reading ? `<p class="empty">${t('xlsReading')}</p>` : P ? xlsPreviewHtml(P) : ''}</div>
+    </section>
+  </div>`;
+  const inp = $('#xlsIn');
+  inp.addEventListener('change', () => { const f = inp.files && inp.files[0]; inp.value = ''; if (f) xlsRead(p, f); });
+};
+async function xlsRead(p, file) {
+  p.P = null; p.R = null; p.reading = true;
+  render();
+  try {
+    try { await ensureXLSX(); } catch (e) { throw { tk: 'network' }; }
+    let found;
+    try {
+      const wb = XLSX.read(await file.arrayBuffer(), { type: 'array', raw: true, codepage: 65001 });
+      found = xlsFind(wb);
+    } catch (e) { throw { tk: 'xlsBadFile' }; }
+    if (!found) throw { tk: 'xlsNoHeader' };
+    if (found.rows.length > 5000) throw { tk: 'xlsTooMany' };
+    p.P = xlsCheck(found.rows);
+    p.P.file = file.name; p.P.sheet = found.sheet;
+  } catch (e) {
+    p.P = null;
+    toast(e && e.tk ? t(e.tk) : t('errGeneric', { x: String(e && e.message || e) }), 'bad');
+  }
+  p.reading = false;
+  if (cur().p === p) render();
+}
+function xlsRowHtml(r) {
+  const x = r.x, it = r.it || {};
+  const vi = x.tenVI || it.tenVI || '', zh = x.tenZH || it.tenZH || '';
+  const qc = x.quyCach || it.quyCach || '', dv = x.donVi || it.donVi || '', nh = x.nhom || r.nhom || it.nhom || '';
+  return `<div class="row"><div class="row-main">
+    <span class="meta"><span class="pill ${r.kind === 'moi' ? 'ok' : 'move'}">${t(r.kind === 'moi' ? 'xlsNew' : 'xlsUpd')}</span><span class="plate">${esc(r.code)}</span>
+      ${r.auto ? `<span>${t('xlsAutoCode')}</span>` : ''}<span>${t('xlsRow', { n: x.dong })}</span></span>
+    <span class="nm">${esc(vi || zh)}</span>${vi && zh && zh !== vi ? `<span class="nm2" lang="zh-CN">${esc(zh)}</span>` : ''}
+    <span class="meta">${qc ? `<span>${esc(qc)}</span>` : ''}${dv ? `<span>${esc(unitName(dv))}</span>` : ''}${nh ? `<span>${esc(grpName(nh))}</span>` : ''}</span>
+    ${r.kind === 'moi' && x.soLuongDau > 0 ? `<span class="meta"><span class="pill ok wrap">${t('xlsInit', { n: fmt(x.soLuongDau), x: x.viTri })}</span></span>` : ''}
+    ${r.skipInit ? `<span class="help">${t('xlsInitSkip')}</span>` : ''}
+  </div></div>`;
+}
+function xlsSum(o, errs) {
+  return `<div class="xls-sum"><span class="pill ok">${t('xlsNew')} <b>${o.moi}</b></span><span class="pill move">${t('xlsUpd')} <b>${o.sua}</b></span>
+    ${o.giu !== undefined ? `<span class="pill grey">${t('xlsSame')} <b>${o.giu}</b></span>` : ''}${errs ? `<span class="pill bad">${t('xlsErr')} <b>${errs}</b></span>` : ''}</div>`;
+}
+function xlsErrRows(list, txt) {
+  return `<div class="list err-list">${list.slice(0, 50).map(e => `<div class="row"><div class="row-main"><span class="nm">${t('xlsRow', { n: e.dong })}</span>
+    <span class="nm2">${txt(e)}</span></div></div>`).join('')}</div>${list.length > 50 ? `<p class="help">${t('xlsMore', { n: list.length - 50 })}</p>` : ''}`;
+}
+function xlsPreviewHtml(P) {
+  const show = P.rows.filter(r => r.kind !== 'giu'), n = P.moi + P.sua;
+  return `<p class="help">${t('xlsFile', { x: P.file, y: P.sheet, n: P.total })}</p>${xlsSum(P, P.loi.length)}
+    ${P.loi.length ? `<h2 class="sec">${t('xlsErrList')} <span class="count">${P.loi.length}</span></h2><p class="help" style="margin-bottom:8px">${t('xlsErrHelp')}</p>${xlsErrRows(P.loi, e => t(e.k, { x: e.x }))}` : ''}
+    ${show.length ? `<h2 class="sec">${t('xlsPreview')} <span class="count">${show.length}</span></h2>
+      <div class="list" id="xlsPrev">${show.slice(0, 30).map(xlsRowHtml).join('')}</div>${show.length > 30 ? `<p class="help">${t('xlsMore', { n: show.length - 30 })}</p>` : ''}` : ''}
+    ${n ? `<button type="button" class="btn primary" id="xlsGo" data-act="xlsGo">${t('xlsGo', { n })}</button>` : `<p class="empty">${t('xlsNothing')}</p>`}`;
+}
+function xlsSrvErr(e) { return TX['xe_' + e.code] ? t('xe_' + e.code, { x: e.msg }) : errMsg({ code: e.code, message: e.msg }); }
+function xlsResultHtml(R) {
+  return `<section class="card okcard" id="xlsResult">
+    <h2 class="card-h">${ic('check')}${t('xlsResult')}</h2>
+    ${xlsSum(R, R.loi.length)}
+    ${R.cut !== undefined ? `<p class="note">${R.errCode === 'MANG' ? t('xlsPartial', { a: R.cut, b: R.total }) : esc(R.errText)}</p>` : ''}
+    ${R.loi.length ? xlsErrRows(R.loi, xlsSrvErr) : ''}
+    <button type="button" class="btn tall full" data-act="view" data-v="items">${ic('items')}<span class="bl">${t('itemsAll')}</span></button>
+  </section>`;
+}
+// Cập nhật danh mục trên máy theo kết quả máy chủ
+function mergeItems(items, stock) {
+  const B = S.base;
+  (items || []).forEach(it => {
+    const i = B.items.findIndex(x => x.maVT.toUpperCase() === it.maVT.toUpperCase());
+    if (i >= 0) B.items[i] = it; else B.items.push(it);
+  });
+  if (stock && stock.length) {
+    const ks = [...new Set(stock.map(s => s.maVT))];
+    B.stock = B.stock.filter(s => !ks.includes(s.maVT)).concat(stock);
+  }
+  commit();
+}
+async function xlsGo(p) {
+  const P = p.P;
+  if (!P || p.busy || needNet()) return;
+  const rows = P.rows.filter(r => r.kind === 'moi' || r.kind === 'sua').map(r => r.x);
+  if (!rows.length) return;
+  p.busy = true;
+  const R = { moi: 0, sua: 0, loi: [] };
+  const btn = $('#xlsGo');
+  if (btn) btn.disabled = true;
+  let done = 0;
+  try {
+    for (let i = 0; i < rows.length; i += 200) {
+      const chunk = rows.slice(i, i + 200);
+      if (btn) btn.innerHTML = t('xlsProgress', { a: fmt(i), b: fmt(rows.length) });
+      const r = await api('importItems', { rows: chunk }, { timeout: 120 });
+      R.moi += r.moi; R.sua += r.sua; R.loi = R.loi.concat(r.loi || []);
+      mergeItems(r.items, r.stock);
+      done = i + chunk.length;
+    }
+    p.P = null;
+    toast(t('xlsDone', { a: R.moi, b: R.sua }));
+  } catch (e) {
+    Object.assign(R, { cut: done, total: rows.length, errCode: e && e.code, errText: errMsg(e).replace(/<[^>]+>/g, ' ') });
+    if (done) p.P = null;
+    toast(e && e.code === 'MANG' ? t('xlsPartial', { a: done, b: rows.length }) : errMsg(e), 'bad');
+  }
+  p.R = R; p.busy = false;
+  if (cur().p === p) { render(); window.scrollTo(0, 0); }
+}
+async function xlsDownload(withItems) {
+  if (IS_PREVIEW) return toast(t('downloadPreviewNote'), 'bad');
+  try { await ensureXLSX(); } catch (e) { return toast(t('network'), 'bad'); }
+  const head = XCOLS.map(k => tp('xc_' + k));
+  const rows = withItems ? S.items.map(i => [i.maVT, i.tenVI, i.tenZH, i.quyCach, UNITS[i.donVi] ? UNITS[i.donVi][0] : i.donVi,
+    GROUPS[i.nhom] ? GROUPS[i.nhom][0] : i.nhom, i.tonToiThieu || '', i.barcode, '', '', i.ghiChu]) : [];
+  const ws = XLSX.utils.aoa_to_sheet([head].concat(rows));
+  const last = Math.max(rows.length + 1, 300);
+  // Cột Mã và Mã vạch dạng chữ để giữ số 0 ở đầu
+  for (let r = 1; r < last; r++) {
+    [0, 7].forEach(c => { const a = XLSX.utils.encode_cell({ r, c }); if (!ws[a]) ws[a] = { t: 's', v: '' }; ws[a].z = '@'; });
+  }
+  ws['!ref'] = XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: last - 1, c: XCOLS.length - 1 } });
+  ws['!cols'] = [12, 32, 28, 24, 10, 16, 12, 16, 12, 12, 26].map(w => ({ wch: w }));
+  const huong = [
+    ['1', 'Mỗi dòng một vật tư, điền ở trang "Vật tư 物料". Không sửa dòng tiêu đề.', '每行一种物料，填写在“Vật tư 物料”工作表中。请勿修改标题行。'],
+    ['2', 'Mã: để trống thì app tự tạo theo nhóm (DI-0001…). Ghi mã đã có thì cập nhật vật tư đó.', '编码：留空则按类别自动生成（DI-0001…）。填写已有编码则更新该物料。'],
+    ['3', 'Cập nhật: ô để trống giữ nguyên thông tin cũ.', '更新时：空白单元格保持原信息不变。'],
+    ['4', 'Vật tư mới bắt buộc có: Tên (tiếng Việt hoặc tiếng Trung), Đơn vị, Nhóm.', '新物料必填：名称（越南语或中文）、单位、类别。'],
+    ['5', 'Số lượng đầu + Vị trí: chỉ dùng cho vật tư mới, ghi thành một lần nhập kho.', '期初数量+库位：仅用于新物料，记为一次入库。'],
+    ['6', 'Mã vạch không được trùng vật tư khác. Cột Mã và Mã vạch để dạng chữ (Text) để giữ số 0 ở đầu.', '条码不得与其他物料重复。编码和条码列请保持文本格式，以保留开头的0。']
+  ];
+  const guide = XLSX.utils.aoa_to_sheet([[tp('importTitle')], []].concat(huong, [[],
+    [tp('xc_donVi')], ['Mã · 代码', 'Tiếng Việt', '中文']], Object.keys(UNITS).map(k => [k, UNITS[k][0], UNITS[k][1]]), [[],
+    [tp('xc_nhom')], ['Mã · 代码', 'Tiếng Việt', '中文', 'Tiền tố mã · 编码前缀']], Object.keys(GROUPS).map(k => [k, GROUPS[k][0], GROUPS[k][1], TIEN_TO[k]]), [[],
+    [tp('xc_viTri')], ['Mã vị trí · 库位编码', 'Mô tả · 描述']], S.locs.map(l => [l.maViTri, locFull(l)]), [[],
+    ['Ví dụ · 示例'], head, ['', 'Dây điện đơn CV 4mm²', '单芯电线 CV 4mm²', 'Cu/PVC 1×4mm²', 'm', 'Điện', 200, '', S.locs[0] ? S.locs[0].maViTri : '', 500, '']]));
+  guide['!cols'] = [14, 60, 50, 22].map(w => ({ wch: w }));
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Vật tư 物料');
+  XLSX.utils.book_append_sheet(wb, guide, 'Hướng dẫn 说明');
+  saveXlsx(wb, withItems ? 'Danh-muc-vat-tu_' + ymd(new Date()) + '.xlsx' : 'Mau-nhap-vat-tu.xlsx');
+}
+
+/* ---------------- Báo cáo xuất theo công trình ---------------- */
+function rpSetRange(p, k) {
+  const d = new Date(), y = d.getFullYear(), m = d.getMonth();
+  p.range = k;
+  if (k === 'month') { p.tu = ymd(new Date(y, m, 1)); p.den = ymd(d); }
+  else if (k === 'last') { p.tu = ymd(new Date(y, m - 1, 1)); p.den = ymd(new Date(y, m, 0)); }
+  else if (k === 'd30') { p.tu = ymd(new Date(y, m, d.getDate() - 29)); p.den = ymd(d); }
+}
+function rpKey(p) { return p.tu + '|' + p.den + '|' + p.ct; }
+function rpCtName(k, ten) { return k ? ten : tp('rpNoProject'); }
+function rpCtSel(p) { return p.ct === '*' ? tp('rpAllProjects') : rpCtName(p.ct, ((p.R && p.R.congTrinhs.find(c => c.k === p.ct)) || {}).ten || p.ct); }
+VIEWS.report = function (p) {
+  if (!p.range) { rpSetRange(p, 'month'); p.ct = '*'; p.tab = 'ct'; }
+  const R = p.R, key = rpKey(p), ready = R && R._key === key;
+  const cts = R ? R.congTrinhs : [];
+  main.innerHTML = `
+  <div class="chips wrap" role="toolbar">${['month', 'last', 'd30', 'custom'].map(k => `<button type="button" class="chip" data-act="rpRange" data-k="${k}" aria-pressed="${p.range === k}">${t('rp_' + k)}</button>`).join('')}</div>
+  <div class="form">
+    ${p.range === 'custom' ? `<div class="two">
+      <div class="field"><label for="rpTu">${t('rpFrom')}</label><input class="inp" type="date" id="rpTu" value="${esc(p.tu)}"></div>
+      <div class="field"><label for="rpDen">${t('rpTo')}</label><input class="inp" type="date" id="rpDen" value="${esc(p.den)}"></div></div>`
+      : `<p class="kv"><b>${esc(tv('rpRange', { a: fmtDayY(p.tu), b: fmtDayY(p.den) }))}</b> <span class="zi" lang="zh-CN">${esc(tz('rpRange', { a: p.tu, b: p.den }))}</span></p>`}
+    <div class="field"><label for="rpCt">${t('project')}</label>
+      <select class="inp" id="rpCt"><option value="*">${esc(tp('rpAllProjects'))}</option>
+        ${cts.map(c => `<option value="${esc(c.k)}" ${p.ct === c.k ? 'selected' : ''}>${esc(rpCtName(c.k, c.ten))} (${c.soLan})</option>`).join('')}</select></div>
+  </div>
+  <div id="rpBox" style="margin-top:12px">${ready ? rpBody(p) : `<p class="empty">${p._err || t(S.offline ? 'needOnline' : 'loading')}</p>`}</div>`;
+  const tuI = $('#rpTu'), denI = $('#rpDen');
+  if (tuI) {
+    const onDate = () => { if (tuI.value && denI.value) { p.tu = tuI.value; p.den = denI.value; p._err = null; render(); } };
+    tuI.addEventListener('change', onDate); denI.addEventListener('change', onDate);
+  }
+  $('#rpCt').addEventListener('change', ev => { p.ct = ev.target.value; p._err = null; render(); });
+  if (!ready && !S.offline && !p._err && p._loading !== key) rpLoad(p, key);
+};
+async function rpLoad(p, key) {
+  p._loading = key;
+  const at = cur();
+  try {
+    const R = await api('report', Object.assign({ tu: p.tu, den: p.den }, p.ct === '*' ? {} : { ct: p.ct }), { timeout: 60 });
+    if (p._loading !== key) return;
+    R._key = key; p.R = R;
+  } catch (e) {
+    if (p._loading !== key) return;
+    p._err = netErr(e);
+  }
+  p._loading = null;
+  if (cur() === at) render();
+}
+function rpRow(m, sl, lan, sub) {
+  const it = S.itemMap.get(m) || { maVT: m, tenVI: m, tenZH: '', donVi: '' };
+  return `<div class="row"><div class="row-main"><span class="nm">${esc(nm1(it))}</span>${nm2(it) ? `<span class="nm2" lang="zh-CN">${esc(nm2(it))}</span>` : ''}
+    <span class="meta"><span class="plate">${esc(m)}</span>${it.quyCach ? `<span>${esc(it.quyCach)}</span>` : ''}</span>
+    ${sub ? `<span class="meta">${esc(sub)}</span>` : ''}</div>
+    <div class="qty"><b>${fmt(sl)}</b><small>${esc(unitName(it.donVi))}</small><small class="rp-lan">${esc(tp('rpTimes', { n: lan }))}</small></div></div>`;
+}
+function rpBody(p) {
+  const R = p.R, tab = p.tab || 'ct';
+  if (!R.soLan) return `<p class="empty">${t('rpNone')}</p><p class="help">${t('rpOnlyOut')}</p>`;
+  const list = tab === 'ct'
+    ? R.theoCT.map(c => `<h2 class="sec ct">${esc(rpCtName(c.k, c.ten))} <span class="count">${c.soLan}</span></h2>
+        <div class="list rp-ct">${c.dong.map(d => rpRow(d.maVT, d.sl, d.lan, d.phieu.join(', '))).join('')}</div>`).join('')
+    : `<div class="list" id="rpVT">${R.theoVT.map(v => rpRow(v.maVT, v.sl, v.lan, v.ct.map(c => rpCtName(c.ten ? 'x' : '', c.ten) + ': ' + fmt(c.sl)).join(' · '))).join('')}</div>`;
+  return `<div class="stats"><span><b>${R.soLan}</b> ${t('rpStatOut')}</span><span><b>${R.theoCT.length}</b> ${t('rpStatCT')}</span><span><b>${R.theoVT.length}</b> ${t('rpStatVT')}</span></div>
+    <div class="seg" role="group"><button type="button" data-act="rpTab" data-tab="ct" aria-pressed="${tab === 'ct'}">${t('rpByProject')}</button>
+      <button type="button" data-act="rpTab" data-tab="vt" aria-pressed="${tab === 'vt'}">${t('rpByItem')}</button></div>
+    <div id="rpList">${list}</div>
+    <p class="help" style="margin-top:10px">${t('rpOnlyOut')}</p>
+    ${R.catBot ? `<p class="note">${t('rpCut', { n: fmt(R.chiTiet.length) })}</p>` : ''}
+    <div class="form" style="margin-top:14px">
+      ${IS_PREVIEW ? `<p class="note">${t('downloadPreviewNote')}</p>` : `
+      <button type="button" class="btn primary" data-act="rpExcel">${ic('download')}${t('rpExcel')}</button>
+      <button type="button" class="btn full" data-act="rpPrint">${ic('print')}${t('rpPrint')}</button>
+      <p class="help">${t('rpPrintHelp')}</p>`}
+    </div>`;
+}
+function rpItem(m) { return S.itemMap.get(m) || { maVT: m, tenVI: '', tenZH: '', quyCach: '', donVi: '' }; }
+function rpTop(p) {
+  const R = p.R;
+  return [[tp('rpHead')], [tp('rpRange', { a: fmtDayY(R.tu), b: fmtDayY(R.den) })], [tp('project') + ': ' + rpCtSel(p)],
+    [tp('rpMade', { x: fmtStamp(new Date()), y: S.me ? S.me.ten : '' })], []];
+}
+async function rpExcel(p) {
+  const R = p.R;
+  if (!R) return;
+  try { await ensureXLSX(); } catch (e) { return toast(t('network'), 'bad'); }
+  const U = u => (UNITS[u] ? UNITS[u][0] + ' ' + UNITS[u][1] : u || '');
+  const h = k => tp(k), top = rpTop(p);
+  const s1 = top.concat([[h('project'), h('xc_maVT'), h('xc_tenVI'), h('xc_tenZH'), h('xc_quyCach'), h('xc_donVi'), h('xr_qty'), h('xr_times'), h('xr_ticket')]]);
+  R.theoCT.forEach(c => c.dong.forEach(d => { const it = rpItem(d.maVT); s1.push([rpCtName(c.k, c.ten), d.maVT, it.tenVI, it.tenZH, it.quyCach, U(it.donVi), d.sl, d.lan, d.phieu.join(', ')]); }));
+  const s2 = top.concat([[h('xc_maVT'), h('xc_tenVI'), h('xc_tenZH'), h('xc_quyCach'), h('xc_donVi'), h('xr_qty'), h('xr_times'), h('xr_nct')]]);
+  R.theoVT.forEach(v => { const it = rpItem(v.maVT); s2.push([v.maVT, it.tenVI, it.tenZH, it.quyCach, U(it.donVi), v.sl, v.lan, v.ct.length]); });
+  const s3 = top.concat([[h('xr_time'), h('project'), h('xc_maVT'), h('xc_tenVI'), h('xc_tenZH'), h('xr_sl'), h('xc_donVi'), h('xr_from'), h('xr_ticket'), h('xr_who'), h('xc_ghiChu')]]);
+  R.chiTiet.forEach(x => { const it = rpItem(x.maVT); s3.push([new Date(x.time), rpCtName(x.ct ? 'x' : '', x.ct), x.maVT, it.tenVI, it.tenZH, x.sl, U(it.donVi), x.tu, x.phieu, x.nguoi, x.ghiChu]); });
+  const mk = (aoa, w) => { const ws = XLSX.utils.aoa_to_sheet(aoa, { cellDates: true, dateNF: 'dd/mm/yyyy hh:mm' }); ws['!cols'] = w.map(x => ({ wch: x })); return ws; };
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, mk(s1, [30, 11, 30, 26, 20, 10, 11, 8, 18]), 'Tổng hợp 汇总');
+  XLSX.utils.book_append_sheet(wb, mk(s2, [11, 30, 26, 20, 10, 11, 8, 12]), 'Theo vật tư 按物料');
+  XLSX.utils.book_append_sheet(wb, mk(s3, [17, 30, 11, 30, 26, 10, 10, 12, 12, 16, 30]), 'Chi tiết 明细');
+  saveXlsx(wb, 'Bao-cao-xuat-kho_' + R.tu + '_' + R.den + '.xlsx');
+}
+// In / lưu PDF: bảng tổng hợp theo công trình, lề 12mm (tem QR in lề 0)
+function rpPrint(p) {
+  const R = p.R;
+  if (!R) return;
+  const h = k => `${esc(tv(k))}<br><span class="z">${esc(tz(k))}</span>`;
+  let rows = '';
+  R.theoCT.forEach(c => {
+    rows += `<tr class="grp"><td colspan="7">${esc(rpCtName(c.k, c.ten))} · ${esc(tp('rpTimes', { n: c.soLan }))}</td></tr>`;
+    c.dong.forEach(d => {
+      const it = rpItem(d.maVT);
+      rows += `<tr><td class="m">${esc(d.maVT)}</td><td>${esc(it.tenVI)}${it.tenZH ? `<br><span class="z">${esc(it.tenZH)}</span>` : ''}</td><td>${esc(it.quyCach)}</td>
+        <td class="n">${fmt(d.sl)}</td><td>${esc(unitName(it.donVi))}</td><td class="n">${d.lan}</td><td class="m">${esc(d.phieu.join(', '))}</td></tr>`;
+    });
+  });
+  $('#printArea').innerHTML = `<div class="rp-print"><h1>${esc(tv('rpHead'))} <span class="z">${esc(tz('rpHead'))}</span></h1>
+    <p>${esc(tp('rpRange', { a: fmtDayY(R.tu), b: fmtDayY(R.den) }))} — ${esc(tp('project'))}: ${esc(rpCtSel(p))}</p>
+    <table><thead><tr><th>${h('xc_maVT')}</th><th>${h('item')}</th><th>${h('xc_quyCach')}</th><th class="n">${h('xr_qty')}</th><th>${h('xc_donVi')}</th><th class="n">${h('xr_times')}</th><th>${h('xr_ticket')}</th></tr></thead>
+    <tbody>${rows}</tbody></table>
+    <p class="foot">${esc(tp('rpMade', { x: fmtStamp(new Date()), y: S.me ? S.me.ten : '' }))}</p></div>`;
+  let st = $('#rpPage');
+  if (!st) { st = document.createElement('style'); st.id = 'rpPage'; document.head.appendChild(st); }
+  st.textContent = '@page{size:A4;margin:12mm}';
+  setTimeout(() => window.print(), 150);
+}
+
+/* ---------------- Ảnh vật tư ---------------- */
+function photoUrl(id, w) {
+  if (DEMO && typeof DemoBackend !== 'undefined' && DemoBackend.photo) { const d = DemoBackend.photo(id); if (d) return d; }
+  return 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(id) + '&sz=w' + w;
+}
+// Thu nhỏ ảnh trên máy trước khi gửi: cạnh dài tối đa 1024px, JPEG chất lượng 0.7 (khoảng 100–250KB)
+async function shrinkImage(file, max, q) {
+  let src = null, bmp = null;
+  if (window.createImageBitmap) { try { bmp = await createImageBitmap(file, { imageOrientation: 'from-image' }); } catch (e) { bmp = null; } }
+  if (bmp) src = bmp;
+  else {
+    src = await new Promise((res, rej) => {
+      const u = URL.createObjectURL(file), im = new Image();
+      im.onload = () => { URL.revokeObjectURL(u); res(im); };
+      im.onerror = () => { URL.revokeObjectURL(u); rej(new Error('img')); };
+      im.src = u;
+    });
+  }
+  const w = src.naturalWidth || src.width, hh = src.naturalHeight || src.height;
+  if (!w || !hh) throw new Error('size');
+  const k = Math.min(1, max / Math.max(w, hh));
+  const c = document.createElement('canvas');
+  c.width = Math.max(1, Math.round(w * k)); c.height = Math.max(1, Math.round(hh * k));
+  const g = c.getContext('2d');
+  g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height);
+  g.drawImage(src, 0, 0, c.width, c.height);
+  if (bmp && bmp.close) bmp.close();
+  const url = c.toDataURL('image/jpeg', q);
+  return url.slice(url.indexOf(',') + 1);
+}
+async function photoPick(maVT, file) {
+  if (needNet()) return;
+  let b64;
+  try { b64 = await shrinkImage(file, 1024, 0.7); } catch (e) { return toast(t('photoBad'), 'bad'); }
+  toast(t('photoUploading'));
+  try {
+    const r = await api('saveItemPhoto', { maVT, base64: b64 }, { timeout: 90 });
+    mergeItems([r.item]);
+    toast(t('photoSaved'));
+    if (cur().v === 'item') render();
+  } catch (e) { toast(netErr(e), 'bad'); }
+}
+// Ảnh không tải được (mất mạng, chưa lưu trên máy): hiện chữ thay cho ảnh vỡ
+document.addEventListener('error', e => {
+  const im = e.target;
+  if (im && im.tagName === 'IMG') { const box = im.closest('.photo,.thumb'); if (box) box.classList.add('broken'); }
+}, true);
 
 /* ---------------- Bảng dưới, thông báo ---------------- */
 function openSheet(html) {
@@ -4327,7 +5982,84 @@ const ACT = {
     if (!ls.length) return toast(t('noOpenLoanFor', { x: it.maVT }), 'bad');
     if (ls.length === 1) return go('giveBack', { id: ls[0].id });
     const p = cur().p; p.tab = 'open'; p.f = it.maVT; render();
-  })
+  }),
+  // Bản 1.3: quản trị, sao lưu
+  backupNow: async el => {
+    if (needNet()) return;
+    const p = cur().p;
+    el.disabled = true; toast(t('backupRunning'));
+    try { p.I = await api('backup', {}, { timeout: 150 }); toast(t('backupDone')); }
+    catch (e) { toast(netErr(e), 'bad'); }
+    if (cur().p === p) render();
+  },
+  backupAuto: async el => {
+    if (needNet()) return;
+    const p = cur().p;
+    el.disabled = true;
+    try { p.I = await api('backupAuto', { bat: el.dataset.on === '1' }); toast(t('autoSaved')); }
+    catch (e) { toast(netErr(e), 'bad'); }
+    if (cur().p === p) render();
+  },
+  // Báo tin
+  ntFind: async el => {
+    const p = cur().p; p.F._sync();
+    if (needNet()) return;
+    el.disabled = true;
+    try { p.chats = await api('notifyChats', { tgToken: p.F.tgToken }); }
+    catch (e) { toast(netErr(e), 'bad'); }
+    if (cur().p === p) render();
+  },
+  ntChat: el => {
+    const p = cur().p; p.F._sync();
+    Object.assign(p.F, { tgChat: el.dataset.id, tgTen: el.dataset.name, tgBat: true });
+    p.chats = null; render();
+  },
+  ntTest: async () => {
+    const p = cur().p;
+    if (!await ntSave(p, true)) return;
+    const b = $('#fTest'); if (b) b.disabled = true;
+    try {
+      const k = await api('notifyTest', {}, { timeout: 60 });
+      const tg = k.telegram === 'OK' ? t('ntTgSent') : k.telegram === 'TAT' ? t('ntTgOff') : t('ntTgErr', { x: k.telegram });
+      const ml = k.email === 'OK' ? t('ntMailSent', { x: k.emailTo }) : k.email === 'TAT' ? t('ntMailOff') : k.email === 'CHUA_CO_EMAIL' ? t('ntMailNoAddr') : t('ntMailErr', { x: k.email });
+      const good = v => v === 'OK' ? 'ok' : v === 'TAT' ? 'grey' : 'bad';
+      openSheet(`<h3>${t('ntTestTitle')}</h3><p class="note ${good(k.telegram)}" id="ntResTg">${tg}</p><p class="note ${good(k.email)}" id="ntResMail">${ml}</p>
+        <div class="btns"><button type="button" class="btn" data-act="sheetClose">${t('close')}</button></div>`);
+    } catch (e) { toast(netErr(e), 'bad'); }
+    if (b) b.disabled = false;
+  },
+  // Nhập Excel, tải file
+  xlsTemplate: () => xlsDownload(false),
+  xlsExport: () => xlsDownload(true),
+  xlsGo: () => xlsGo(cur().p),
+  shareFile: () => {
+    const f = S._file; closeSheet();
+    if (f && navigator.share) navigator.share({ files: [f], title: f.name }).catch(() => { /* người dùng bỏ qua */ });
+  },
+  // Báo cáo
+  rpRange: el => { const p = cur().p; rpSetRange(p, el.dataset.k); p.ct = '*'; p._err = null; render(); },
+  rpTab: el => { cur().p.tab = el.dataset.tab; render(); },
+  rpExcel: () => rpExcel(cur().p),
+  rpPrint: () => rpPrint(cur().p),
+  // Ảnh vật tư
+  photoView: el => {
+    const it = S.itemMap.get(String(el.dataset.id).toUpperCase());
+    if (!it || !it.anh) return;
+    openSheet(`<h3>${esc(nm1(it))}</h3><div class="photo big"><img class="photo-big" src="${esc(photoUrl(it.anh, 1600))}" alt="${esc(tp('photo'))}" referrerpolicy="no-referrer"><span class="photo-err">${t('photoErr')}</span></div>
+      <div class="btns"><button type="button" class="btn" data-act="sheetClose">${t('close')}</button></div>`);
+  },
+  photoDel: el => openSheet(`<h3>${t('photoDelQ')}</h3><div class="btns">
+    <button type="button" class="btn primary" data-act="photoDelGo" data-id="${esc(el.dataset.id)}">${ic('trash')}${t('photoDel')}</button>
+    <button type="button" class="btn" data-act="sheetClose">${t('back')}</button></div>`),
+  photoDelGo: async el => {
+    if (needNet()) return;
+    el.disabled = true;
+    try {
+      const r = await api('saveItemPhoto', { maVT: el.dataset.id, xoa: true });
+      closeSheet(); mergeItems([r.item]); toast(t('photoDeleted'));
+      if (cur().v === 'item') render();
+    } catch (e) { toast(netErr(e), 'bad'); el.disabled = false; }
+  }
 };
 /* ---------------- iPhone: chạm vào ô nhập phải mở được bàn phím ---------------- */
 // iOS chỉ mở bàn phím khi ô được focus ngay trong lần chạm. Nếu ô đang "kẹt" (có focus mà không có bàn phím)
